@@ -1,0 +1,200 @@
+{
+    "program": "Pacific Studies Minor",
+    "requirements": [
+        {
+            "category": "Core Requirements",
+            "required": true,
+            "choose": null,
+            "courses": [
+                {
+                    "course_number": "PAIS 105",
+                    "name": "Introduction to Pacific Studies",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "PAIS 200",
+                    "name": "Recognizing Place, Purpose, and Positionality on Native Land",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "PAIS 105"
+                    ]
+                }
+            ]
+        },
+        {
+            "category": "Electives",
+            "required": false,
+            "choose": 3,
+            "courses": [
+                {
+                    "course_number": "PAIS 201",
+                    "name": "Indigenous Pacific Research Methodology",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "PAIS 105"
+                    ]
+                },
+                {
+                    "course_number": "PAIS 220",
+                    "name": "Pacific Social Development",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "PAIS 105"
+                    ]
+                },
+                {
+                    "course_number": "PAIS 250",
+                    "name": "Polynesian Dance and Performance",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "PAIS 275",
+                    "name": "Pacific Wood Carving",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "PAIS 320",
+                    "name": "Peace and Conflict in the Pacific",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "PAIS 105"
+                    ]
+                },
+                {
+                    "course_number": "PAIS 330",
+                    "name": "Sovereignty and Self Governance in Oceania",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "PAIS 105"
+                    ]
+                },
+                {
+                    "course_number": "PAIS 331",
+                    "name": "Women in Oceania",
+                    "semesters_offered": [
+                        "Variable"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "PAIS 105"
+                    ]
+                },
+                {
+                    "course_number": "PAIS 340",
+                    "name": "Anti-Racism and Belonging: Pacific Dialogue",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "PAIS 105"
+                    ]
+                },
+                {
+                    "course_number": "PAIS 375",
+                    "name": "Environmental Issues and Resource Management",
+                    "semesters_offered": [
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "PAIS 105"
+                    ]
+                },
+                {
+                    "course_number": "PAIS 390R",
+                    "name": "Special Topics in Pacific Studies",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "PAIS 105"
+                    ]
+                },
+                {
+                    "course_number": "LANG 100/200/300",
+                    "name": "Pacific Languages (HAWN/MAOR/SAMN/TONG)",
+                    "semesters_offered": [
+                        "Variable"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "HIST 362",
+                    "name": "History of the Pacific",
+                    "semesters_offered": [
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "HUM 301",
+                    "name": "Culture of Oceania",
+                    "semesters_offered": [
+                        "Fall"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "IPB 352",
+                    "name": "Intercultural Conflict Dynamics",
+                    "semesters_offered": [
+                        "Fall"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "IPB 121"
+                    ]
+                }
+            ]
+        }
+    ]
+}

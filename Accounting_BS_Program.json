@@ -1,0 +1,305 @@
+{
+    "program": "Accounting (BS)",
+    "requirements": [
+        {
+            "category": "Required Accounting Foundation Courses",
+            "required": true,
+            "choose": null,
+            "courses": [
+                {
+                    "course_number": "ACCT 186",
+                    "name": "Introduction to Financial Computing",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "ACCT 201",
+                    "name": "Introduction to Financial Accounting",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "ACCT 203",
+                    "name": "Introduction to Managerial Accounting",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 186",
+                        "ACCT 201"
+                    ]
+                },
+                {
+                    "course_number": "MATH 121",
+                    "name": "Principles of Statistics",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "MATH 107",
+                        "MATH 110",
+                        "ACCT 186"
+                    ]
+                },
+                {
+                    "course_number": "ECON 200",
+                    "name": "Principles of Microeconomics",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 186",
+                        "MATH 107"
+                    ]
+                },
+                {
+                    "course_number": "ECON 201",
+                    "name": "Principles of Macroeconomics",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 186",
+                        "MATH 107"
+                    ]
+                }
+            ]
+        },
+        {
+            "category": "Required Business Courses",
+            "required": true,
+            "choose": null,
+            "courses": [
+                {
+                    "course_number": "BUSM 301",
+                    "name": "Business Finance",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 203",
+                        "ECON 201",
+                        "MATH 121"
+                    ]
+                },
+                {
+                    "course_number": "BUSM 320",
+                    "name": "Business Communication",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 203",
+                        "ENGL 101"
+                    ]
+                },
+                {
+                    "course_number": "BUSM 342",
+                    "name": "Business Law and Ethics",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 203",
+                        "ENGL 101"
+                    ]
+                }
+            ]
+        },
+        {
+            "category": "Elective Business/CS/FIN Course",
+            "required": false,
+            "choose": 1,
+            "courses": [
+                {
+                    "course_number": "CS 250",
+                    "name": "Database Applications",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "ENTR 275",
+                    "name": "Leadership and the Gospel of Jesus Christ: Becoming a Disciple Leader",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": []
+                },
+                {
+                    "course_number": "FIN 360",
+                    "name": "Corporate Financial Statement Analysis",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "BUSM 301"
+                    ]
+                },
+                {
+                    "course_number": "BUSM 361",
+                    "name": "Business Analytics and Operations",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "BUSM 180",
+                        "ACCT 186"
+                    ]
+                },
+                {
+                    "course_number": "BUSM 310",
+                    "name": "Principles of Management",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "BUSM 180"
+                    ]
+                },
+                {
+                    "course_number": "BUSM 304",
+                    "name": "Principles of Marketing Management",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "BUSM 180",
+                        "BUSM 320"
+                    ]
+                }
+            ]
+        },
+        {
+            "category": "Required Accounting Courses",
+            "required": true,
+            "choose": null,
+            "courses": [
+                {
+                    "course_number": "ACCT 301",
+                    "name": "Intermediate Accounting I",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 201",
+                        "ACCT 203",
+                        "ECON 200"
+                    ]
+                },
+                {
+                    "course_number": "ACCT 302",
+                    "name": "Intermediate Accounting II",
+                    "semesters_offered": [
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 301"
+                    ]
+                },
+                {
+                    "course_number": "ACCT 312",
+                    "name": "Managerial Accounting",
+                    "semesters_offered": [
+                        "Fall",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 201",
+                        "ACCT 203",
+                        "MATH 121",
+                        "ECON 200"
+                    ]
+                },
+                {
+                    "course_number": "ACCT 321",
+                    "name": "Federal Taxation I",
+                    "semesters_offered": [
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 301"
+                    ]
+                },
+                {
+                    "course_number": "ACCT 356",
+                    "name": "Accounting Information Systems",
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 301"
+                    ]
+                },
+                {
+                    "course_number": "ACCT 365",
+                    "name": "Auditing",
+                    "semesters_offered": [
+                        "Winter",
+                        "Spring"
+                    ],
+                    "credit_hours": 3.0,
+                    "prerequisites": [
+                        "ACCT 301",
+                        "ACCT 312"
+                    ]
+                }
+            ]
+        }
+    ]
+}
