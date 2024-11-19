@@ -1,83 +1,78 @@
 document.getElementById("calculate-schedule").addEventListener("click", async () => {
-    const major = document.getElementById("major").value;
-    const minor1 = document.getElementById("minor1").value;
-    const minor2 = document.getElementById("minor2").value;
+    try {
+        const major = document.getElementById("major").value;
+        const minor1 = document.getElementById("minor1").value;
+        const minor2 = document.getElementById("minor2").value;
 
-    // Load the JSON data
-    const majorData = await fetch(major).then(res => res.json());
-    const minor1Data = await fetch(minor1).then(res => res.json());
-    const minor2Data = await fetch(minor2).then(res => res.json());
-
-    // Combine all course requirements
-    const allRequirements = [
-        ...majorData.requirements,
-        ...minor1Data.requirements,
-        ...minor2Data.requirements,
-    ];
-
-    const semesters = ["Fall", "Winter", "Spring"];
-    const maxCredits = { Fall: 16, Winter: 16, Spring: 10 };
-
-    let schedule = []; // Final schedule
-    let completedCourses = new Set(); // Track completed courses
-    let deferredCourses = []; // Courses deferred due to unmet prerequisites
-
-    // Collect all available course numbers for prerequisite checking
-    const availableCourses = new Set();
-    allRequirements.forEach(requirement =>
-        requirement.courses.forEach(course => availableCourses.add(course.course_number))
-    );
-
-    // Helper to check if prerequisites are met or not part of the program
-    const prerequisitesMet = (course) =>
-        course.prerequisites.every(prereq => completedCourses.has(prereq) || !availableCourses.has(prereq));
-
-    for (let i = 0; i < 10; i++) {
-        let currentSemester = { 
-            name: `Semester ${i + 1} (${semesters[i % 3]})`, 
-            credits: 0, 
-            courses: [] 
+        // Fetch JSON data for the programs
+        const fetchJson = async (url) => {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
         };
 
-        // Attempt to schedule deferred courses first
-        deferredCourses = deferredCourses.filter(course => {
-            if (
-                course.semesters_offered.includes(semesters[i % 3]) &&
-                prerequisitesMet(course) &&
-                currentSemester.credits + course.credit_hours <= maxCredits[semesters[i % 3]]
-            ) {
-                currentSemester.courses.push(course.name);
-                currentSemester.credits += course.credit_hours;
-                completedCourses.add(course.course_number);
-                return false; // Remove from deferred
-            }
-            return true; // Keep in deferred
-        });
+        const majorData = await fetchJson(major);
+        const minor1Data = await fetchJson(minor1);
+        const minor2Data = await fetchJson(minor2);
 
-        for (let requirement of allRequirements) {
-            for (let course of requirement.courses) {
+        // Combine all courses in sequential order
+        let allCourses = [
+            ...majorData.courses,
+            ...minor1Data.courses,
+            ...minor2Data.courses,
+        ];
+
+        console.log("All courses combined in order:", allCourses);
+
+        const semesters = ["Fall", "Winter", "Spring"];
+        const maxCredits = { Fall: 16, Winter: 16, Spring: 10 };
+
+        let schedule = []; // Final schedule
+        let semesterIndex = 0;
+
+        // Process courses until all are scheduled
+        while (allCourses.length > 0) {
+            const semesterType = semesters[semesterIndex % 3];
+            let currentSemester = {
+                name: `Semester ${semesterIndex + 1} (${semesterType})`,
+                credits: 0,
+                courses: [],
+            };
+
+            // Iterate over courses in sequential order
+            allCourses = allCourses.filter((course) => {
                 if (
-                    course.semesters_offered.includes(semesters[i % 3]) &&
-                    prerequisitesMet(course) &&
-                    !completedCourses.has(course.course_number) &&
-                    currentSemester.credits + course.credit_hours <= maxCredits[semesters[i % 3]]
+                    course.semesters_offered.includes(semesterType) &&
+                    currentSemester.credits + course.credits <= maxCredits[semesterType]
                 ) {
-                    currentSemester.courses.push(course.name);
-                    currentSemester.credits += course.credit_hours;
-                    completedCourses.add(course.course_number);
-                } else if (!completedCourses.has(course.course_number)) {
-                    deferredCourses.push(course); // Add to deferred if prerequisites are unmet
+                    currentSemester.courses.push(`${course.course_number}: ${course.course_name}`);
+                    currentSemester.credits += course.credits;
+                    return false; // Remove scheduled course
                 }
+                return true; // Keep deferred courses
+            });
+
+            // Add the semester if it has courses
+            if (currentSemester.courses.length > 0) {
+                schedule.push(currentSemester);
+            }
+
+            semesterIndex++;
+            if (semesterIndex > 100) {
+                console.error("Exceeded maximum iterations. Check data integrity.");
+                break;
             }
         }
 
-        schedule.push(currentSemester);
-    }
+        // Display the schedule
+        const scheduleDiv = document.getElementById("schedule");
+        scheduleDiv.innerHTML = schedule.map((sem) => `
+            <h3>${sem.name} - Total Credits: ${sem.credits}</h3>
+            <ul>${sem.courses.map((c) => `<li>${c}</li>`).join('')}</ul>
+        `).join('');
 
-    // Display the schedule
-    const scheduleDiv = document.getElementById("schedule");
-    scheduleDiv.innerHTML = schedule.map((sem) => `
-        <h3>${sem.name} - Total Credits: ${sem.credits}</h3>
-        <ul>${sem.courses.map((c) => `<li>${c}</li>`).join('')}</ul>
-    `).join('');
+    } catch (error) {
+        console.error("Error during scheduling process:", error);
+        document.getElementById("schedule").innerHTML = "<p>An error occurred while generating the schedule. Check the console for details.</p>";
+    }
 });

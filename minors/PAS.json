@@ -1,0 +1,35 @@
+{
+    "courses": [
+      {
+        "course_number": "PAIS 105",
+        "course_name": "Introduction to Pacific Studies",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3
+      },
+      {
+        "course_number": "PAIS 200",
+        "course_name": "Recognizing Place, Purpose, and Positionality on Native Land",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3
+      },
+      {
+        "course_number": "PAIS 201",
+        "course_name": "Indigenous Pacific Research Methodology",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3
+      },
+      {
+        "course_number": "PAIS 220",
+        "course_name": "Pacific Social Development",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3
+      },
+      {
+        "course_number": "PAIS 320",
+        "course_name": "Peace and Conflict in the Pacific",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3
+      }
+    ]
+  }
+  
