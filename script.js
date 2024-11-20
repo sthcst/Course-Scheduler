@@ -3,6 +3,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const major = document.getElementById("major").value;
         const minor1 = document.getElementById("minor1").value;
         const minor2 = document.getElementById("minor2").value;
+        const startSemester = document.getElementById("start-semester").value;
 
         // Fetch JSON data for the programs
         const fetchJson = async (url) => {
@@ -22,19 +23,22 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             ...minor2Data.courses,
         ];
 
-        console.log("All courses combined in order:", allCourses);
+        // Map to represent semesters and order
+        const semesterOrder = ["Fall", "Winter", "Spring"];
+        let startYear = parseInt(startSemester.split(" ")[1]);
+        let currentSemesterIndex = semesterOrder.indexOf(startSemester.split(" ")[0]);
 
-        const semesters = ["Fall", "Winter", "Spring"];
         const maxCredits = { Fall: 16, Winter: 16, Spring: 10 };
 
         let schedule = []; // Final schedule
         let completedCourses = new Set();
-        let semesterIndex = 0;
 
         while (allCourses.some(course => !course.scheduled)) {
-            const semesterType = semesters[semesterIndex % 3];
+            const semesterType = semesterOrder[currentSemesterIndex % 3];
+            const currentYear = startYear + Math.floor(currentSemesterIndex / 3);
+            const semesterLabel = `${semesterType} ${currentYear}`;
             const currentSemester = {
-                name: `Semester ${semesterIndex + 1} (${semesterType})`,
+                name: `Semester ${schedule.length + 1} (${semesterLabel})`,
                 credits: 0,
                 courses: [],
             };
@@ -67,9 +71,9 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 schedule.push(currentSemester);
             }
 
-            semesterIndex++;
-            if (semesterIndex > 100) {
-                console.error("Exceeded maximum iterations. Check prerequisites or data integrity.");
+            currentSemesterIndex++;
+            if (schedule.length > 100) {
+                console.error("Exceeded maximum semesters. Check prerequisites or course data.");
                 break;
             }
         }
@@ -77,12 +81,44 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         // Display the schedule
         const scheduleDiv = document.getElementById("schedule");
         scheduleDiv.innerHTML = schedule.map(sem => `
-            <h3>${sem.name} - Total Credits: ${sem.credits}</h3>
-            <ul>${sem.courses.map(c => `<li>${c}</li>`).join('')}</ul>
+            <div class="semester">
+                <h3>${sem.name} - Total Credits: ${sem.credits}</h3>
+                <ul>
+                    ${sem.courses.map(c => `<li>${c}</li>`).join('')}
+                </ul>
+            </div>
         `).join('');
+
+        // Set equal heights for semester boxes
+        setEqualHeights();
 
     } catch (error) {
         console.error("Error during scheduling process:", error);
         document.getElementById("schedule").innerHTML = "<p>An error occurred while generating the schedule. Check the console for details.</p>";
     }
 });
+
+// Function to set all semester boxes to the same height
+function setEqualHeights() {
+    const semesters = document.querySelectorAll(".semester");
+    let maxHeight = 0;
+
+    // Reset heights to auto before recalculating
+    semesters.forEach((box) => {
+        box.style.height = "auto";
+    });
+
+    // Calculate the maximum height
+    semesters.forEach((box) => {
+        maxHeight = Math.max(maxHeight, box.offsetHeight);
+    });
+
+    // Apply the maximum height to all boxes
+    semesters.forEach((box) => {
+        box.style.height = `${maxHeight}px`;
+    });
+}
+
+// Set equal heights on load and resize
+window.addEventListener("load", setEqualHeights);
+window.addEventListener("resize", setEqualHeights);
