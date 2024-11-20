@@ -1,41 +1,46 @@
 {
-    "courses": [
-      {
-        "course_number": "ENTR 180",
-        "course_name": "New Venture Finance",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3
-      },
-      {
-        "course_number": "ENTR 275",
-        "course_name": "Leadership and the Gospel of Jesus Christ: Becoming a Disciple Leader",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3
-      },
-      {
-        "course_number": "ENTR 283",
-        "course_name": "New Venture Creation",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3
-      },
-      {
-        "course_number": "ENTR 285",
-        "course_name": "New Venture Growth Strategies",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3
-      },
-      {
-        "course_number": "ENTR 483",
-        "course_name": "New Venture Management",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3
-      },
-      {
-        "course_number": "ENTR 318",
-        "course_name": "Personal Financial Management",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 3
-      }
-    ]
-  }
-  
+  "courses": [
+    {
+      "course_number": "ENTR 180",
+      "course_name": "New Venture Finance",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3,
+      "prerequisites": []
+    },
+    {
+      "course_number": "ENTR 275",
+      "course_name": "Leadership and the Gospel of Jesus Christ: Becoming a Disciple Leader",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3,
+      "prerequisites": ["ENTR 180"]
+    },
+    {
+      "course_number": "ENTR 283",
+      "course_name": "New Venture Creation",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3,
+      "prerequisites": ["ENTR 275"]
+    },
+    {
+      "course_number": "ENTR 285",
+      "course_name": "New Venture Growth Strategies",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3,
+      "prerequisites": ["ENTR 283"]
+    },
+    {
+      "course_number": "ENTR 483",
+      "course_name": "New Venture Management",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3,
+      "prerequisites": ["ENTR 285"]
+    },
+    {
+      "course_number": "ENTR 318",
+      "course_name": "Personal Financial Management",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 3,
+      "prerequisites": ["ENTR 483"]
+    }
+  ]
+}
