@@ -12,42 +12,42 @@
       "course_name": "Information Technology Essentials",
       "semesters_offered": ["Fall", "Winter"],
       "credits": 3,
-      "prerequisites": ["CS 101"]
+      "prerequisites": []
     },
     {
       "course_number": "CS 140",
       "course_name": "Web Design",
       "semesters_offered": ["Fall", "Spring"],
       "credits": 3,
-      "prerequisites": ["IT 124"]
+      "prerequisites": []
     },
     {
       "course_number": "MATH 121",
       "course_name": "Principles of Statistics",
       "semesters_offered": ["Fall", "Winter", "Spring"],
       "credits": 3,
-      "prerequisites": ["CS 140"]
+      "prerequisites": []
     },
     {
       "course_number": "CS 205",
       "course_name": "Foundations of Discrete Mathematics",
       "semesters_offered": ["Fall", "Winter"],
       "credits": 3,
-      "prerequisites": ["MATH 121"]
+      "prerequisites": ["CS 101"]
     },
     {
       "course_number": "CS 206",
       "course_name": "Discrete Mathematics II",
       "semesters_offered": ["Fall", "Spring"],
       "credits": 1,
-      "prerequisites": ["CS 205"]
+      "prerequisites": ["CS 202", "CS 205"]
     },
     {
       "course_number": "CS 202",
       "course_name": "Introduction to Object-Oriented Programming",
       "semesters_offered": ["Fall", "Winter"],
       "credits": 3,
-      "prerequisites": ["CS 206"]
+      "prerequisites": ["CS 101"]
     },
     {
       "course_number": "CS 250",
@@ -61,7 +61,7 @@
       "course_name": "Computer Organization",
       "semesters_offered": ["Fall", "Winter"],
       "credits": 3,
-      "prerequisites": ["CS 250"]
+      "prerequisites": ["CS 202"]
     },
     {
       "course_number": "MATH 212",
@@ -75,14 +75,14 @@
       "course_name": "Advanced Object-Oriented Programming",
       "semesters_offered": ["Fall", "Spring"],
       "credits": 3,
-      "prerequisites": ["MATH 212"]
+      "prerequisites": ["CS 202"]
     },
     {
       "course_number": "CS 301",
       "course_name": "Algorithms and Complexity",
       "semesters_offered": ["Winter", "Spring"],
       "credits": 3,
-      "prerequisites": ["CS 300"]
+      "prerequisites": ["CS 300", "CS 206"]
     },
     {
       "course_number": "CS 311",
@@ -96,42 +96,42 @@
       "course_name": "Web Applications Development",
       "semesters_offered": ["Fall"],
       "credits": 3,
-      "prerequisites": ["CS 311"]
+      "prerequisites": ["CS 250", "CS 300"]
     },
     {
       "course_number": "CS 320",
       "course_name": "Introduction to Computational Theory",
       "semesters_offered": ["Winter", "Spring"],
       "credits": 3,
-      "prerequisites": ["CS 401"]
+      "prerequisites": ["CS 206"]
     },
     {
       "course_number": "CS 415",
       "course_name": "Operating Systems Design",
       "semesters_offered": ["Fall"],
       "credits": 3,
-      "prerequisites": ["CS 320"]
+      "prerequisites": ["CS 210", "CS 301"]
     },
     {
       "course_number": "CS 490R",
       "course_name": "Advanced Topics in Computer Science",
       "semesters_offered": ["Fall", "Winter", "Spring"],
       "credits": 3,
-      "prerequisites": ["CS 415"]
+      "prerequisites": ["CS 301"]
     },
     {
       "course_number": "CS 490R II",
       "course_name": "Advanced Topics in Computer Science",
       "semesters_offered": ["Fall", "Winter", "Spring"],
       "credits": 3,
-      "prerequisites": ["CS 490R"]
+      "prerequisites": ["CS 301"]
     },
     {
       "course_number": "CS 420",
       "course_name": "Programming Languages",
       "semesters_offered": ["Spring"],
       "credits": 3,
-      "prerequisites": ["CS 490R II"]
+      "prerequisites": ["CS 301", "CS 320"]
     },
     {
       "course_number": "HIST 470",

@@ -48,7 +48,9 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
 
                 // Check prerequisites
                 const prereqsMet = course.prerequisites.every(prereq =>
-                    completedCourses.has(prereq)
+                    schedule.some(sem =>
+                        sem.courses.some(c => c.startsWith(prereq))
+                    )
                 );
 
                 if (
@@ -89,36 +91,8 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             </div>
         `).join('');
 
-        // Set equal heights for semester boxes
-        setEqualHeights();
-
     } catch (error) {
         console.error("Error during scheduling process:", error);
         document.getElementById("schedule").innerHTML = "<p>An error occurred while generating the schedule. Check the console for details.</p>";
     }
 });
-
-// Function to set all semester boxes to the same height
-function setEqualHeights() {
-    const semesters = document.querySelectorAll(".semester");
-    let maxHeight = 0;
-
-    // Reset heights to auto before recalculating
-    semesters.forEach((box) => {
-        box.style.height = "auto";
-    });
-
-    // Calculate the maximum height
-    semesters.forEach((box) => {
-        maxHeight = Math.max(maxHeight, box.offsetHeight);
-    });
-
-    // Apply the maximum height to all boxes
-    semesters.forEach((box) => {
-        box.style.height = `${maxHeight}px`;
-    });
-}
-
-// Set equal heights on load and resize
-window.addEventListener("load", setEqualHeights);
-window.addEventListener("resize", setEqualHeights);
