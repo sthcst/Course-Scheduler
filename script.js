@@ -96,3 +96,4 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         document.getElementById("schedule").innerHTML = "<p>An error occurred while generating the schedule. Check the console for details.</p>";
     }
 });
+
