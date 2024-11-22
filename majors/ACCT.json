@@ -12,126 +12,126 @@
         "course_name": "Introduction to Financial Accounting",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["ACCT 186"]
+        "prerequisites": []
       },
       {
         "course_number": "ACCT 203",
         "course_name": "Introduction to Managerial Accounting",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["ACCT 201"]
+        "prerequisites": ["ACCT 201", "ACCT 186"]
       },
       {
         "course_number": "MATH 121",
         "course_name": "Principles of Statistics",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["ACCT 203"]
+        "prerequisites": ["ACCT 186"]
       },
       {
         "course_number": "ECON 200",
         "course_name": "Principles of Microeconomics",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["MATH 121"]
+        "prerequisites": ["ACCT 186"]
       },
       {
         "course_number": "ECON 201",
         "course_name": "Principles of Macroeconomics",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["ECON 200"]
+        "prerequisites": ["ACCT 186"]
       },
       {
         "course_number": "ACCT 301",
         "course_name": "Intermediate Accounting I",
         "semesters_offered": ["Fall", "Winter"],
         "credits": 3,
-        "prerequisites": ["ECON 201"]
+        "prerequisites": ["ACCT 201", "ACCT 203"]
       },
       {
         "course_number": "BUSM 301",
         "course_name": "Business Finance",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["ACCT 301"]
+        "prerequisites": ["ACCT 203", "ECON 201", "MATH 121"]
       },
       {
         "course_number": "BUSM 342",
         "course_name": "Business Law and Ethics",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["BUSM 301"]
+        "prerequisites": ["ACCT 203"]
       },
       {
         "course_number": "ACCT 302",
         "course_name": "Intermediate Accounting II",
         "semesters_offered": ["Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["BUSM 342"]
+        "prerequisites": ["ACCT 301"]
       },
       {
         "course_number": "ACCT 312",
         "course_name": "Managerial Accounting",
         "semesters_offered": ["Fall", "Spring"],
         "credits": 3,
-        "prerequisites": ["ACCT 302"]
+        "prerequisites": ["ACCT 201", "ACCT 203", "MATH 121", "ECON 200"]
       },
       {
         "course_number": "ACCT 321",
         "course_name": "Federal Taxation I",
         "semesters_offered": ["Winter"],
         "credits": 3,
-        "prerequisites": ["ACCT 312"]
+        "prerequisites": ["ACCT 301"]
       },
       {
         "course_number": "ACCT 356",
         "course_name": "Accounting Information Systems",
         "semesters_offered": ["Fall", "Winter"],
         "credits": 3,
-        "prerequisites": ["ACCT 321"]
+        "prerequisites": ["ACCT 301"]
       },
       {
         "course_number": "ACCT 365",
         "course_name": "Auditing",
         "semesters_offered": ["Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["ACCT 356"]
+        "prerequisites": ["ACCT 302", "ACCT 356"]
       },
       {
         "course_number": "ACCT 386",
         "course_name": "Data Analytics for Accountants",
         "semesters_offered": ["Fall", "Winter"],
         "credits": 3,
-        "prerequisites": ["ACCT 365"]
+        "prerequisites": ["ACCT 301"]
       },
       {
         "course_number": "ACCT 400",
         "course_name": "Intermediate Accounting III",
         "semesters_offered": ["Fall", "Spring"],
         "credits": 3,
-        "prerequisites": ["ACCT 386"]
+        "prerequisites": ["ACCT 302", "BUSM 301"]
       },
       {
         "course_number": "ACCT 440",
         "course_name": "International Accounting and Accounting Research",
         "semesters_offered": ["Fall", "Winter"],
         "credits": 3,
-        "prerequisites": ["ACCT 400"]
+        "prerequisites": ["ACCT 302", "BUSM 301"]
       },
       {
         "course_number": "CS 250",
         "course_name": "Database Applications",
         "semesters_offered": ["Fall", "Winter"],
         "credits": 3,
-        "prerequisites": ["ACCT 440"]
+        "prerequisites": []
       },
       {
         "course_number": "ENTR 275",
         "course_name": "Leadership and the Gospel of Jesus Christ: Becoming a Disciple Leader",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 3,
-        "prerequisites": ["CS 250"]
+        "prerequisites": []
       }
     ]
   }
