@@ -39,7 +39,7 @@
       "course_number": "CS 206",
       "course_name": "Discrete Mathematics II",
       "semesters_offered": ["Fall", "Spring"],
-      "credits": 1,
+      "credits": 3,
       "prerequisites": ["CS 202", "CS 205"]
     },
     {
@@ -73,7 +73,7 @@
     {
       "course_number": "CS 300",
       "course_name": "Advanced Object-Oriented Programming",
-      "semesters_offered": ["Fall", "Spring"],
+      "semesters_offered": ["Fall", "Winter"],
       "credits": 3,
       "prerequisites": ["CS 202"]
     },
@@ -138,7 +138,7 @@
       "course_name": "History and Ethics of Computing",
       "semesters_offered": ["Fall", "Winter"],
       "credits": 3,
-      "prerequisites": ["CS 420"]
+      "prerequisites": []
     }
   ]
 }

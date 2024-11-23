@@ -20,42 +20,30 @@ body {
 .title {
     margin-top: 30px;
     font-size: 36px;
-    color: white;
+    color: black;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     text-align: center;
 }
 
 .floating-bar {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: center; /* Vertically aligns the button with the dropdowns */
+    justify-content: space-between; /* Spaces out the elements evenly */
     background: rgba(255, 255, 255, 0.9);
     border-radius: 30px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     padding: 10px 20px;
-    width: 80%;
+    max-width: 90%; /* Dynamically adjusts width to fit content while leaving margins */
     margin: 20px auto;
     position: fixed;
-    top: 100px; /* Below the title */
+    top: 100px;
     z-index: 10;
 }
 
 .input-group {
-    margin: 0 15px;
-}
-
-.input-group label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 5px;
-}
-
-.input-group select,
-.input-group input {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 150px;
+    margin: 0 10px; /* Adjusts spacing between dropdowns */
+    display: flex;
+    flex-direction: column; /* Stacks label above dropdown */
 }
 
 button {
@@ -66,6 +54,8 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    align-self: flex-start; /* Aligns the button to the left within its container */
+    margin-left: 15px; /* Adds spacing from the last dropdown */
 }
 
 button:hover {

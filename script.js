@@ -4,6 +4,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const minor1 = document.getElementById("minor1").value;
         const minor2 = document.getElementById("minor2").value;
         const startSemester = document.getElementById("start-semester").value;
+        const majorClassLimit = parseInt(document.getElementById("major-class-limit").value);
 
         // Fetch JSON data for the programs
         const fetchJson = async (url) => {
@@ -18,9 +19,9 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
 
         // Combine all courses
         const allCourses = [
-            ...majorData.courses,
-            ...minor1Data.courses,
-            ...minor2Data.courses,
+            ...majorData.courses.map(course => ({ ...course, type: "major" })),
+            ...minor1Data.courses.map(course => ({ ...course, type: "minor1" })),
+            ...minor2Data.courses.map(course => ({ ...course, type: "minor2" })),
         ];
 
         // Map to represent semesters and order
@@ -41,6 +42,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 name: `Semester ${schedule.length + 1} (${semesterLabel})`,
                 credits: 0,
                 courses: [],
+                majorCount: 0,
             };
 
             for (const course of allCourses) {
@@ -53,15 +55,25 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                     )
                 );
 
+                // Ensure we respect major class limits
+                const isMajorLimitExceeded =
+                    course.type === "major" &&
+                    currentSemester.majorCount >= majorClassLimit;
+
                 if (
                     prereqsMet &&
                     course.semesters_offered.includes(semesterType) &&
-                    currentSemester.credits + course.credits <= maxCredits[semesterType]
+                    currentSemester.credits + course.credits <= maxCredits[semesterType] &&
+                    !isMajorLimitExceeded
                 ) {
                     currentSemester.courses.push(`${course.course_number}: ${course.course_name}`);
                     currentSemester.credits += course.credits;
                     course.scheduled = true; // Mark the course as scheduled
                     completedCourses.add(course.course_number);
+
+                    if (course.type === "major") {
+                        currentSemester.majorCount++;
+                    }
                 }
 
                 // Stop adding courses if the semester is full
@@ -96,4 +108,3 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         document.getElementById("schedule").innerHTML = "<p>An error occurred while generating the schedule. Check the console for details.</p>";
     }
 });
-
