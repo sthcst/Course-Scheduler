@@ -1,0 +1,124 @@
+{
+    "courses": [
+      {
+        "course_number": "POSC 101",
+        "course_name": "Introduction to Politics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 170",
+        "course_name": "International Relations",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 190",
+        "course_name": "Foundations of Critical Thinking",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 202",
+        "course_name": "History of Political Philosophy",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 230",
+        "course_name": "Fundamentals of Good Governance",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 280",
+        "course_name": "Professionalism in the Political Environment",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 300",
+        "course_name": "Political Inquiry and Writing",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 304",
+        "course_name": "Quantitative Political Research",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["POSC 300"]
+      },
+      {
+        "course_number": "POSC 318",
+        "course_name": "Federal and Decentralized Government",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 322",
+        "course_name": "Oceanic Governments and Politics",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 330",
+        "course_name": "Introduction to Public Administration",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 331",
+        "course_name": "Public Policy",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 335",
+        "course_name": "Issues of Terrorism",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "PMGT 300",
+        "course_name": "Public Policy",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "PMGT 350",
+        "course_name": "Crisis Management",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 420",
+        "course_name": "Complexity and Public Policy",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 499",
+        "course_name": "Political Science Research and Writing",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["POSC 202", "POSC 300"]
+      }
+    ]
+  }
+  
