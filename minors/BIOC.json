@@ -1,0 +1,85 @@
+{
+    "courses": [
+      {
+        "course_number": "MATH 110",
+        "course_name": "College Algebra",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "CHEM 105",
+        "course_name": "General Chemistry I",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["MATH 110"]
+      },
+      {
+        "course_number": "CHEM 106",
+        "course_name": "General Chemistry II",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["CHEM 105"]
+      },
+      {
+        "course_number": "CHEM 107L",
+        "course_name": "General Chemistry Laboratory",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1,
+        "prerequisites": [],
+        "corequisites": ["CHEM 106"]
+      },
+      {
+        "course_number": "CHEM 201",
+        "course_name": "Chemical and Laboratory Safety",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1,
+        "prerequisites": ["CHEM 101L"]
+      },
+      {
+        "course_number": "CHEM 351",
+        "course_name": "Organic Chemistry I",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["CHEM 106"]
+      },
+      {
+        "course_number": "CHEM 351L",
+        "course_name": "Organic Chemistry I Lab",
+        "semesters_offered": ["Fall"],
+        "credits": 1,
+        "prerequisites": ["CHEM 107L"],
+        "corequisites": ["CHEM 351", "CHEM 201"]
+      },
+      {
+        "course_number": "CHEM 352",
+        "course_name": "Organic Chemistry II",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["CHEM 351"]
+      },
+      {
+        "course_number": "CHEM 352L",
+        "course_name": "Organic Chemistry II Lab",
+        "semesters_offered": ["Winter"],
+        "credits": 1,
+        "prerequisites": ["CHEM 351L"],
+        "corequisites": ["CHEM 352"]
+      },
+      {
+        "course_number": "CHEM 481",
+        "course_name": "Biochemistry I",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 3,
+        "prerequisites": ["BIOL 112L", "CHEM 351"]
+      },
+      {
+        "course_number": "CHEM 483L",
+        "course_name": "Biochemistry Methods Lab - Proteins",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 1,
+        "prerequisites": ["CHEM 351L"],
+        "corequisites": ["CHEM 481"]
+      }
+    ]
+}  

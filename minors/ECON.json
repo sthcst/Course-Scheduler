@@ -1,0 +1,54 @@
+{
+    "courses": [
+      {
+        "course_number": "ACCT 186",
+        "course_name": "Introduction to Financial Computing",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MATH 121",
+        "course_name": "Principles of Statistics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ECON 200",
+        "course_name": "Principles of Microeconomics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ACCT 186"]
+      },
+      {
+        "course_number": "ECON 201",
+        "course_name": "Principles of Macroeconomics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ACCT 186"]
+      },
+      {
+        "course_number": "ECON 350",
+        "course_name": "Economic Development",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["ECON 200", "ECON 201", "MATH 121"]
+      },
+      {
+        "course_number": "ECON 353",
+        "course_name": "Money, Banking, and Business",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["ECON 200", "ECON 201", "MATH 121"]
+      },
+      {
+        "course_number": "ECON 360",
+        "course_name": "International Economics",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ECON 200", "ECON 201"]
+      }
+    ]
+}
+  
