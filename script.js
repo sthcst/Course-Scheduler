@@ -21,14 +21,33 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const religionData = await fetchJson("religion/religion.json");
         const coreData = await fetchJson("core/core.json"); // Fetch core courses
 
-        // Add core courses to allCourses
-        const allCourses = [
-            ...religionData.courses.map(course => ({ ...course, type: "religion" })),
-            ...majorData.courses.map(course => ({ ...course, type: "major" })),
-            ...minor1Data.courses.map(course => ({ ...course, type: "minor1" })),
-            ...minor2Data.courses.map(course => ({ ...course, type: "minor2" })),
-            ...coreData.courses.map(course => ({ ...course, type: "core" })), // Core courses
+        // Combine courses from all sources into a single array
+        const combinedCourses = [
+            ...religionData.courses.map(course => ({ ...course, type: ["religion"] })),
+            ...majorData.courses.map(course => ({ ...course, type: ["major"] })),
+            ...minor1Data.courses.map(course => ({ ...course, type: ["minor1"] })),
+            ...minor2Data.courses.map(course => ({ ...course, type: ["minor2"] })),
+            ...coreData.courses.map(course => ({ ...course, type: ["core"] })),
         ];
+
+        // Deduplicate courses by course_number
+        const courseMap = {};
+        for (const course of combinedCourses) {
+            const courseNumber = course.course_number;
+            if (courseMap[courseNumber]) {
+                // Merge types
+                courseMap[courseNumber].type = Array.from(new Set([...courseMap[courseNumber].type, ...course.type]));
+                // Merge prerequisites
+                courseMap[courseNumber].prerequisites = Array.from(new Set([...courseMap[courseNumber].prerequisites, ...course.prerequisites]));
+                // Merge semesters_offered
+                courseMap[courseNumber].semesters_offered = Array.from(new Set([...courseMap[courseNumber].semesters_offered, ...course.semesters_offered]));
+            } else {
+                courseMap[courseNumber] = course;
+            }
+        }
+
+        // Convert the courseMap back to an array
+        const allCourses = Object.values(courseMap);
 
         // Shuffle the courses to randomize the order
         const shuffleArray = (array) => {
@@ -50,8 +69,8 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         // Sort courses based on their type and how many times they are prerequisites
         allCourses.sort((a, b) => {
             // Core courses have the lowest priority
-            if (a.type === "core" && b.type !== "core") return 1;
-            if (a.type !== "core" && b.type === "core") return -1;
+            if (a.type.includes("core") && !b.type.includes("core")) return 1;
+            if (!a.type.includes("core") && b.type.includes("core")) return -1;
 
             // Prioritize courses that are prerequisites for many others
             const aCount = prereqCounts[a.course_number] || 0;
@@ -86,18 +105,18 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 let courseScheduledInThisIteration = false;
 
                 for (const course of allCourses) {
-                    if (course.scheduled || course.type === "core") continue;
+                    if (course.scheduled || course.type.includes("core")) continue;
 
                     const prereqsMet = course.prerequisites.every(prereq =>
                         completedCourses.has(prereq)
                     );
 
                     const isMajorLimitExceeded =
-                        course.type === "major" &&
+                        course.type.includes("major") &&
                         currentSemester.majorCount >= majorClassLimit;
 
                     const isRelLimitExceeded =
-                        course.type === "religion" &&
+                        course.type.includes("religion") &&
                         currentSemester.relCount >= 1;
 
                     if (
@@ -113,8 +132,8 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                         coursesScheduledThisSemester = true;
                         courseScheduledInThisIteration = true;
 
-                        if (course.type === "major") currentSemester.majorCount++;
-                        if (course.type === "religion") currentSemester.relCount++;
+                        if (course.type.includes("major")) currentSemester.majorCount++;
+                        if (course.type.includes("religion")) currentSemester.relCount++;
                     }
 
                     if (currentSemester.credits >= maxCredits[semesterType]) break;
@@ -129,7 +148,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 let coreCourseScheduled = false;
 
                 for (const course of allCourses) {
-                    if (course.scheduled || course.type !== "core") continue;
+                    if (course.scheduled || !course.type.includes("core")) continue;
 
                     const prereqsMet = course.prerequisites.every(prereq =>
                         completedCourses.has(prereq)
