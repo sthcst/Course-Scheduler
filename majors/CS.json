@@ -1,5 +1,6 @@
 {
   "courses": [
+    
     {
       "course_number": "CS 101",
       "course_name": "Introduction to Programming Fundamentals",
@@ -124,7 +125,7 @@
       "course_name": "Advanced Topics in Computer Science",
       "semesters_offered": ["Fall", "Winter", "Spring"],
       "credits": 3,
-      "prerequisites": ["CS 301"]
+      "prerequisites": ["CS 301", "CS 490R"]
     },
     {
       "course_number": "CS 420",

@@ -18,25 +18,43 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const majorData = await fetchJson(major);
         const minor1Data = await fetchJson(minor1);
         const minor2Data = await fetchJson(minor2);
+        const religionData = await fetchJson("religion/religion.json");
 
-        // Combine all courses
         const allCourses = [
+            ...religionData.courses.map(course => ({ ...course, type: "religion" })),
             ...majorData.courses.map(course => ({ ...course, type: "major" })),
             ...minor1Data.courses.map(course => ({ ...course, type: "minor1" })),
             ...minor2Data.courses.map(course => ({ ...course, type: "minor2" })),
         ];
 
-        // Map to represent semesters and order
+        // Shuffle the courses to randomize the order
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        };
+        shuffleArray(allCourses);
+
+        // Calculate the number of times each course is a prerequisite
+        const prereqCounts = {};
+        for (const course of allCourses) {
+            for (const prereq of course.prerequisites) {
+                prereqCounts[prereq] = (prereqCounts[prereq] || 0) + 1;
+            }
+        }
+
+        // Sort courses based on how many times they are prerequisites (descending)
+        allCourses.sort((a, b) => {
+            const aCount = prereqCounts[a.course_number] || 0;
+            const bCount = prereqCounts[b.course_number] || 0;
+            return bCount - aCount;
+        });
+
         const semesterOrder = ["Fall", "Winter", "Spring"];
         let startYear = parseInt(startSemester.split(" ")[1]);
         let currentSemesterIndex = semesterOrder.indexOf(startSemester.split(" ")[0]);
-
-        // Set max credits dynamically
-        const maxCredits = {
-            Fall: fallWinterCredits,
-            Winter: fallWinterCredits,
-            Spring: springCredits,
-        };
+        const maxCredits = { Fall: fallWinterCredits, Winter: fallWinterCredits, Spring: springCredits };
 
         let schedule = []; // Final schedule
         let completedCourses = new Set();
@@ -50,46 +68,71 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 credits: 0,
                 courses: [],
                 majorCount: 0,
+                relCount: 0,
             };
 
-            for (const course of allCourses) {
-                if (course.scheduled) continue;
+            let coursesScheduledThisSemester = false;
 
-                // Check prerequisites
-                const prereqsMet = course.prerequisites.every(prereq =>
-                    schedule.some(sem =>
-                        sem.courses.some(c => c.startsWith(prereq))
-                    )
-                );
+            // Schedule courses
+            while (currentSemester.credits < maxCredits[semesterType]) {
+                let courseScheduledInThisIteration = false;
 
-                // Ensure we respect major class limits
-                const isMajorLimitExceeded =
-                    course.type === "major" &&
-                    currentSemester.majorCount >= majorClassLimit;
+                for (const course of allCourses) {
+                    if (course.scheduled) continue;
 
-                if (
-                    prereqsMet &&
-                    course.semesters_offered.includes(semesterType) &&
-                    currentSemester.credits + course.credits <= maxCredits[semesterType] &&
-                    !isMajorLimitExceeded
-                ) {
-                    currentSemester.courses.push(`${course.course_number}: ${course.course_name}`);
-                    currentSemester.credits += course.credits;
-                    course.scheduled = true; // Mark the course as scheduled
-                    completedCourses.add(course.course_number);
+                    const prereqsMet = course.prerequisites.every(prereq =>
+                        completedCourses.has(prereq)
+                    );
 
-                    if (course.type === "major") {
-                        currentSemester.majorCount++;
+                    const isMajorLimitExceeded =
+                        course.type === "major" &&
+                        currentSemester.majorCount >= majorClassLimit;
+
+                    const isRelLimitExceeded =
+                        course.type === "religion" &&
+                        currentSemester.relCount >= 1;
+
+                    if (
+                        prereqsMet &&
+                        course.semesters_offered.includes(semesterType) &&
+                        currentSemester.credits + course.credits <= maxCredits[semesterType] &&
+                        !isMajorLimitExceeded &&
+                        !isRelLimitExceeded
+                    ) {
+                        currentSemester.courses.push(`${course.course_number}: ${course.course_name}`);
+                        currentSemester.credits += course.credits;
+                        course.scheduled = true;
+                        coursesScheduledThisSemester = true;
+                        courseScheduledInThisIteration = true;
+
+                        if (course.type === "major") currentSemester.majorCount++;
+                        if (course.type === "religion") currentSemester.relCount++;
                     }
+
+                    // Break if the semester is full
+                    if (currentSemester.credits >= maxCredits[semesterType]) break;
                 }
 
-                // Stop adding courses if the semester is full
-                if (currentSemester.credits >= maxCredits[semesterType]) break;
+                if (!courseScheduledInThisIteration) {
+                    // No additional courses could be scheduled in this semester
+                    break;
+                }
             }
 
             // Add the semester if it has courses
-            if (currentSemester.courses.length > 0) {
+            if (coursesScheduledThisSemester) {
                 schedule.push(currentSemester);
+
+                // At the end of the semester, add scheduled courses to completedCourses
+                for (const course of allCourses) {
+                    if (course.scheduled && !completedCourses.has(course.course_number)) {
+                        completedCourses.add(course.course_number);
+                    }
+                }
+            } else {
+                // No courses could be scheduled; possible issue with prerequisites or course availability
+                console.error(`No courses could be scheduled in ${semesterLabel}.`);
+                break;
             }
 
             currentSemesterIndex++;
