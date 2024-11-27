@@ -5,6 +5,8 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const minor2 = document.getElementById("minor2").value;
         const startSemester = document.getElementById("start-semester").value;
         const majorClassLimit = parseInt(document.getElementById("major-class-limit").value);
+        const fallWinterCredits = parseInt(document.getElementById("fall-winter-credits").value);
+        const springCredits = parseInt(document.getElementById("spring-credits").value);
 
         // Fetch JSON data for the programs
         const fetchJson = async (url) => {
@@ -29,7 +31,12 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         let startYear = parseInt(startSemester.split(" ")[1]);
         let currentSemesterIndex = semesterOrder.indexOf(startSemester.split(" ")[0]);
 
-        const maxCredits = { Fall: 16, Winter: 16, Spring: 10 };
+        // Set max credits dynamically
+        const maxCredits = {
+            Fall: fallWinterCredits,
+            Winter: fallWinterCredits,
+            Spring: springCredits,
+        };
 
         let schedule = []; // Final schedule
         let completedCourses = new Set();

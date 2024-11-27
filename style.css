@@ -44,6 +44,7 @@ body {
     margin: 0 10px; /* Adjusts spacing between dropdowns */
     display: flex;
     flex-direction: column; /* Stacks label above dropdown */
+    color: black;
 }
 
 button {
