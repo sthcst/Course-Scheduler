@@ -49,14 +49,8 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         // Convert the courseMap back to an array
         const allCourses = Object.values(courseMap);
 
-        // Shuffle the courses to randomize the order
-        const shuffleArray = (array) => {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        };
-        shuffleArray(allCourses);
+        // Remove randomness: Do not shuffle the courses
+        // Instead, sort courses deterministically
 
         // Calculate the number of times each course is a prerequisite
         const prereqCounts = {};
@@ -66,16 +60,32 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             }
         }
 
-        // Sort courses based on their type and how many times they are prerequisites
+        // Sort courses based on priority
         allCourses.sort((a, b) => {
-            // Core courses have the lowest priority
-            if (a.type.includes("core") && !b.type.includes("core")) return 1;
-            if (!a.type.includes("core") && b.type.includes("core")) return -1;
-
             // Prioritize courses that are prerequisites for many others
-            const aCount = prereqCounts[a.course_number] || 0;
-            const bCount = prereqCounts[b.course_number] || 0;
-            return bCount - aCount;
+            const aPrereqCount = prereqCounts[a.course_number] || 0;
+            const bPrereqCount = prereqCounts[b.course_number] || 0;
+
+            if (bPrereqCount !== aPrereqCount) {
+                return bPrereqCount - aPrereqCount;
+            }
+
+            // Prioritize by type: major > minor1 > minor2 > core > religion
+            const typePriority = { "major": 1, "minor1": 2, "minor2": 3, "core": 4, "religion": 5 };
+
+            const aTypePriority = Math.min(...a.type.map(t => typePriority[t] || 6));
+            const bTypePriority = Math.min(...b.type.map(t => typePriority[t] || 6));
+
+            if (aTypePriority !== bTypePriority) {
+                return aTypePriority - bTypePriority;
+            }
+
+            // Prioritize courses with earlier semesters offered
+            const semesterOrder = { "Fall": 1, "Winter": 2, "Spring": 3 };
+            const aEarliestSemester = Math.min(...a.semesters_offered.map(s => semesterOrder[s]));
+            const bEarliestSemester = Math.min(...b.semesters_offered.map(s => semesterOrder[s]));
+
+            return aEarliestSemester - bEarliestSemester;
         });
 
         const semesterOrder = ["Fall", "Winter", "Spring"];
@@ -85,6 +95,16 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
 
         let schedule = []; // Final schedule
         let completedCourses = new Set();
+
+        // Calculate total number of religion courses
+        const totalReligionCourses = allCourses.filter(course => course.type.includes("religion")).length;
+
+        // Estimate minimum number of semesters needed
+        let estimatedSemesters = Math.ceil(allCourses.reduce((sum, course) => sum + course.credits, 0) / Math.max(...Object.values(maxCredits)));
+
+        // Distribute religion courses across semesters
+        let religionCoursesQueue = allCourses.filter(course => course.type.includes("religion"));
+        let religionCourseIndex = 0;
 
         while (allCourses.some(course => !course.scheduled)) {
             const semesterType = semesterOrder[currentSemesterIndex % 3];
@@ -100,53 +120,60 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
 
             let coursesScheduledThisSemester = false;
 
-            // Schedule non-core courses first
-            while (currentSemester.credits < maxCredits[semesterType]) {
-                let courseScheduledInThisIteration = false;
-
-                for (const course of allCourses) {
-                    if (course.scheduled || course.type.includes("core")) continue;
-
-                    const prereqsMet = course.prerequisites.every(prereq =>
+            // Schedule religion class if available and not already scheduled
+            if (currentSemester.relCount < 1 && religionCourseIndex < religionCoursesQueue.length) {
+                const relCourse = religionCoursesQueue[religionCourseIndex];
+                if (
+                    !relCourse.scheduled &&
+                    relCourse.semesters_offered.includes(semesterType) &&
+                    currentSemester.credits + relCourse.credits <= maxCredits[semesterType]
+                ) {
+                    const prereqsMet = relCourse.prerequisites.every(prereq =>
                         completedCourses.has(prereq)
                     );
 
-                    const isMajorLimitExceeded =
-                        course.type.includes("major") &&
-                        currentSemester.majorCount >= majorClassLimit;
-
-                    const isRelLimitExceeded =
-                        course.type.includes("religion") &&
-                        currentSemester.relCount >= 1;
-
-                    if (
-                        prereqsMet &&
-                        course.semesters_offered.includes(semesterType) &&
-                        currentSemester.credits + course.credits <= maxCredits[semesterType] &&
-                        !isMajorLimitExceeded &&
-                        !isRelLimitExceeded
-                    ) {
-                        currentSemester.courses.push(`${course.course_number}: ${course.course_name}`);
-                        currentSemester.credits += course.credits;
-                        course.scheduled = true;
+                    if (prereqsMet) {
+                        currentSemester.courses.push(`${relCourse.course_number}: ${relCourse.course_name}`);
+                        currentSemester.credits += relCourse.credits;
+                        relCourse.scheduled = true;
                         coursesScheduledThisSemester = true;
-                        courseScheduledInThisIteration = true;
-
-                        if (course.type.includes("major")) currentSemester.majorCount++;
-                        if (course.type.includes("religion")) currentSemester.relCount++;
+                        currentSemester.relCount++;
+                        religionCourseIndex++;
                     }
-
-                    if (currentSemester.credits >= maxCredits[semesterType]) break;
                 }
-
-                // If no non-core courses were scheduled in this iteration, break to schedule core courses
-                if (!courseScheduledInThisIteration) break;
             }
 
-            // Schedule core courses if there is still room
-            if (currentSemester.credits < maxCredits[semesterType]) {
-                let coreCourseScheduled = false;
+            // Schedule other courses
+            for (const course of allCourses) {
+                if (course.scheduled || course.type.includes("religion")) continue;
 
+                const prereqsMet = course.prerequisites.every(prereq =>
+                    completedCourses.has(prereq)
+                );
+
+                const isMajorLimitExceeded =
+                    course.type.includes("major") &&
+                    currentSemester.majorCount >= majorClassLimit;
+
+                if (
+                    prereqsMet &&
+                    course.semesters_offered.includes(semesterType) &&
+                    currentSemester.credits + course.credits <= maxCredits[semesterType] &&
+                    !isMajorLimitExceeded
+                ) {
+                    currentSemester.courses.push(`${course.course_number}: ${course.course_name}`);
+                    currentSemester.credits += course.credits;
+                    course.scheduled = true;
+                    coursesScheduledThisSemester = true;
+
+                    if (course.type.includes("major")) currentSemester.majorCount++;
+                }
+
+                if (currentSemester.credits >= maxCredits[semesterType]) break;
+            }
+
+            // If there's still room, attempt to schedule core courses
+            if (currentSemester.credits < maxCredits[semesterType]) {
                 for (const course of allCourses) {
                     if (course.scheduled || !course.type.includes("core")) continue;
 
@@ -163,7 +190,6 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                         currentSemester.credits += course.credits;
                         course.scheduled = true;
                         coursesScheduledThisSemester = true;
-                        coreCourseScheduled = true;
                     }
 
                     if (currentSemester.credits >= maxCredits[semesterType]) break;
