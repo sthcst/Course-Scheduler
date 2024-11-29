@@ -1,0 +1,27 @@
+
+{
+    "courses": [
+      {
+        "course_number": "EIL 201",
+        "course_name": "The Int'l Student in the University",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": []
+      },
+      {
+        "course_number": "EIL 313",
+        "course_name": "Listening/Speaking",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 4,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ENGL 317",
+        "course_name": "Reading/Writing",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 4,
+        "prerequisites": []
+      }
+    ]
+}
+  

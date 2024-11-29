@@ -3,6 +3,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const major = document.getElementById("major").value;
         const minor1 = document.getElementById("minor1").value;
         const minor2 = document.getElementById("minor2").value;
+        const englishLevel = document.getElementById("english-level").value; // Get English level
         const startSemester = document.getElementById("start-semester").value;
         const majorClassLimit = parseInt(document.getElementById("major-class-limit").value);
         const fallWinterCredits = parseInt(document.getElementById("fall-winter-credits").value);
@@ -19,7 +20,36 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const minor1Data = await fetchJson(minor1);
         const minor2Data = await fetchJson(minor2);
         const religionData = await fetchJson("religion/religion.json");
-        const coreData = await fetchJson("core/core.json"); // Fetch core courses
+        const coreData = await fetchJson("core/core.json");
+
+        // Fetch EIL courses based on English level
+        let eilCourses = [];
+        if (englishLevel === "academic-english-1") {
+            const eilLevel1Data = await fetchJson("EIL/level1.json");
+            const eilLevel2Data = await fetchJson("EIL/level2.json");
+
+            // Add Level 1 EIL courses
+            const level1Courses = eilLevel1Data.courses.map(course => ({ ...course, type: ["eil"] }));
+
+            // Add Level 2 EIL courses
+            const level2Courses = eilLevel2Data.courses.map(course => ({ ...course, type: ["eil"] }));
+
+            // Modify Level 2 EIL courses to have Level 1 EIL courses as prerequisites
+            const level1CourseNumbers = level1Courses.map(course => course.course_number);
+
+            for (let course of level2Courses) {
+                // Add Level 1 courses as prerequisites
+                course.prerequisites = Array.from(new Set([...course.prerequisites, ...level1CourseNumbers]));
+            }
+
+            eilCourses = [...level1Courses, ...level2Courses];
+
+        } else if (englishLevel === "academic-english-2") {
+            const eilLevel2Data = await fetchJson("EIL/level2.json");
+            eilCourses = eilLevel2Data.courses.map(course => ({ ...course, type: ["eil"] }));
+            // No modification to prerequisites needed
+        }
+        // If 'fluent', no EIL courses are added
 
         // Combine courses from all sources into a single array
         const combinedCourses = [
@@ -28,6 +58,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             ...minor1Data.courses.map(course => ({ ...course, type: ["minor1"] })),
             ...minor2Data.courses.map(course => ({ ...course, type: ["minor2"] })),
             ...coreData.courses.map(course => ({ ...course, type: ["core"] })),
+            ...eilCourses, // Add EIL courses
         ];
 
         // Deduplicate courses by course_number
@@ -50,7 +81,6 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const allCourses = Object.values(courseMap);
 
         // Remove randomness: Do not shuffle the courses
-        // Instead, sort courses deterministically
 
         // Calculate the number of times each course is a prerequisite
         const prereqCounts = {};
@@ -70,11 +100,11 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 return bPrereqCount - aPrereqCount;
             }
 
-            // Prioritize by type: major > minor1 > minor2 > core > religion
-            const typePriority = { "major": 1, "minor1": 2, "minor2": 3, "core": 4, "religion": 5 };
+            // Prioritize by type: EIL > major > minor1 > minor2 > core > religion
+            const typePriority = { "eil": 1, "major": 2, "minor1": 3, "minor2": 4, "core": 5, "religion": 6 };
 
-            const aTypePriority = Math.min(...a.type.map(t => typePriority[t] || 6));
-            const bTypePriority = Math.min(...b.type.map(t => typePriority[t] || 6));
+            const aTypePriority = Math.min(...a.type.map(t => typePriority[t] || 7));
+            const bTypePriority = Math.min(...b.type.map(t => typePriority[t] || 7));
 
             if (aTypePriority !== bTypePriority) {
                 return aTypePriority - bTypePriority;
@@ -99,12 +129,12 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         // Calculate total number of religion courses
         const totalReligionCourses = allCourses.filter(course => course.type.includes("religion")).length;
 
-        // Estimate minimum number of semesters needed
-        let estimatedSemesters = Math.ceil(allCourses.reduce((sum, course) => sum + course.credits, 0) / Math.max(...Object.values(maxCredits)));
+        // EIL courses constraints
+        const eilCoursesList = allCourses.filter(course => course.type.includes("eil"));
+        const eilCourseNumbers = eilCoursesList.map(course => course.course_number);
 
-        // Distribute religion courses across semesters
-        let religionCoursesQueue = allCourses.filter(course => course.type.includes("religion"));
-        let religionCourseIndex = 0;
+        // Initialize a counter to track semesters for EIL courses
+        let eilSemestersUsed = 0;
 
         while (allCourses.some(course => !course.scheduled)) {
             const semesterType = semesterOrder[currentSemesterIndex % 3];
@@ -116,36 +146,68 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 courses: [],
                 majorCount: 0,
                 relCount: 0,
+                eilCount: 0,
             };
 
             let coursesScheduledThisSemester = false;
 
             // Schedule religion class if available and not already scheduled
-            if (currentSemester.relCount < 1 && religionCourseIndex < religionCoursesQueue.length) {
-                const relCourse = religionCoursesQueue[religionCourseIndex];
-                if (
-                    !relCourse.scheduled &&
-                    relCourse.semesters_offered.includes(semesterType) &&
-                    currentSemester.credits + relCourse.credits <= maxCredits[semesterType]
-                ) {
+            const availableRelCourses = allCourses.filter(course =>
+                course.type.includes("religion") &&
+                !course.scheduled &&
+                course.semesters_offered.includes(semesterType)
+            );
+
+            if (currentSemester.relCount < 1 && availableRelCourses.length > 0) {
+                for (const relCourse of availableRelCourses) {
                     const prereqsMet = relCourse.prerequisites.every(prereq =>
                         completedCourses.has(prereq)
                     );
 
-                    if (prereqsMet) {
+                    if (
+                        prereqsMet &&
+                        currentSemester.credits + relCourse.credits <= maxCredits[semesterType]
+                    ) {
                         currentSemester.courses.push(`${relCourse.course_number}: ${relCourse.course_name}`);
                         currentSemester.credits += relCourse.credits;
                         relCourse.scheduled = true;
                         coursesScheduledThisSemester = true;
                         currentSemester.relCount++;
-                        religionCourseIndex++;
+                        break; // Only schedule one religion class per semester
                     }
                 }
             }
 
+            // Schedule EIL courses within first 4 semesters, prioritize first 2 semesters
+            if (eilSemestersUsed < 4 && currentSemester.eilCount < eilCoursesList.length) {
+                for (const course of eilCoursesList) {
+                    if (course.scheduled) continue;
+
+                    const prereqsMet = course.prerequisites.every(prereq =>
+                        completedCourses.has(prereq)
+                    );
+
+                    if (
+                        prereqsMet &&
+                        course.semesters_offered.includes(semesterType) &&
+                        currentSemester.credits + course.credits <= maxCredits[semesterType]
+                    ) {
+                        currentSemester.courses.push(`${course.course_number}: ${course.course_name}`);
+                        currentSemester.credits += course.credits;
+                        course.scheduled = true;
+                        coursesScheduledThisSemester = true;
+                        currentSemester.eilCount++;
+                    }
+
+                    if (currentSemester.credits >= maxCredits[semesterType]) break;
+                }
+
+                eilSemestersUsed++;
+            }
+
             // Schedule other courses
             for (const course of allCourses) {
-                if (course.scheduled || course.type.includes("religion")) continue;
+                if (course.scheduled || course.type.includes("religion") || course.type.includes("eil")) continue;
 
                 const prereqsMet = course.prerequisites.every(prereq =>
                     completedCourses.has(prereq)
