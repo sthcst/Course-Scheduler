@@ -21,6 +21,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const minor2Data = await fetchJson(minor2);
         const religionData = await fetchJson("religion/religion.json");
         const coreData = await fetchJson("core/core.json");
+        const holokaiData = await fetchJson("holokai/holokai.json"); // Fetch Holokai course
 
         // Fetch EIL courses based on English level
         let eilCourses = [];
@@ -58,6 +59,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             ...minor1Data.courses.map(course => ({ ...course, type: ["minor1"] })),
             ...minor2Data.courses.map(course => ({ ...course, type: ["minor2"] })),
             ...coreData.courses.map(course => ({ ...course, type: ["core"] })),
+            ...holokaiData.courses.map(course => ({ ...course, type: ["holokai"] })), // Add Holokai course
             ...eilCourses, // Add EIL courses
         ];
 
@@ -100,11 +102,11 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 return bPrereqCount - aPrereqCount;
             }
 
-            // Prioritize by type: EIL > major > minor1 > minor2 > core > religion
-            const typePriority = { "eil": 1, "major": 2, "minor1": 3, "minor2": 4, "core": 5, "religion": 6 };
+            // Prioritize by type: Holokai > EIL > major > minor1 > minor2 > core > religion
+            const typePriority = { "holokai": 1, "eil": 2, "major": 3, "minor1": 4, "minor2": 5, "core": 6, "religion": 7 };
 
-            const aTypePriority = Math.min(...a.type.map(t => typePriority[t] || 7));
-            const bTypePriority = Math.min(...b.type.map(t => typePriority[t] || 7));
+            const aTypePriority = Math.min(...a.type.map(t => typePriority[t] || 8));
+            const bTypePriority = Math.min(...b.type.map(t => typePriority[t] || 8));
 
             if (aTypePriority !== bTypePriority) {
                 return aTypePriority - bTypePriority;
@@ -126,12 +128,8 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         let schedule = []; // Final schedule
         let completedCourses = new Set();
 
-        // Calculate total number of religion courses
-        const totalReligionCourses = allCourses.filter(course => course.type.includes("religion")).length;
-
         // EIL courses constraints
         const eilCoursesList = allCourses.filter(course => course.type.includes("eil"));
-        const eilCourseNumbers = eilCoursesList.map(course => course.course_number);
 
         // Initialize a counter to track semesters for EIL courses
         let eilSemestersUsed = 0;
@@ -150,6 +148,28 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             };
 
             let coursesScheduledThisSemester = false;
+
+            // Schedule Holokai course in the first semester
+            if (schedule.length === 0) { // First semester
+                const holokaiCourse = allCourses.find(course => course.type.includes("holokai") && !course.scheduled);
+                if (holokaiCourse) {
+                    const prereqsMet = holokaiCourse.prerequisites.every(prereq =>
+                        completedCourses.has(prereq)
+                    );
+                    if (
+                        holokaiCourse.semesters_offered.includes(semesterType) &&
+                        currentSemester.credits + holokaiCourse.credits <= maxCredits[semesterType] &&
+                        prereqsMet
+                    ) {
+                        currentSemester.courses.push(`${holokaiCourse.course_number}: ${holokaiCourse.course_name}`);
+                        currentSemester.credits += holokaiCourse.credits;
+                        holokaiCourse.scheduled = true;
+                        coursesScheduledThisSemester = true;
+                    } else {
+                        console.error("Unable to schedule the required Holokai course in the first semester.");
+                    }
+                }
+            }
 
             // Schedule religion class if available and not already scheduled
             const availableRelCourses = allCourses.filter(course =>
@@ -207,7 +227,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
 
             // Schedule other courses
             for (const course of allCourses) {
-                if (course.scheduled || course.type.includes("religion") || course.type.includes("eil")) continue;
+                if (course.scheduled || course.type.includes("religion") || course.type.includes("eil") || course.type.includes("holokai")) continue;
 
                 const prereqsMet = course.prerequisites.every(prereq =>
                     completedCourses.has(prereq)
