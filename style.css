@@ -6,7 +6,7 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #ffffff;
     color: #333;
 }
 
@@ -25,15 +25,40 @@ body {
     margin-top: 30px;
     font-size: 36px;
     color: black;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    
 }
 
 /* Style for the header image */
 .header-image {
     display: block;
     margin: 15px auto;
-    max-width: 80%;
+    width: 100%;
+    max-width: 1200px;
     height: auto;
+    box-sizing: border-box;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+/* Fade effect on the edges of the image */
+.header-image-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 15px auto;
+}
+
+.header-image-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, white, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0) 70%, white);
+    pointer-events: none;
+    z-index: 1;
 }
 
 /* Container to wrap the menu bar and schedule */
@@ -56,9 +81,8 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     padding: 30px 20px 30px; /* Increased bottom padding to accommodate the button */
     margin: 20px 0;
+    margin-bottom: 0px;
     position: relative;
-    top: 50px;
-    z-index: 10;
     width: 100%;
     box-sizing: border-box;
 }
@@ -107,7 +131,7 @@ button:hover {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    margin-top: 200px;
+    margin-top: 40px;
     padding-bottom: 40px;
     width: 100%;
     align-items: stretch; /* Ensure grid items stretch vertically */
@@ -124,6 +148,7 @@ button:hover {
     flex-direction: column;
     width: 100%;
     height: 100%; /* Make semester boxes fill available height */
+    margin-top: 0px;
 }
 
 .semester h3 {
