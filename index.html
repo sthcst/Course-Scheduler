@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>10-Semester Schedule Generator</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="background-image">
-      <h1 class="title">10-Semester Schedule Generator</h1>
-      <img src="images/simplefusion.jpg" alt="University Campus" class="header-image">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>10-Semester Schedule Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="background-image">
+    <h1 class="title">10-Semester Schedule Generator</h1>
+    <img src="images/simplefusion.jpg" alt="University Campus" class="header-image">
+
+    <!-- Start of the container -->
+    <div class="container">
       <header class="floating-bar">
+        <!-- First Row -->
         <div class="input-group">
           <label for="major">Major:</label>
           <select id="major">
             <option value="majors/CS.json">Computer Science</option>
             <option value="majors/ACCT.json">Accounting</option>
             <option value="majors/HIST.json">History</option>
-            <option value="majors/BUSMM.json">
-              Business Management - Marketing
-            </option>
+            <option value="majors/BUSMM.json">Business Management - Marketing</option>
             <option value="majors/COMM.json">Communications</option>
             <option value="majors/POSC.json">Political Science</option>
           </select>
@@ -30,9 +32,7 @@
           <select id="minor1">
             <option value="minors/ENTR.json">Entrepreneurship</option>
             <option value="minors/ASTU.json">Asian Studies</option>
-            <option value="minors/HHS.json">
-              Health and Human Performance
-            </option>
+            <option value="minors/HHS.json">Health and Human Performance</option>
             <option value="minors/CWRT.json">Creative Writing</option>
             <option value="minors/ECON.json">Economics</option>
           </select>
@@ -49,15 +49,15 @@
         </div>
 
         <div class="input-group">
-          <!-- Add this inside your form or appropriate section in index.html -->
           <label for="english-level">English Level:</label>
-            <select id="english-level">
-              <option value="fluent">Fluent</option>
-              <option value="academic-english-2">Academic English 2</option>
-              <option value="academic-english-1">Academic English 1</option>
-            </select>
+          <select id="english-level">
+            <option value="fluent">Fluent</option>
+            <option value="academic-english-2">Academic English 2</option>
+            <option value="academic-english-1">Academic English 1</option>
+          </select>
         </div>
 
+        <!-- Second Row -->
         <div class="input-group">
           <label for="start-semester">Starting Semester:</label>
           <select id="start-semester">
@@ -71,7 +71,7 @@
         </div>
 
         <div class="input-group">
-          <label for="major-class-limit">Max Major Classes per Sem:</label>
+          <label for="major-class-limit">Max Major Classes:</label>
           <select id="major-class-limit">
             <option value="2">2</option>
             <option value="3">3</option>
@@ -103,6 +103,7 @@
           </select>
         </div>
 
+        <!-- Generate Schedule button -->
         <button id="calculate-schedule">Generate Schedule</button>
       </header>
 
@@ -110,7 +111,10 @@
         <div id="schedule"></div>
       </main>
     </div>
+    <!-- End of the container -->
 
-    <script src="script.js"></script>
-  </body>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>
