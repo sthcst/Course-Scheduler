@@ -8,12 +8,15 @@
 </head>
 <body>
   <div class="background-image">
-    <h1 class="title">Map Your College Journey</h1>
-    
+    <!-- Start of the image container -->
+    <div class="header-image-container">
+      <img src="images/graduation.jpg" alt="University Campus" class="header-image">
+      <h1 class="title">Map Your College Journey</h1>
+    </div>
+    <!-- End of the image container -->
 
     <!-- Start of the container -->
     <div class="container">
-      <img src="images/graduation.jpg" alt="University Campus" class="header-image">
       <header class="floating-bar">
         <!-- First Row -->
         <div class="input-group">
@@ -108,9 +111,30 @@
         <button id="calculate-schedule">Generate Schedule</button>
       </header>
 
-      <main>
-        <div id="schedule"></div>
-      </main>
+      <!-- Schedule Container -->
+      <div id="schedule-container">
+        <!-- Summary Information -->
+        <div id="summary" class="summary-box">
+          <div class="summary-item" id="total-credits-box">
+            <p>Total Credits</p>
+            <h2 id="total-credits">0</h2>
+          </div>
+          <div class="summary-item" id="graduation-date-box">
+            <p>Graduation Date</p>
+            <h2 id="graduation-date">TBD</h2>
+          </div>
+          <div class="summary-item" id="electives-needed-box">
+            <p>Electives Needed</p>
+            <h2 id="electives-needed">0</h2>
+          </div>
+        </div>
+
+        <!-- Schedule Grid -->
+        <div id="schedule">
+          <!-- Semester boxes populated by JavaScript -->
+        </div>
+      </div>
+
     </div>
     <!-- End of the container -->
 

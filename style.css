@@ -6,7 +6,7 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #ffffff;
+    background-color: #ffffff8b;
     color: #333;
 }
 
@@ -18,30 +18,16 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    color: white;
+    color: rgb(229, 87, 87);
 }
 
 .title {
     margin-top: 30px;
     font-size: 36px;
     color: black;
-    
 }
 
-/* Style for the header image */
-.header-image {
-    display: block;
-    margin: 15px auto;
-    width: 100%;
-    max-width: 1200px;
-    height: auto;
-    box-sizing: border-box;
-    border-radius: 8px;
-    transition: box-shadow 0.3s ease;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-}
-
-/* Fade effect on the edges of the image */
+/* Style for the header image container */
 .header-image-container {
     position: relative;
     width: 100%;
@@ -49,16 +35,14 @@ body {
     margin: 15px auto;
 }
 
-.header-image-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom, white, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0) 70%, white);
-    pointer-events: none;
-    z-index: 1;
+.header-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: box-shadow 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
 /* Container to wrap the menu bar and schedule */
@@ -81,7 +65,7 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     padding: 30px 20px 30px; /* Increased bottom padding to accommodate the button */
     margin: 20px 0;
-    margin-bottom: 0px;
+    margin-bottom: 40px;
     position: relative;
     width: 100%;
     box-sizing: border-box;
@@ -171,6 +155,37 @@ button:hover {
     line-height: 1.5;
 }
 
+/* Summary Box Styles */
+.summary-box {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.summary-item {
+    flex: 1 1 calc(33.33% - 20px); /* Ensures each box takes 1/3 of the width with gap spacing */
+    background: #fff;
+    color: #333;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.summary-item p {
+    font-size: 18px;
+    margin: 0 0 10px;
+    color: #555;
+}
+
+.summary-item h2 {
+    font-size: 36px;
+    margin: 0;
+    color: #007BFF;
+}
+
 /* Media Queries */
 
 /* Tablet screens (<= 900px) */
@@ -186,6 +201,21 @@ button:hover {
 
     #schedule {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .summary-box {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .summary-item {
+        flex: 1 1 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .summary-item:last-child {
+        margin-bottom: 0;
     }
 }
 
@@ -208,6 +238,10 @@ button:hover {
     button {
         font-size: 16px;
         padding: 10px 20px;
+    }
+
+    .title {
+        font-size: 28px; /* Adjust font size for mobile */
     }
 
     #schedule {

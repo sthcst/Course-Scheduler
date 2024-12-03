@@ -300,6 +300,16 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             }
         }
 
+        // **Calculate total credits and graduation date**
+        let totalCredits = schedule.reduce((sum, sem) => sum + sem.credits, 0);
+        let graduationDate = schedule[schedule.length - 1].name.match(/\(([^)]+)\)/)[1]; // Extract semester label
+        let electiveCreditsNeeded = Math.max(0, 120 - totalCredits);
+
+        // **Update the summary information in the boxes**
+        document.getElementById('total-credits').innerText = totalCredits;
+        document.getElementById('graduation-date').innerText = graduationDate;
+        document.getElementById('electives-needed').innerText = electiveCreditsNeeded;
+
         // Display the schedule
         const scheduleDiv = document.getElementById("schedule");
         scheduleDiv.innerHTML = schedule.map(sem => `
