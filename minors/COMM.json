@@ -1,0 +1,41 @@
+{
+    "courses": [
+      {
+        "course_number": "COMM 110",
+        "course_name": "Intercultural Communication",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "COMM 200",
+        "course_name": "Mass Communication and Society",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "COMM 251",
+        "course_name": "Introduction to Cultural Theory",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "COMM 301",
+        "course_name": "The Internet and Society",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": ["COMM 200 or COMM 211"]
+      },
+      {
+        "course_number": "COMM 305",
+        "course_name": "Communication and Popular Culture",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["COMM 200"]
+      }
+      
+    ]
+  }
+  

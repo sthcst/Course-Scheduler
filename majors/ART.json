@@ -1,0 +1,96 @@
+{
+    "courses": [
+      {
+        "course_number": "ART 119",
+        "course_name": "Drawing and Design Principles",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 210",
+        "course_name": "Digital Design",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 119"]
+      },
+      {
+        "course_number": "ART 212",
+        "course_name": "Digital Photography",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 119"]
+      },
+      {
+        "course_number": "FILM 218",
+        "course_name": "Basic Video Production",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 220",
+        "course_name": "Experience in Visual Arts",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 221R",
+        "course_name": "Figure Drawing",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["ART 119"]
+      },
+      {
+        "course_number": "ART 225",
+        "course_name": "Painting Concepts",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 119", "Portfolio Review"]
+      },
+      {
+        "course_number": "ART 265",
+        "course_name": "Beginning Sculpture",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 201",
+        "course_name": "Global Art History I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ART 202",
+        "course_name": "Global Art History II",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ART 306",
+        "course_name": "Global Art History III",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101", "ART 201 or ART 202"]
+      },
+      {
+        "course_number": "ART 337",
+        "course_name": "Art Methods for Secondary Teachers",
+        "semesters_offered": ["Winter"],
+        "credits": 2,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 442",
+        "course_name": "Reading in Aesthetics",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ART 201", "ART 202"]
+      }
+    ]
+  }
+  

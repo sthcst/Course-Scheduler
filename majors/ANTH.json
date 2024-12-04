@@ -1,0 +1,109 @@
+{
+    "courses": [
+        {
+            "course_number": "ANTH 105",
+            "course_name": "Introduction to Cultural Anthropology",
+            "semesters_offered": ["Fall", "Winter", "Spring"],
+            "credits": 3,
+            "prerequisites": []
+        },
+        {
+            "course_number": "IPB 121",
+            "course_name": " Intercultural Peacebuilding",
+            "semesters_offered": ["Fall", "Winter", "Spring"],
+            "credits": 3,
+            "prerequisites": []
+        },
+        {
+            "course_number": "ANTH 270",
+            "course_name": "Language in Culture and Society: A survey of the role of language in life",
+            "semesters_offered": ["Fall", "Winter"],
+            "credits": 3,
+            "prerequisites": []
+        },
+        {
+            "course_number": "ANTH 310",
+            "course_name": "Anthropology Theory",
+            "semesters_offered": ["Winter"],
+            "credits": 3,
+            "prerequisites": ["ANTH 105"]
+        },
+        {
+            "course_number": "ANTH 322",
+            "course_name": "Ethnographic Methods",
+            "semesters_offered": ["Fall", "Winter"],
+            "credits": 3,
+            "prerequisites": ["ANTH 105", "IPB 121"]
+        },
+        {
+            "course_number": "HUM 100R",
+            "course_name": "Critical Inquiry and Engagement",
+            "semesters_offered": ["Fall", "Winter", "Spring"],
+            "credits": 1,
+            "prerequisites": []
+        },
+        {
+            "course_number": "ANTH 360",
+            "course_name": "Museum Studies",
+            "semesters_offered": ["Fall"],
+            "credits": 3,
+            "prerequisites": ["ANTH 105"]
+        },
+        {
+            "course_number": "ANTH 440",
+            "course_name": "Conservation of Intangible Culture",
+            "semesters_offered": ["Fall"],
+            "credits": 3,
+            "prerequisites": ["ANTH 105"]
+        },
+        {
+            "course_number": "ANTH 447",
+            "course_name": "Applied and Development Anthropology",
+            "semesters_offered": ["Winter"],
+            "credits": 3,
+            "prerequisites": ["ANTH 105", "IPB 121"]
+        },
+        {
+            "course_number": "ANTH 470",
+            "course_name": "Language Documentation and Conservation",
+            "semesters_offered": ["Winter"],
+            "credits": 3,
+            "prerequisites": ["ANTH 105"]
+        },
+        {
+            "course_number": "HIST 192",
+            "course_name": "Hawaiian Public and Local History",
+            "semesters_offered": ["Fall"],
+            "credits": 3,
+            "prerequisites": []
+        },
+        {
+            "course_number": "ANTH 210",
+            "course_name": "Contemporary Pacific",
+            "semesters_offered": ["Fall"],
+            "credits": 3,
+            "prerequisites": []
+        },
+        {
+            "course_number": "ANTH 445",
+            "course_name": "Anthropology of Religion",
+            "semesters_offered": ["Fall"],
+            "credits": 3,
+            "prerequisites": ["ANTH 105", "IPB 121"]
+        },
+        {
+            "course_number": "ANTH 450",
+            "course_name": "Political and Economic Anthropology",
+            "semesters_offered": ["Winter"],
+            "credits": 3,
+            "prerequisites": ["ANTH 105", "IPB 121"]
+        },
+        {
+            "course_number": "ANTH 460",
+            "course_name": "Anthropology of Globalization",
+            "semesters_offered": ["Spring"],
+            "credits": 3,
+            "prerequisites": ["ANTH 105", "IPB 121"]
+        }
+    ]
+}
