@@ -1,0 +1,40 @@
+{
+    "courses": [
+      {
+        "course_number": "ENGL 251",
+        "course_name": "Fundamentals of Literature",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ENGL 321",
+        "course_name": "English Grammars",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ENGL 341",
+        "course_name": "World Literatures in English",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251"]
+      },
+      {
+        "course_number": "ENGL 342",
+        "course_name": "Pacific Literatures",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251"]
+      },
+      {
+        "course_number": "ENGL 343",
+        "course_name": "Asian Literature",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251"]
+      }
+    ]
+  }
+  

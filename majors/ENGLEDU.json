@@ -1,0 +1,110 @@
+{
+    "courses": [
+      {
+        "course_number": "ENGL 251",
+        "course_name": "Fundamentals of Literature",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ENGL 321",
+        "course_name": "English Grammars",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ENGL 382",
+        "course_name": "Shakespeare",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251 or permission of instructor"]
+      },
+      {
+        "course_number": "ENGL 420",
+        "course_name": "Literature for Young Adults",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ENGL 490",
+        "course_name": "Senior Seminar",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["Senior"]
+      },
+      {
+        "course_number": "ENGL 218",
+        "course_name": "Introduction to Creative Writing",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ENGL 361 - 364",
+        "course_name": "American Literature from the Beginnings to Mid-Nineteenth Century",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251"]
+      },
+      {
+        "course_number": "ENGL 361 - 364 II",
+        "course_name": "American Literature from Mid-Nineteenth Century to World War I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251"]
+      },
+      {
+        "course_number": "ENGL 341",
+        "course_name": "World Literatures in English",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251"]
+      },
+      {
+        "course_number": "ENGL 371",
+        "course_name": "English Literature to 1500: Medieval Period",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251"]
+      },
+      {
+        "course_number": "ENGL 374",
+        "course_name": "English Literature from 1780 to 1832: The Romantic Period",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251"]
+      },
+      {
+        "course_number": "ENGL 375",
+        "course_name": "English Literature from 1832 to 1890: The Victorian Period",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ENGL 251"]
+      },
+      {
+        "course_number": "EDU 212",
+        "course_name": "Foundations of Education",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": []
+      },
+      {
+        "course_number": "EDU 200",
+        "course_name": "Human Growth and Learning in Schools",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HWST 101",
+        "course_name": "Introduction to Hawaiian Studies",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      }
+    ]
+  }
+  

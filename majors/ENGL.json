@@ -76,7 +76,7 @@
         "course_name": "Senior Seminar",
         "semesters_offered": ["Fall", "Winter"],
         "credits": 3,
-        "prerequisites": ["ENGL 374"]
+        "prerequisites": ["Senior"]
       }
     ]
   }

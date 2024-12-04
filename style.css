@@ -45,6 +45,19 @@ body {
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
+/* Fade effect on the edges of the image */
+.header-image-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, white, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0) 70%, white);
+    pointer-events: none;
+    z-index: 1;
+}
+
 /* Container to wrap the menu bar and schedule */
 .container {
     max-width: 1200px;
@@ -63,9 +76,8 @@ body {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 30px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    padding: 30px 20px 30px; /* Increased bottom padding to accommodate the button */
+    padding: 30px 20px 70px; /* Increased bottom padding to accommodate the button */
     margin: 20px 0;
-    margin-bottom: 40px;
     position: relative;
     width: 100%;
     box-sizing: border-box;
@@ -94,7 +106,7 @@ body {
 
 button {
     position: absolute;
-    bottom: -20px;
+    bottom: -25px; /* Adjusted to protrude slightly */
     left: 50%;
     transform: translateX(-50%);
     padding: 12px 30px;
@@ -108,6 +120,11 @@ button {
 
 button:hover {
     background: #0056b3;
+}
+
+/* Hidden class to hide elements */
+.hidden {
+    display: none;
 }
 
 /* Schedule Grid Container */
@@ -232,12 +249,13 @@ button:hover {
     }
 
     .floating-bar {
-        padding: 30px 15px 30px; /* Adjusted padding */
+        padding: 30px 15px 70px; /* Adjusted padding to accommodate button */
     }
 
     button {
         font-size: 16px;
         padding: 10px 20px;
+        bottom: -20px; /* Adjusted to match the desktop value */
     }
 
     .title {
@@ -246,6 +264,21 @@ button:hover {
 
     #schedule {
         grid-template-columns: 1fr;
+    }
+
+    .summary-box {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .summary-item {
+        flex: 1 1 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .summary-item:last-child {
+        margin-bottom: 0;
     }
 }
 

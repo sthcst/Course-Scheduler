@@ -1,5 +1,8 @@
 document.getElementById("calculate-schedule").addEventListener("click", async () => {
     try {
+        // **Ensure the schedule container is hidden before starting**
+        document.getElementById('schedule-container').classList.add('hidden');
+
         const major = document.getElementById("major").value;
         const minor1 = document.getElementById("minor1").value;
         const minor2 = document.getElementById("minor2").value;
@@ -75,7 +78,9 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 // Merge semesters_offered
                 courseMap[courseNumber].semesters_offered = Array.from(new Set([...courseMap[courseNumber].semesters_offered, ...course.semesters_offered]));
             } else {
-                courseMap[courseNumber] = course;
+                // Identify if the course has 'senior' in prerequisites
+                const hasSeniorPrereq = course.prerequisites.some(prereq => prereq.toLowerCase() === "senior");
+                courseMap[courseNumber] = { ...course, isSeniorCourse: hasSeniorPrereq };
             }
         }
 
@@ -94,6 +99,10 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
 
         // Sort courses based on priority
         allCourses.sort((a, b) => {
+            // Prioritize non-senior courses first
+            if (a.isSeniorCourse && !b.isSeniorCourse) return 1;
+            if (!a.isSeniorCourse && b.isSeniorCourse) return -1;
+
             // Prioritize courses that are prerequisites for many others
             const aPrereqCount = prereqCounts[a.course_number] || 0;
             const bPrereqCount = prereqCounts[b.course_number] || 0;
@@ -225,9 +234,9 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 eilSemestersUsed++;
             }
 
-            // Schedule other courses
+            // Schedule other courses (excluding senior courses)
             for (const course of allCourses) {
-                if (course.scheduled || course.type.includes("religion") || course.type.includes("eil") || course.type.includes("holokai")) continue;
+                if (course.scheduled || course.type.includes("religion") || course.type.includes("eil") || course.type.includes("holokai") || course.isSeniorCourse) continue;
 
                 const prereqsMet = course.prerequisites.every(prereq =>
                     completedCourses.has(prereq)
@@ -254,10 +263,10 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 if (currentSemester.credits >= maxCredits[semesterType]) break;
             }
 
-            // If there's still room, attempt to schedule core courses
+            // If there's still room, attempt to schedule core courses (excluding senior courses)
             if (currentSemester.credits < maxCredits[semesterType]) {
                 for (const course of allCourses) {
-                    if (course.scheduled || !course.type.includes("core")) continue;
+                    if (course.scheduled || !course.type.includes("core") || course.isSeniorCourse) continue;
 
                     const prereqsMet = course.prerequisites.every(prereq =>
                         completedCourses.has(prereq)
@@ -271,6 +280,37 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                         currentSemester.courses.push(`${course.course_number}: ${course.course_name}`);
                         currentSemester.credits += course.credits;
                         course.scheduled = true;
+                        coursesScheduledThisSemester = true;
+                    }
+
+                    if (currentSemester.credits >= maxCredits[semesterType]) break;
+                }
+            }
+
+            // Schedule Senior Courses in the last three semesters
+            const seniorCourses = allCourses.filter(course => course.isSeniorCourse && !course.scheduled);
+            const remainingSemesters = 3;
+
+            // Calculate the total number of semesters left
+            const totalCoursesLeft = allCourses.filter(course => !course.scheduled).length;
+            const estimatedTotalSemesters = schedule.length + Math.ceil(totalCoursesLeft / Math.max(fallWinterCredits, springCredits));
+
+            // Determine if we are within the last three semesters
+            const semestersLeft = estimatedTotalSemesters - schedule.length;
+            if (semestersLeft <= remainingSemesters && seniorCourses.length > 0) {
+                for (const seniorCourse of seniorCourses) {
+                    const prereqsMet = seniorCourse.prerequisites.every(prereq =>
+                        prereq.toLowerCase() === "senior" || completedCourses.has(prereq)
+                    );
+
+                    if (
+                        prereqsMet &&
+                        seniorCourse.semesters_offered.includes(semesterType) &&
+                        currentSemester.credits + seniorCourse.credits <= maxCredits[semesterType]
+                    ) {
+                        currentSemester.courses.push(`${seniorCourse.course_number}: ${seniorCourse.course_name}`);
+                        currentSemester.credits += seniorCourse.credits;
+                        seniorCourse.scheduled = true;
                         coursesScheduledThisSemester = true;
                     }
 
@@ -310,6 +350,9 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         document.getElementById('graduation-date').innerText = graduationDate;
         document.getElementById('electives-needed').innerText = electiveCreditsNeeded;
 
+        // **Make the schedule container visible after successful generation**
+        document.getElementById('schedule-container').classList.remove('hidden');
+
         // Display the schedule
         const scheduleDiv = document.getElementById("schedule");
         scheduleDiv.innerHTML = schedule.map(sem => `
@@ -323,6 +366,10 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
 
     } catch (error) {
         console.error("Error during scheduling process:", error);
+
+        // **Hide the schedule container if there's an error**
+        document.getElementById('schedule-container').classList.add('hidden');
+
         document.getElementById("schedule").innerHTML = "<p>An error occurred while generating the schedule. Check the console for details.</p>";
     }
 });

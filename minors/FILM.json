@@ -1,0 +1,40 @@
+{
+    "courses": [
+      {
+        "course_number": "FILM 102",
+        "course_name": "Introduction to Film",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "FILM 218",
+        "course_name": "Basic Video Production",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "FILM 318",
+        "course_name": "Intermediate Video Production",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["FILM 218"]
+      },
+      {
+        "course_number": "FILM 300",
+        "course_name": "World Cinema",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["FILM 102"]
+      },
+      {
+        "course_number": "FILM 365R",
+        "course_name": "Special Studies in World Cinema",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["FILM 102"]
+      }
+    ]
+  }
+  
