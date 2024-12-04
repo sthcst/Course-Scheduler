@@ -1,0 +1,103 @@
+{
+    "courses": [
+      {
+        "course_number": "HIST 120",
+        "course_name": "American History to 1865",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 121",
+        "course_name": "American History Since 1865",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 200",
+        "course_name": "The Historian's Craft",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 201",
+        "course_name": "History of Civilization to 1500",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 202",
+        "course_name": "History of Civilization Since 1500",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ANTH 105",
+        "course_name": "Introduction to Cultural Anthropology",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ECON 200",
+        "course_name": "Principles of Microeconomics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["MATH 107"]
+      },
+      {
+        "course_number": "GEOG 101",
+        "course_name": "Introductory Geography",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "POSC 110",
+        "course_name": "The U.S. Political System",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 250-400 I",
+        "course_name": "History Elective I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 250-400 II",
+        "course_name": "History Elective II",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 250-400 III",
+        "course_name": "History Elective III",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": []
+      },
+      {
+        "course_number": "EDU 212",
+        "course_name": "Foundations of Education",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": []
+      },
+      {
+        "course_number": "EDU 200",
+        "course_name": "Human Growth and Learning in Schools",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      }
+    ]
+  }
+  
