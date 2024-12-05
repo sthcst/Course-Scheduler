@@ -1,0 +1,82 @@
+{
+    "courses": [
+      {
+        "course_number": "ART 119",
+        "course_name": "Drawing and Design Principles",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 210",
+        "course_name": "Digital Design",
+        "semesters_offered": ["Fall","Winter","Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 119"]
+      },
+      {
+        "course_number": "ART 156",
+        "course_name": "Three Dimensional Concepts",
+        "semesters_offered": ["Fall","Winter","Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 119", "ART 156"]
+      },
+      {
+        "course_number": "ART 221R",
+        "course_name": "Figure Drawing",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["ART 119"]
+      },
+      {
+        "course_number": "ART 225",
+        "course_name": "Painting Concepts",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 325",
+        "course_name": "Figure Painting",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["ART 221R", "ART 225"]
+      },
+      {
+        "course_number": "ART 335",
+        "course_name": "Watercolor Painting",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 221R", "ART 225"]
+      },
+      {
+        "course_number": "ART 345",
+        "course_name": "Digital Painting",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 210", "ART 221R", "ART 225"]
+      },
+      {
+        "course_number": "ART 385",
+        "course_name": "Contemporary Art Studio",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 119", "ART 156"]
+      },
+      {
+        "course_number": "ART 425",
+        "course_name": "Advanced Painting",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ART 325"]
+      },
+      {
+        "course_number": "ART 201",
+        "course_name": "Global Art History I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      }
+    ]
+  }
+  

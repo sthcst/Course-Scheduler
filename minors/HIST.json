@@ -1,0 +1,41 @@
+{
+    "courses": [
+      {
+        "course_number": "GEOG 101",
+        "course_name": "Introductory Geography",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 120",
+        "course_name": "American History to 1865",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 250",
+        "course_name": "History of Eastern Oceania",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 252",
+        "course_name": "History of Western Oceania",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HIST 303",
+        "course_name": "Christianity",
+        "semesters_offered": ["Fall, Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      }
+      
+    ]
+  }
+  

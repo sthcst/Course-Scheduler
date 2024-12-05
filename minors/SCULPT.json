@@ -1,0 +1,33 @@
+{
+    "courses": [
+      {
+        "course_number": "ART 119",
+        "course_name": "Drawing and Design Principles",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 156",
+        "course_name": "Three Dimensional Concepts",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 255",
+        "course_name": "Beginning Ceramics",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 201",
+        "course_name": "Global Art History I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      }
+    ]
+  }
+  
