@@ -39,14 +39,14 @@
         "prerequisites": []
       },
       {
-        "course_number": "REL 000",
+        "course_number": "REL 001",
         "course_name": "Choose Your Religion Elective II",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 2,
         "prerequisites": []
       },
       {
-        "course_number": "REL 000",
+        "course_number": "REL 002",
         "course_name": "Choose Your Religion Elective III (Scripture Course)",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 2,

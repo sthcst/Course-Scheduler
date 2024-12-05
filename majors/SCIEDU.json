@@ -1,0 +1,98 @@
+{
+    "courses": [
+      {
+        "course_number": "BIOL 112 and LAB",
+        "course_name": "Biology I - Cell and Molecular Biology",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 4,
+        "prerequisites": []
+      },
+    
+      {
+        "course_number": "BIOL 113",
+        "course_name": "Biology II - Evolution, Ecology, and Organismal Biology",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MATH 110",
+        "course_name": " College Algebra",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "CHEM 105",
+        "course_name": "General Chemistry I",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["MATH 110"]
+      },
+      {
+        "course_number": "CHEM 106 and LAB",
+        "course_name": "General Chemistry II",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["CHEM 105"]
+      },
+      {
+        "course_number": "BIOL 261 and LAB",
+        "course_name": "Human Physiology",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 4,
+        "prerequisites": ["BIOL 112 and LAB"]
+      },
+      {
+        "course_number": "BIOL 312 and LAB",
+        "course_name": "Marine Biology",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 3,
+        "prerequisites": ["BIO 113"]
+      },
+      {
+        "course_number": "SCI 201",
+        "course_name": "Scientific Inquiry",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "OCEN 201",
+        "course_name": " Oceanography and Marine Science",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "PHYS 105",
+        "course_name": "College Physics I",
+        "semesters_offered": ["Fall","Spring"],
+        "credits": 3,
+        "prerequisites": ["MATH 110"]
+      },
+      {
+        "course_number": "EDU 212",
+        "course_name": "Foundations of Education",
+        "semesters_offered": ["Fall","Winter","Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "EDU 200",
+        "course_name": "Human Growth and Learning in Schools",
+        "semesters_offered": ["Fall","Winter","Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "HWST 101",
+        "course_name": "Introduction to Hawaiian Studies",
+        "semesters_offered": ["Fall","Winter","Spring"],
+        "credits": 3,
+        "prerequisites": []
+      }
+    ]
+    
+  }
+  

@@ -1,0 +1,124 @@
+{
+    "courses": [
+      {
+        "course_number": "TESOL 240",
+        "course_name": "Introduction to TESOL",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "LING 210",
+        "course_name": "Introduction to Linguistics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "LING 260",
+        "course_name": "Phonology",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["LING 210"]
+      },
+      {
+        "course_number": "LING 331",
+        "course_name": "Sociolinguistics",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["LING 210"]
+      },
+      {
+        "course_number": "EDU 305",
+        "course_name": "Computer and Technology Assisted Instruction",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": ["TESOL 240"]
+      },
+      {
+        "course_number": "TESOL 375",
+        "course_name": "Observation in TESOL",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 2,
+        "prerequisites": ["LING 210", "TESOL 240"]
+      },
+      {
+        "course_number": "TESOL 310",
+        "course_name": "TESOL Principles and Methods",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["LING 210", "TESOL 240"]
+      },
+      {
+        "course_number": "LING 321",
+        "course_name": "English Syntax",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["TESOL 310"]
+      },
+      {
+        "course_number": "LING 423",
+        "course_name": "Language Acquisition",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["TESOL 310"]
+      },
+      {
+        "course_number": "TESOL 400",
+        "course_name": "Second Language Testing and Research Methods",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["TESOL 310"]
+      },
+      {
+        "course_number": "TESOL 380",
+        "course_name": "Internship Preparation",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1,
+        "prerequisites": ["TESOL 310", "TESOL 375"]
+      },
+      {
+        "course_number": "TESOL 399R",
+        "course_name": "Internship in TESOL",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": ["TESOL 380"]
+      },
+      {
+        "course_number": "TESOL 490",
+        "course_name": "TESOL Senior Seminar",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1,
+        "prerequisites": ["Senior"]
+      },
+      {
+        "course_number": "TESOL 324",
+        "course_name": "Teaching Listening",
+        "semesters_offered": ["Fall"],
+        "credits": 2,
+        "prerequisites": ["TESOL 310"]
+      },
+      {
+        "course_number": "TESOL 327",
+        "course_name": "Teaching Speaking",
+        "semesters_offered": ["Winter"],
+        "credits": 2,
+        "prerequisites": ["TESOL 310"]
+      },
+      {
+        "course_number": "TESOL 328",
+        "course_name": "Teaching Reading",
+        "semesters_offered": ["Spring"],
+        "credits": 2,
+        "prerequisites": ["TESOL 310"]
+      },
+      {
+        "course_number": "TESOL 329",
+        "course_name": "Teaching Writing",
+        "semesters_offered": ["Fall"],
+        "credits": 2,
+        "prerequisites": ["TESOL 310"]
+      }
+    ]
+  }
+  

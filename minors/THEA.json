@@ -1,0 +1,40 @@
+{
+    "courses": [
+      {
+        "course_number": "THEA 115",
+        "course_name": "Introduction to Theatre",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "THEA 123",
+        "course_name": "Acting I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "THEA 141",
+        "course_name": "Introduction to Theatre Technology I: Costume and Makeup Design",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "THEA 142",
+        "course_name": "Introduction to Theatre Technology II: Set, Lighting Design, and Stage Management",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "THEA 221",
+        "course_name": "Voice, Speech, and Movement",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      }
+    ]
+  }
+  

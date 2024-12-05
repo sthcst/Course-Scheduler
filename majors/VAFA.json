@@ -1,0 +1,180 @@
+{
+    "courses": [
+      {
+        "course_number": "ART 119",
+        "course_name": "Drawing and Design Principles",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 156",
+        "course_name": "Three Dimensional Concepts",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 201",
+        "course_name": "Global Art History I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ART 202",
+        "course_name": "Global Art History II",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["ENGL 101"]
+      },
+      {
+        "course_number": "ART 316",
+        "course_name": "Graphic Design History",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 210"]
+      },
+      {
+        "course_number": "ART 442",
+        "course_name": "Readings in Aesthetics",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ART 201", "ART 202" ]
+      },
+      {
+        "course_number": "ART 210",
+        "course_name": "Digital Design",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 119"]
+      },
+      {
+        "course_number": "ART 212",
+        "course_name": "Digital Photography",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 119"]
+      },
+      {
+        "course_number": "ART 270",
+        "course_name": "Typography",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ART 210", "ART 212"]
+      },
+      {
+        "course_number": "ART 280",
+        "course_name": "Branding",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ART 210", "ART 212"]
+      },
+      {
+        "course_number": "ART 370",
+        "course_name": "Interaction Design",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["ART 270", "ART 280"]
+      },
+      {
+        "course_number": "ART 371",
+        "course_name": "Typography II: Type & Lettering",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["ART 270", "ART 280"]
+      },
+      {
+        "course_number": "ART 380",
+        "course_name": "Publication Design",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["ART 270", "ART 280"]
+      },
+      {
+        "course_number": "ART 399R",
+        "course_name": "Internship in Visual Art",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ART 270", "ART 280"]
+      },
+      {
+        "course_number": "ART 444",
+        "course_name": "Motion Graphics",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ART 370", "ART 371", "ART 380"]
+      },
+      {
+        "course_number": "ART 445",
+        "course_name": "Packaging Design",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["ART 370", "ART 371", "ART 380"]
+      },
+      {
+        "course_number": "ART 470",
+        "course_name": "Artist Portfolio Production",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["Senior"]
+      },
+      {
+        "course_number": "ART 480",
+        "course_name": "BFA Thesis Research",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["Senior"]
+      },
+      {
+        "course_number": "ART 481",
+        "course_name": "BFA Thesis Studio (Graphic Design)",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["Senior"]
+      },
+      {
+        "course_number": "ART 300R I",
+        "course_name": "Visual Arts Seminar I",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 1,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 300R II",
+        "course_name": "Visual Arts Seminar I",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 1,
+        "prerequisites": ["ART 300R I"]
+      },
+      {
+        "course_number": "ART 300R III",
+        "course_name": "Visual Arts Seminar I",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 1,
+        "prerequisites": ["ART 300R II"]
+      },
+      {
+        "course_number": "ART 300R IV",
+        "course_name": "Visual Arts Seminar I",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 1,
+        "prerequisites": ["ART 300R III"]
+      },
+      {
+        "course_number": "ART 225",
+        "course_name": "Painting Concepts",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "ART 255",
+        "course_name": "Beginning Ceramics",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": []
+      }
+    ]
+  }
+  

@@ -1,0 +1,47 @@
+{
+    "courses": [
+      {
+        "course_number": "MUSC 101",
+        "course_name": "Introduction to Music Literature",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MUSC 111 and LAB",
+        "course_name": "Music Theory I",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 4,
+        "prerequisites": []
+      }, 
+      {
+        "course_number": "MUSC 000",
+        "course_name": "Music Elective I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MUSC 001",
+        "course_name": "Ensemble Participation I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MUSC 002",
+        "course_name": "Ensemble Participation II",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1,
+        "prerequisites": ["MUSC 001"]
+      },
+      {
+        "course_number": "MUSC 003",
+        "course_name": "Ensemble Participation III",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1,
+        "prerequisites": ["MUSC 002"]
+      }
+    ]
+  }
+  

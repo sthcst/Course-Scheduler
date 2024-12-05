@@ -1,0 +1,48 @@
+{
+    "courses": [
+      {
+        "course_number": "MUSC 111",
+        "course_name": "Music Theory I and LAB",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+        
+      },
+      {
+        "course_number": "MUSC 160R I",
+        "course_name": "Individual Instruction I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MUSC 160R II",
+        "course_name": "Individual Instruction II)",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": ["MUSC 160R I"]
+      },
+      {
+        "course_number": "MUSC 260R",
+        "course_name": "Individual Instruction (Section 2)",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": ["MUSC 160R II"]
+      },
+      {
+        "course_number": "MUSC 161",
+        "course_name": "Introduction to Piano Technique",
+        "semesters_offered": ["Fall"],
+        "credits": 2,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MUSC 385",
+        "course_name": "Music History II: 1750 to 1900",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["MUSC 111"]
+      }
+    ]
+  }
+  
