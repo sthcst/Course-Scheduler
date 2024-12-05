@@ -27,7 +27,7 @@
       "course_name": "Principles of Statistics",
       "semesters_offered": ["Fall", "Winter", "Spring"],
       "credits": 3,
-      "prerequisites": []
+      "prerequisites": ["MATH 107"]
     },
     {
       "course_number": "CS 205",
@@ -69,7 +69,7 @@
       "course_name": "Calculus I",
       "semesters_offered": ["Fall", "Winter"],
       "credits": 4,
-      "prerequisites": ["CS 210"]
+      "prerequisites": ["MATH 121"]
     },
     {
       "course_number": "CS 300",
@@ -140,6 +140,13 @@
       "semesters_offered": ["Fall", "Winter"],
       "credits": 3,
       "prerequisites": []
-    }
+    },
+    {
+      "course_number": "BIOL 112/L",
+      "course_name": "Biology I - Cell and Molecular Biology/Laboratory",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 4,
+      "prerequisites": []
+    } 
   ]
 }

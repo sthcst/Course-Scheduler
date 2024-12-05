@@ -1,0 +1,124 @@
+{
+    "courses": [
+      {
+        "course_number": "BIOL 112",
+        "course_name": "Biology I - Cell and Molecular Biology with Lab",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 4,
+        "prerequisites": []
+      },
+      {
+        "course_number": "BIOL 113",
+        "course_name": "Biology II - Evolution, Ecology, and Organismal Biology",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["BIOL 112"]
+      },
+      {
+        "course_number": "BIOL 490R",
+        "course_name": "Current Topics in Biology",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1,
+        "prerequisites": ["Senior status with 90+ credits"]
+      },
+      {
+        "course_number": "MATH 121",
+        "course_name": "Principles of Statistics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["MATH 107"]
+      },
+      {
+        "course_number": "CHEM 101",
+        "course_name": "Introduction to General Chemistry with Lab",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 4,
+        "prerequisites": []
+      },
+      {
+        "course_number": "BIOL 204",
+        "course_name": "Pacific Natural History with Lab",
+        "semesters_offered": ["Spring"],
+        "credits": 4,
+        "prerequisites": ["BIOL 113"]
+      },
+      {
+        "course_number": "BIOL 312",
+        "course_name": "Marine Biology with Lab",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 4,
+        "prerequisites": ["BIOL 113"]
+      },
+      {
+        "course_number": "BIOL 304",
+        "course_name": "Marine Biodiversity with Lab",
+        "semesters_offered": ["Fall"],
+        "credits": 4,
+        "prerequisites": ["BIOL 113"]
+      },
+      {
+        "course_number": "BIOL 412",
+        "course_name": "Coral Reef Ecology with Lab",
+        "semesters_offered": ["Winter"],
+        "credits": 4,
+        "prerequisites": ["BIOL 312", "CHEM 101"]
+      },
+      {
+        "course_number": "OCEN 201",
+        "course_name": "Oceanography and Marine Science",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "BIOL 248",
+        "course_name": "Conservation Biology",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["BIOL 113"]
+      },
+      {
+        "course_number": "BIOL 348",
+        "course_name": "Natural Resource Management with Lab",
+        "semesters_offered": ["Winter"],
+        "credits": 4,
+        "prerequisites": ["BIOL 113", "CHEM 101"]
+      },
+      {
+        "course_number": "BIOL 350",
+        "course_name": "Ecology with Lab",
+        "semesters_offered": ["Fall"],
+        "credits": 4,
+        "prerequisites": ["BIOL 113", "CHEM 101"]
+      },
+      {
+        "course_number": "BIOL 374",
+        "course_name": "Evolution and Human Prehistory",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["BIOL 113"]
+      },
+      {
+        "course_number": "GEOL 105",
+        "course_name": "Geology of the Pacific",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "GEOL 106",
+        "course_name": "Field Geology of Hawaii",
+        "semesters_offered": ["Spring"],
+        "credits": 1,
+        "prerequisites": ["GEOL 105"]
+      },
+      {
+        "course_number": "BIOL 261",
+        "course_name": "Human Physiology with Lab",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 4,
+        "prerequisites": ["BIOL 112", "CHEM 101"]
+      }
+    ]
+  }
+  
