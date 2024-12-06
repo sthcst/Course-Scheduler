@@ -1,0 +1,117 @@
+{
+    "courses": [
+      {
+        "course_number": "SOCW 160",
+        "course_name": "Introduction to Social Welfare and Social Work",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "SOCW 357",
+        "course_name": "Human Behavior in the Social Environment",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["SOCW 160"]
+      },
+      {
+        "course_number": "SOCW 366",
+        "course_name": "Social Welfare Policy",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["SOCW 160", "Fall", "Winter", "Spring"]
+      },
+      {
+        "course_number": "SOCW 371",
+        "course_name": "Social Work Values and Ethics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["SOCW 160"]
+      },
+      {
+        "course_number": "SOCW 372",
+        "course_name": "Anti-Racism, Diversity, Equity and Inclusion",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["SOCW 160"]
+      },
+      {
+        "course_number": "SOCW 486",
+        "course_name": "Social Research Methods and Applied Statistics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "SOCW 362",
+        "course_name": "Social Work Practice with Individuals",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["SOCW 160"]
+      },
+      {
+        "course_number": "SOCW 364",
+        "course_name": "Social Work Practice with Families and Groups",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["SOCW 362"]
+      },
+      {
+        "course_number": "SOCW 462",
+        "course_name": "Social Work Practice with Organizations and Communities",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["SOCW 362"]
+      },
+      {
+        "course_number": "SOCW 368",
+        "course_name": "Social Welfare in Asia and the Pacific",
+        "semesters_offered": ["Winter"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "SOCW 463",
+        "course_name": "Child Welfare",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3.0,
+        "prerequisites": ["SOCW 362"]
+      },
+      {
+        "course_number": "SOCW 468",
+        "course_name": "Community Mental Health",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3.0,
+        "prerequisites": ["SOCW 160"]
+      },
+      {
+        "course_number": "SOCW 469",
+        "course_name": "Aging: A Global Concern",
+        "semesters_offered": ["Spring"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "SOCW 470",
+        "course_name": "Assessment and Treatment of Substance Abuse",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+        {
+        "course_number": "SOCW 490",
+        "course_name": "Practicum Preparation Seminar",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 1.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "SOCW 491R",
+        "course_name": "Field Practicum",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 12.0,
+        "prerequisites": ["Senior"]
+      }
+    ]
+  }
+  

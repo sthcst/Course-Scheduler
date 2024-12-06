@@ -1,0 +1,138 @@
+{
+    "courses": [
+      {
+        "course_number": "CS 101",
+        "course_name": "Introduction to Programming Fundamentals",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "IT 124",
+        "course_name": "Information Technology Essentials",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "CS 140",
+        "course_name": "Web Design",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "CS 202",
+        "course_name": "Introduction to Object-Oriented Programming",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["CS 101"]
+      },
+      {
+        "course_number": "CS 250",
+        "course_name": "Database Applications",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "CS 311",
+        "course_name": "Systems Engineering",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["CS 202", "CS 250"]
+      },
+      {
+        "course_number": "IT 340",
+        "course_name": "Foundations of Human-Computer Interaction",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["CS 140", "MATH 121"]
+      },
+      {
+        "course_number": "HIST 470",
+        "course_name": "History and Ethics of Computing",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 3,
+        "prerequisites": ["ENGL 315"]
+      },
+      {
+        "course_number": "MATH 121",
+        "course_name": "Principles of Statistics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "IT 280",
+        "course_name": "Computer Networking",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "IT 320",
+        "course_name": "System Administration Essentials",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["CS 101", "IT 124"]
+      },
+      {
+        "course_number": "IT 327",
+        "course_name": "Server Administration",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["IT 124"]
+      },
+      {
+        "course_number": "IT 381",
+        "course_name": "Cybersecurity Analysis",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["IT 124"]
+      },
+      {
+        "course_number": "IT 420",
+        "course_name": "System Administration",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["IT 320"]
+      },
+      {
+        "course_number": "IT 426",
+        "course_name": "Architecting Computer Services",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["IT 124", "IT 280"]
+      },
+      {
+        "course_number": "IT 480",
+        "course_name": "Computer Network Design",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["IT 280"]
+      },
+      {
+        "course_number": "IT 390R I",
+        "course_name": "Special Topics in Information Technology",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["IT 124", "IT 280"]
+      },
+      {
+        "course_number": "IT 390R II",
+        "course_name": "Special Topics in Information Technology",
+        "semesters_offered": ["Winter"],
+        "credits": 3,
+        "prerequisites": ["IT 124", "IT 280"]
+      },
+      {
+        "course_number": "IT 390R III",
+        "course_name": "Special Topics in Information Technology",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": ["IT 124", "IT 280"]
+      }
+    ]
+  }
+  

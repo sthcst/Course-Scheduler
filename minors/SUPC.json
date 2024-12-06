@@ -1,0 +1,47 @@
+{
+    "courses": [
+    {
+        "course_number": "ACCT 186",
+        "course_name": "Introduction to Financial Computing",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": []
+    },
+      {
+        "course_number": "BUSM 180",
+        "course_name": "Introduction to Business",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "BUSM 361",
+        "course_name": "Business Analytics and Operations",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["BUSM 180", "ACCT 186"]
+      },
+      {
+        "course_number": "BUSM 371",
+        "course_name": "Supply Chain Management",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["BUSM 361"]
+      },
+      {
+        "course_number": "BUSM 391",
+        "course_name": "Project Management",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["BUSM 361"]
+      },
+      {
+        "course_number": "BUSM 381",
+        "course_name": "Global Logistics Management",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["BUSM 361"]
+      }
+    ]
+  }
+  

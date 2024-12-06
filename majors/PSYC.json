@@ -1,110 +1,109 @@
 {
-    "courses": [
-      {
-        "course_number": "PSYC 111",
-        "course_name": "General Psychology",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3,
-        "prerequisites": []
-      },
-      {
-        "course_number": "PSYC 190",
-        "course_name": "Navigating Psychology",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 1,
-        "prerequisites": ["PSYC 111"]
-      },
-      {
-        "course_number": "PSYC 205",
-        "course_name": "Applied Social Statistics",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111", "PSYC 190", "MATH 107" ]
-      },
-      {
-        "course_number": "PSYC 306",
-        "course_name": "Quantitative Research Methods",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111", "PSYC 205"]
-      },
-      {
-        "course_number": "PSYC 490",
-        "course_name": "Senior Seminar",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 3,
-        "prerequisites": ["PSYC 306", "Senior"]
-      },
-      {
-        "course_number": "PSYC 370",
-        "course_name": "Behavioral Psychology",
-        "semesters_offered": ["Fall"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111"]
-      },
-      {
-        "course_number": "PSYC 381",
-        "course_name": "Drugs and Behavior",
-        "semesters_offered": ["Winter"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111"]
-      },
-      {
-        "course_number": "PSYC 210",
-        "course_name": "Developmental Psychology",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111"]
-      },
-      {
-        "course_number": "PSYC 341",
-        "course_name": "Personality",
-        "semesters_offered": ["Winter"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111"]
-      },
-      {
-        "course_number": "PSYC 321",
-        "course_name": "Organizational Behavior",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111"]
-      },
-      {
-        "course_number": "PSYC 307",
-        "course_name": "Qualitative Research Methods",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111"]
-      },
-      {
-        "course_number": "PSYC 310",
-        "course_name": "Measurement and Evaluation",
-        "semesters_offered": ["Fall"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111", "PSYC 205"]
-      },
-      {
-        "course_number": "PSYC 340",
-        "course_name": "Community Mental Health",
-        "semesters_offered": ["Fall", "Spring"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111"]
-      },
-      {
-        "course_number": "PSYC 365",
-        "course_name": "Motivation",
-        "semesters_offered": ["Fall"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111"]
-      },
-      {
-        "course_number": "PSYC 380",
-        "course_name": "Sensation and Perception",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3,
-        "prerequisites": ["PSYC 111"]
-      }
-    ]
-  }
-  
+  "courses": [
+    {
+      "course_number": "PSYC 111",
+      "course_name": "General Psychology",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3.0,
+      "prerequisites": []
+    },
+    {
+      "course_number": "PSYC 190",
+      "course_name": "Navigating Psychology",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 1.0,
+      "prerequisites": ["PSYC 111"]
+    },
+    {
+      "course_number": "PSYC 205",
+      "course_name": "Applied Social Statistics",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111", "PSYC 190"]
+    },
+    {
+      "course_number": "PSYC 306",
+      "course_name": "Quantitative Research Methods",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111", "PSYC 205"]
+    },
+    {
+      "course_number": "PSYC 490",
+      "course_name": "Senior Seminar",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 306"]
+    },
+    {
+      "course_number": "PSYC 375",
+      "course_name": "Cognitive Psychology",
+      "semesters_offered": ["Winter", "Spring"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111", "PSYC 205"]
+    },
+    {
+      "course_number": "PSYC 385",
+      "course_name": "Brain and Behavior",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111"]
+    },
+    {
+      "course_number": "PSYC 210",
+      "course_name": "Developmental Psychology",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111"]
+    },
+    {
+      "course_number": "PSYC 440",
+      "course_name": "Abnormal Psychology",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111", "PSYC 210"]
+    },
+    {
+      "course_number": "PSYC 350",
+      "course_name": "Social Psychology",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111"]
+    },
+    {
+      "course_number": "PSYC 307",
+      "course_name": "Qualitative Research Methods",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111"]
+    },
+    {
+      "course_number": "PSYC 310",
+      "course_name": "Measurement and Evaluation",
+      "semesters_offered": ["Fall"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111", "PSYC 205"]
+    },
+    {
+      "course_number": "PSYC 340",
+      "course_name": "Community Mental Health",
+      "semesters_offered": ["Fall", "Spring"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111"]
+    },
+    {
+      "course_number": "PSYC 365",
+      "course_name": "Motivation",
+      "semesters_offered": ["Fall"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111"]
+    },
+    {
+      "course_number": "PSYC 380",
+      "course_name": "Sensation and Perception",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3.0,
+      "prerequisites": ["PSYC 111"]
+    }
+  ]
+}

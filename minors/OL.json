@@ -1,0 +1,40 @@
+{
+    "courses": [
+      {
+        "course_number": "BUSM 180",
+        "course_name": "Introduction to Business",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "BUSM 310",
+        "course_name": "Principles of Management",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["BUSM 180"]
+      },
+      {
+        "course_number": "BUSM 320",
+        "course_name": "Business Communication",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["BUSM 180"]
+      },
+      {
+        "course_number": "BUSM 401",
+        "course_name": "Principles of Leadership",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3,
+        "prerequisites": ["BUSM 310"]
+      },
+      {
+        "course_number": "IPB 121",
+        "course_name": "Intercultural Peacebuilding",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      }
+    ]
+  }
+  

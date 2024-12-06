@@ -1,0 +1,110 @@
+{
+    "courses": [
+      {
+        "course_number": "MATH 121",
+        "course_name": "Principles of Statistics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MATH 212",
+        "course_name": "Calculus I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 5,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MATH 213",
+        "course_name": "Calculus II",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 5,
+        "prerequisites": ["MATH 212"]
+      },
+      {
+        "course_number": "MATH 301",
+        "course_name": "Foundations of Mathematics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["MATH 212"]
+      },
+      {
+        "course_number": "MATH 314",
+        "course_name": "Multivariable Calculus",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 5,
+        "prerequisites": ["MATH 213"]
+      },
+      {
+        "course_number": "MATH 334",
+        "course_name": "Differential Equations",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["MATH 314"]
+      },
+      {
+        "course_number": "MATH 343",
+        "course_name": "Elementary Linear Algebra",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["MATH 212"]
+      },
+      {
+        "course_number": "MATH 111",
+        "course_name": "Trigonometry and Analytic Geometry",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MATH 302",
+        "course_name": "Foundations of Geometry",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["MATH 212"]
+      },
+      {
+        "course_number": "MATH 308",
+        "course_name": "Mathematics Using Technologies",
+        "semesters_offered": ["Spring"],
+        "credits": 3,
+        "prerequisites": ["MATH 121", "MATH 212"]
+      },
+      {
+        "course_number": "MATH 377",
+        "course_name": "Secondary Mathematics Teaching Methods",
+        "semesters_offered": ["Fall"],
+        "credits": 2,
+        "prerequisites": ["MATH 212"]
+      },
+      {
+        "course_number": "MATH 490R",
+        "course_name": "Mathematics Seminar",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 2,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MATH 311",
+        "course_name": "Introduction to Numerical Methods",
+        "semesters_offered": ["Fall","Winter","Spring"],
+        "credits": 3,
+        "prerequisites": ["MATH 213"]
+      },
+      {
+        "course_number": "MATH 332",
+        "course_name": "Introduction to Complex Variables",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 3,
+        "prerequisites": ["MATH 314"]
+      },
+      {
+        "course_number": "MATH 421",
+        "course_name": "Mathematical Statistics",
+        "semesters_offered": ["Fall"],
+        "credits": 3,
+        "prerequisites": ["MATH 314"]
+      }
+    ]
+  }
+  

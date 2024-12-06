@@ -1,0 +1,40 @@
+{
+    "courses": [
+      {
+        "course_number": "BIOL 112/L",
+        "course_name": "Biology I - Cell and Molecular Biology/Lab",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 4.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "BIOL 113",
+        "course_name": "Biology II - Evolution, Ecology, and Organismal Biology",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "BIOL 204",
+        "course_name": "Pacific Natural History (Combined with Lab)",
+        "semesters_offered": ["Spring"],
+        "credits": 4.0,
+        "prerequisites": ["BIOL 113"]
+      },
+      {
+        "course_number": "BIOL 312",
+        "course_name": "Marine Biology (Combined with Lab)",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 4.0,
+        "prerequisites": ["BIOL 113"]
+      },
+      {
+        "course_number": "BIOL 248",
+        "course_name": "Conservation Biology",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["BIOL 113"]
+      }
+    ]
+  }
+  

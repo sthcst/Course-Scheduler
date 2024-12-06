@@ -1,0 +1,61 @@
+{
+      "courses": [
+        {
+            "course_number": "HAWN 101",
+            "course_name": "Ke Kumu o ka ‘Olelo–Kau Mua - The Source Part I",
+            "semesters_offered": ["Fall"],
+            "credits": 4.0,
+            "prerequisites": []
+        },
+        {
+            "course_number": "HAWN 102",
+            "course_name": "Ke Kumu o ka ‘Olelo–Kau Mua - The Source Part II",
+            "semesters_offered": ["Winter"],
+            "credits": 4.0,
+            "prerequisites": ["HAWN 101"]
+        },
+        {
+          "course_number": "HAWN 201",
+          "course_name": "Ke Kahua o ka 'Olelo-Kau Mua-The Foundation Part I",
+          "semesters_offered": ["Fall"],
+          "credits": 4.0,
+          "prerequisites": ["HAWN 102"]
+        },
+        {
+          "course_number": "HAWN 202",
+          "course_name": "Ke Kahua o ka 'Olelo-Kau Hope-The Foundation Part II",
+          "semesters_offered": ["Winter"],
+          "credits": 4.0,
+          "prerequisites": ["HAWN 201"]
+        },
+        {
+          "course_number": "HAWN 225",
+          "course_name": "Hoʻoikaika Kamaʻilio-Traditional Oratorical Styles",
+          "semesters_offered": ["Spring"],
+          "credits": 3.0,
+          "prerequisites": ["HAWN 102"]
+        },
+        {
+          "course_number": "HAWN 301",
+          "course_name": "Hoʻokukulu ‘Olelo-Kau Mua – The Building Part I",
+          "semesters_offered": ["Fall"],
+          "credits": 3.0,
+          "prerequisites": ["HAWN 202"]
+        },
+        {
+          "course_number": "HAWN 302",
+          "course_name": "Hoʻokukulu ‘Olelo-Kau Hope – The Building Part II",
+          "semesters_offered": ["Winter"],
+          "credits": 3.0,
+          "prerequisites": ["HAWN 301"]
+        },
+        {
+          "course_number": "HAWN 335",
+          "course_name": "Hoʻoikaika Kakau-Strength in the Language",
+          "semesters_offered": ["Spring"],
+          "credits": 3.0,
+          "prerequisites": ["HAWN 302"]
+        }
+      ]
+    }
+  
