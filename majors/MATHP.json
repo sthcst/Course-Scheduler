@@ -1,0 +1,110 @@
+{
+    "courses": [
+      {
+        "course_number": "MATH 121",
+        "course_name": "Principles of Statistics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MATH 212",
+        "course_name": "Calculus I",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 5.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "MATH 213",
+        "course_name": "Calculus II",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 5.0,
+        "prerequisites": ["MATH 212"]
+      },
+      {
+        "course_number": "MATH 301",
+        "course_name": "Foundations of Mathematics",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["MATH 212"]
+      },
+      {
+        "course_number": "MATH 314",
+        "course_name": "Multivariable Calculus",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 5.0,
+        "prerequisites": ["MATH 213"]
+      },
+      {
+        "course_number": "MATH 334",
+        "course_name": "Differential Equations",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["MATH 314"]
+      },
+      {
+        "course_number": "MATH 343",
+        "course_name": "Elementary Linear Algebra",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["MATH 212"]
+      },
+      {
+        "course_number": "PHYS 205",
+        "course_name": "Physics I",
+        "semesters_offered": ["Fall"],
+        "credits": 4.0,
+        "prerequisites": ["MATH 212"]
+      },
+      {
+        "course_number": "PHYS 155L",
+        "course_name": "Physics I Lab",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 1.0,
+        "prerequisites": ["PHYS 205"]
+      },
+      {
+        "course_number": "PHYS 206",
+        "course_name": "Physics II",
+        "semesters_offered": ["Winter"],
+        "credits": 4.0,
+        "prerequisites": ["PHYS 205"]
+      },
+      {
+        "course_number": "PHYS 156L",
+        "course_name": "Physics II Lab",
+        "semesters_offered": ["Winter"],
+        "credits": 1.0,
+        "prerequisites": ["PHYS 206"]
+      },
+        {
+        "course_number": "MATH 332",
+        "course_name": "Introduction to Complex Variables",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["MATH 314"]
+      },
+      {
+        "course_number": "MATH 421",
+        "course_name": "Mathematical Statistics",
+        "semesters_offered": ["Fall"],
+        "credits": 3.0,
+        "prerequisites": ["MATH 314"]
+      },
+      {
+        "course_number": "MATH 441",
+        "course_name": "Introduction to Analysis I",
+        "semesters_offered": ["Fall"],
+        "credits": 3.0,
+        "prerequisites": ["MATH 314", "MATH 301"]
+      },
+      {
+        "course_number": "MATH 471",
+        "course_name": "Abstract Algebra I",
+        "semesters_offered": ["Fall"],
+        "credits": 3.0,
+        "prerequisites": ["MATH 301"]
+      }
+    ]
+  }
+  

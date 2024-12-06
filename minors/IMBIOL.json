@@ -1,0 +1,34 @@
+{
+    "courses": [
+      {
+        "course_number": "BIOL 113",
+        "course_name": "Biology II - Evolution, Ecology, and Organismal Biology",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "BIOL 312/312L",
+        "course_name": "Marine Biology (Combined with Lab)",
+        "semesters_offered": ["Fall", "Spring"],
+        "credits": 4.0,
+        "prerequisites": ["BIOL 113", "OCEN 201"]
+      },
+      {
+        "course_number": "OCEN 201",
+        "course_name": "Oceanography and Marine Science",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["BIOL 113"]
+      },
+      {
+        "course_number": "BIOL 204",
+        "course_name": "Pacific Natural History",
+        "note": "Concurrent enrollment with a lab is not required for the minor",
+        "semesters_offered": ["Spring"],
+        "credits": 2.0,
+        "prerequisites": ["BIOL 113"]
+      }
+    ]
+  }
+  

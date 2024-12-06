@@ -98,41 +98,40 @@
       "credits": 3,
       "prerequisites": ["BUSM 180", "ACCT 186"]
     },
-      {
-        "course_number": "BUSM 421",
-        "course_name": "Integrated Marketing Communications",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 3,
-        "prerequisites": ["BUSM 304"]
-      },
-      {
-        "course_number": "BUSM 422",
-        "course_name": "Marketing Research",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 3,
-        "prerequisites": ["BUSM 304", "MATH 121"]
-      },
-      {
-        "course_number": "BUSM 429",
-        "course_name": "Strategic Marketing Management",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 3,
-        "prerequisites": ["BUSM 304", "BUSM 421", "BUSM 422"]
-      },
-      {
-        "course_number": "BUSM 410",
-        "course_name": "Advanced Analytics and Big Data",
-        "semesters_offered": ["Fall", "Winter"],
-        "credits": 3,
-        "prerequisites": ["BUSM 361"]
-      },
-      {
-        "course_number": "BUSM 411R",
-        "course_name": "Digital Marketing Agency",
-        "semesters_offered": ["Fall", "Winter", "Spring"],
-        "credits": 3,
-        "prerequisites": ["BUSM 304"]
-      }
-    ]
+    {
+      "course_number": "FIN 360",
+      "course_name": "Corporate Financial Statement Analysis",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 3,
+      "prerequisites": ["BUSM 301"]
+    },
+    {
+      "course_number": "FIN 370",
+      "course_name": "Risk Management",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 3,
+      "prerequisites": ["FIN 360"]
+    },
+    {
+      "course_number": "ECON 353",
+      "course_name": "Money, Banking & Business",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 3,
+      "prerequisites": ["ACCT 186", "ECON 201", "MATH 121"]
+    },
+    {
+      "course_number": "FIN 410",
+      "course_name": "Investments",
+      "semesters_offered": ["Winter"],
+      "credits": 3,
+      "prerequisites": ["FIN 360"]
+    },
+    {
+      "course_number": "FIN 432",
+      "course_name": "International Finance",
+      "semesters_offered": ["Fall"],
+      "credits": 3,
+      "prerequisites": ["FIN 360"]
+    }
+  ]
 }
-  

@@ -1,0 +1,68 @@
+{
+    "courses": [
+      {
+        "course_number": "CS 101",
+        "course_name": "Introduction to Programming Fundamentals",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "IT 124",
+        "course_name": "Information Technology Essentials",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "IT 320",
+        "course_name": "System Administration Essentials",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3.0,
+        "prerequisites": ["CS 101", "IT 124"]
+      },
+      {
+        "course_number": "IT 327",
+        "course_name": "Server Administration",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["IT 124"]
+      },
+      {
+        "course_number": "IT 381",
+        "course_name": "Cybersecurity Analysis",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 3.0,
+        "prerequisites": ["IT 124"]
+      },
+      {
+        "course_number": "IT 420",
+        "course_name": "System Administration",
+        "semesters_offered": ["Winter"],
+        "credits": 3.0,
+        "prerequisites": ["IT 320"]
+      },
+      {
+        "course_number": "IT 426",
+        "course_name": "Architecting Computer Services",
+        "semesters_offered": ["Variable"],
+        "credits": 3.0,
+        "prerequisites": ["IT 124"]
+      },
+      {
+        "course_number": "IT 480",
+        "course_name": "Computer Network Design",
+        "semesters_offered": ["Winter"],
+        "credits": 3.0,
+        "prerequisites": ["IT 280"]
+      },
+      {
+        "course_number": "IT 482",
+        "course_name": "Ethical Hacking",
+        "semesters_offered": ["Winter"],
+        "credits": 3.0,
+        "prerequisites": ["IT 381"]
+      }
+    ]
+  }
+  

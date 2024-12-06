@@ -1,0 +1,39 @@
+{
+  "courses": [
+    {
+      "course_number": "MATH 212",
+      "course_name": "Calculus I",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 5.0,
+      "prerequisites": []
+    },
+    {
+      "course_number": "MATH 213",
+      "course_name": "Calculus II",
+      "semesters_offered": ["Fall", "Winter"],
+      "credits": 5.0,
+      "prerequisites": ["MATH 212"]
+    },
+    {
+      "course_number": "MATH 311",
+      "course_name": "Introduction to Numerical Methods",
+      "semesters_offered": ["Fall", "Winter", "Spring"],
+      "credits": 3.0,
+      "prerequisites": ["MATH 213"]
+    },
+    {
+      "course_number": "MATH 314",
+      "course_name": "Multivariable Calculus",
+      "semesters_offered": ["Winter", "Spring"],
+      "credits": 5.0,
+      "prerequisites": ["MATH 213"]
+    },
+    {
+      "course_number": "MATH 332",
+      "course_name": "Introduction to Complex Variables",
+      "semesters_offered": ["Winter", "Spring"],
+      "credits": 3.0,
+      "prerequisites": ["MATH 314"]
+    }
+  ]
+}
