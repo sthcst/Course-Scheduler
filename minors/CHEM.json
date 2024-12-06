@@ -1,0 +1,47 @@
+{
+    "courses": [
+      {
+        "course_number": "CHEM 105",
+        "course_name": "General Chemistry I",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 3.0,
+        "prerequisites": []
+      },
+      {
+        "course_number": "CHEM 106/107L",
+        "course_name": "General Chemistry II with Lab",
+        "semesters_offered": ["Winter", "Spring"],
+        "credits": 4.0,
+        "prerequisites": ["CHEM 105"]
+      },
+      {
+        "course_number": "CHEM 201",
+        "course_name": "Chemical and Laboratory Safety",
+        "semesters_offered": ["Fall", "Winter", "Spring"],
+        "credits": 1.0,
+        "prerequisites": ["CHEM 107L or BIOL 112L"]
+      },
+      {
+        "course_number": "CHEM 351/351L",
+        "course_name": "Organic Chemistry I with Lab",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 4.0,
+        "prerequisites": ["CHEM 106"]
+      },
+      {
+        "course_number": "CHEM 352/352L",
+        "course_name": "Organic Chemistry II with Lab",
+        "semesters_offered": ["Fall", "Winter"],
+        "credits": 4.0,
+        "prerequisites": ["CHEM 351"]
+      },
+      {
+        "course_number": "CHEM 270",
+        "course_name": "Introduction to Environmental Chemistry",
+        "semesters_offered": ["Fall"],
+        "credits": 3.0,
+        "prerequisites": ["CHEM 106", "CHEM 107L"]
+      }
+    ]
+  }
+  
