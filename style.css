@@ -293,3 +293,88 @@ button:hover {
         max-width: calc(100% - 10px);
     }
 }
+
+/* Additional CSS for the new top header section */
+.top-header {
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 10px 0;
+}
+
+.top-header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.site-logo {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.top-nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-link {
+    display: inline-block;
+    text-decoration: none;
+    color: #9e1b34;
+    font-weight: bold;
+    font-size: 16px;
+    background: rgba(158, 27, 52, 0.1);
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: background 0.3s ease;
+    margin-left: 15px;
+}
+
+.nav-link:hover {
+    background: rgba(158, 27, 52, 0.2);
+}
+
+/* Override styles to make the image and floating bar appear combined */
+
+/* Ensure both image and floating bar share the same width and alignment */
+.header-image-container, .container {
+    max-width: 1200px !important;
+    margin: 0 auto !important; /* Center both containers */
+    padding: 0 20px !important; /* Matching padding to ensure same width */
+    
+}
+
+/* Adjust image corners:
+   Rounded top corners, square bottom corners:
+   top-left: 8px, top-right: 8px, bottom-left: 0, bottom-right: 0 */
+.header-image {
+    border-radius: 25px 25px 0 0 !important;
+    box-shadow: none !important; /* Remove its shadow to rely on floating bar for unified shadow */
+    margin-top: 25px;
+}
+
+/* Remove margin below the header-image-container so the floating bar touches it */
+.header-image-container {
+    margin-bottom: 0 !important;
+}
+
+/* Adjust the floating bar:
+   Square top corners, rounded bottom corners:
+   top-left: 0, top-right:0, bottom-left:8px, bottom-right:8px */
+.floating-bar {
+    border-radius: 0 0 25px 25px !important;
+    margin: 0 !important; /* Remove any margins so it touches the image directly */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important; /* Keep a unified shadow for the combined shape */
+}
+
+/* The container had a negative margin-top originally, remove it:
+   This ensures no gap or misalignment. */
+.container {
+    margin-top: 0 !important;
+}
