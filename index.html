@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>10-Semester Schedule Generator</title>
+    <title>Holokai Planner</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -12,8 +12,8 @@
       <div class="top-header-content">
         <h2 class="site-logo">My University Planner</h2>
         <nav class="top-nav">
-          <a href="single.html" class="nav-link">Single Program Scheduler</a>
-          <a href="index.html" class="nav-link">Full Program Scheduler</a>
+          <a href="single.html" class="nav-link ">Single Scheduler</a>
+          <a href="index.html" class="nav-link active">Full Schedule</a>
         </nav>
       </div>
     </header>
@@ -325,6 +325,15 @@
               <option value="12">12</option>
             </select>
           </div>
+
+          <div class="legend">
+            <p><span class="legend-color type-major"></span> Major Classes</p>
+            <p><span class="legend-color type-minor"></span> Minor Classes</p>
+            <p><span class="legend-color type-core"></span> Core Classes</p>
+            <p><span class="legend-color type-eil"></span> EIL/Holokai Classes</p>
+            <p><span class="legend-color type-religion"></span> Religion Classes</p>
+          </div>
+        
 
           <!-- Generate Schedule button -->
           <button id="calculate-schedule">Generate Schedule</button>

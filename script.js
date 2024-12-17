@@ -3,6 +3,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         // **Ensure the schedule container is hidden before starting**
         document.getElementById('schedule-container').classList.add('hidden');
 
+        // Retrieve user input values
         const major = document.getElementById("major").value;
         const minor1 = document.getElementById("minor1").value;
         const minor2 = document.getElementById("minor2").value;
@@ -12,7 +13,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const fallWinterCredits = parseInt(document.getElementById("fall-winter-credits").value);
         const springCredits = parseInt(document.getElementById("spring-credits").value);
 
-        // Fetch JSON data for the programs
+        // **Fetch JSON data for the programs**
         const fetchJson = async (url) => {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -26,7 +27,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         const coreData = await fetchJson("core/core.json");
         const holokaiData = await fetchJson("holokai/holokai.json"); // Fetch Holokai course
 
-        // Fetch EIL courses based on English level
+        // **Fetch EIL courses based on English level**
         let eilCourses = [];
         if (englishLevel === "academic-english-1") {
             const eilLevel1Data = await fetchJson("EIL/level1.json");
@@ -55,7 +56,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         }
         // If 'fluent', no EIL courses are added
 
-        // Combine courses from all sources into a single array
+        // **Combine courses from all sources into a single array**
         const combinedCourses = [
             ...religionData.courses.map(course => ({ ...course, type: ["religion"] })),
             ...majorData.courses.map(course => ({ ...course, type: ["major"] })),
@@ -66,7 +67,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             ...eilCourses, // Add EIL courses
         ];
 
-        // Deduplicate courses by course_number
+        // **Deduplicate courses by course_number**
         const courseMap = {};
         for (const course of combinedCourses) {
             const courseNumber = course.course_number;
@@ -84,12 +85,12 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             }
         }
 
-        // Convert the courseMap back to an array
+        // **Convert the courseMap back to an array**
         const allCourses = Object.values(courseMap);
 
-        // Remove randomness: Do not shuffle the courses
+        // **Remove randomness: Do not shuffle the courses**
 
-        // Calculate the number of times each course is a prerequisite
+        // **Calculate the number of times each course is a prerequisite**
         const prereqCounts = {};
         for (const course of allCourses) {
             for (const prereq of course.prerequisites) {
@@ -97,7 +98,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             }
         }
 
-        // Sort courses based on priority
+        // **Sort courses based on priority**
         allCourses.sort((a, b) => {
             // Prioritize non-senior courses first
             if (a.isSeniorCourse && !b.isSeniorCourse) return 1;
@@ -137,10 +138,10 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         let schedule = []; // Final schedule
         let completedCourses = new Set();
 
-        // EIL courses constraints
+        // **EIL courses constraints**
         const eilCoursesList = allCourses.filter(course => course.type.includes("eil"));
 
-        // Initialize a counter to track semesters for EIL courses
+        // **Initialize a counter to track semesters for EIL courses**
         let eilSemestersUsed = 0;
 
         while (allCourses.some(course => !course.scheduled)) {
@@ -158,7 +159,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
 
             let coursesScheduledThisSemester = false;
 
-            // Schedule Holokai course in the first semester
+            // **Schedule Holokai course in the first semester**
             if (schedule.length === 0) { // First semester
                 const holokaiCourse = allCourses.find(course => course.type.includes("holokai") && !course.scheduled);
                 if (holokaiCourse) {
@@ -180,7 +181,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 }
             }
 
-            // Schedule religion class if available and not already scheduled
+            // **Schedule religion class if available and not already scheduled**
             const availableRelCourses = allCourses.filter(course =>
                 course.type.includes("religion") &&
                 !course.scheduled &&
@@ -207,7 +208,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 }
             }
 
-            // Schedule EIL courses within first 4 semesters, prioritize first 2 semesters
+            // **Schedule EIL courses within first 4 semesters, prioritize first 2 semesters**
             if (eilSemestersUsed < 4 && currentSemester.eilCount < eilCoursesList.length) {
                 for (const course of eilCoursesList) {
                     if (course.scheduled) continue;
@@ -234,7 +235,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 eilSemestersUsed++;
             }
 
-            // Schedule other courses (excluding senior courses)
+            // **Schedule other courses (excluding senior courses)**
             for (const course of allCourses) {
                 if (course.scheduled || course.type.includes("religion") || course.type.includes("eil") || course.type.includes("holokai") || course.isSeniorCourse) continue;
 
@@ -263,7 +264,7 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 if (currentSemester.credits >= maxCredits[semesterType]) break;
             }
 
-            // If there's still room, attempt to schedule core courses (excluding senior courses)
+            // **If there's still room, attempt to schedule core courses (excluding senior courses)**
             if (currentSemester.credits < maxCredits[semesterType]) {
                 for (const course of allCourses) {
                     if (course.scheduled || !course.type.includes("core") || course.isSeniorCourse) continue;
@@ -287,15 +288,15 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
                 }
             }
 
-            // Schedule Senior Courses in the last three semesters
+            // **Schedule Senior Courses in the last three semesters**
             const seniorCourses = allCourses.filter(course => course.isSeniorCourse && !course.scheduled);
             const remainingSemesters = 3;
 
-            // Calculate the total number of semesters left
+            // **Calculate the total number of semesters left**
             const totalCoursesLeft = allCourses.filter(course => !course.scheduled).length;
             const estimatedTotalSemesters = schedule.length + Math.ceil(totalCoursesLeft / Math.max(fallWinterCredits, springCredits));
 
-            // Determine if we are within the last three semesters
+            // **Determine if we are within the last three semesters**
             const semestersLeft = estimatedTotalSemesters - schedule.length;
             if (semestersLeft <= remainingSemesters && seniorCourses.length > 0) {
                 for (const seniorCourse of seniorCourses) {
@@ -321,14 +322,14 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
             if (coursesScheduledThisSemester) {
                 schedule.push(currentSemester);
 
-                // At the end of the semester, add scheduled courses to completedCourses
+                // **At the end of the semester, add scheduled courses to completedCourses**
                 for (const course of allCourses) {
                     if (course.scheduled && !completedCourses.has(course.course_number)) {
                         completedCourses.add(course.course_number);
                     }
                 }
             } else {
-                // No courses could be scheduled; possible issue with prerequisites or course availability
+                // **No courses could be scheduled; possible issue with prerequisites or course availability**
                 console.error(`No courses could be scheduled in ${semesterLabel}.`);
                 break;
             }
@@ -353,13 +354,18 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         // **Make the schedule container visible after successful generation**
         document.getElementById('schedule-container').classList.remove('hidden');
 
-        // Display the schedule
+        // **Display the schedule**
         const scheduleDiv = document.getElementById("schedule");
         scheduleDiv.innerHTML = schedule.map(sem => `
             <div class="semester">
                 <h3>${sem.name} - Total Credits: ${sem.credits}</h3>
                 <ul>
-                    ${sem.courses.map(c => `<li>${c}</li>`).join('')}
+                    ${sem.courses.map(c => {
+                        const [courseNumber, courseName] = c.split(": ");
+                        const course = allCourses.find(course => course.course_number === courseNumber);
+                        const typeClass = getTypeClass(course);
+                        return `<li><span class="course-box ${typeClass}">${c}</span></li>`;
+                    }).join('')}
                 </ul>
             </div>
         `).join('');
@@ -373,3 +379,21 @@ document.getElementById("calculate-schedule").addEventListener("click", async ()
         document.getElementById("schedule").innerHTML = "<p>An error occurred while generating the schedule. Check the console for details.</p>";
     }
 });
+
+// **Helper function to get the type class for CSS**
+function getTypeClass(course) {
+    if (course.type.includes("holokai")) {
+        return "type-holokai";
+    } else if (course.type.includes("eil")) {
+        return "type-eil";
+    } else if (course.type.includes("major")) {
+        return "type-major";
+    } else if (course.type.includes("minor1") || course.type.includes("minor2")) {
+        return "type-minor";
+    } else if (course.type.includes("core")) {
+        return "type-core";
+    } else if (course.type.includes("religion")) {
+        return "type-religion";
+    }
+    return ""; // Default case if no type matches
+}
