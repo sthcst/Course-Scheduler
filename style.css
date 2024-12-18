@@ -62,7 +62,7 @@ body {
 
 /* Container to wrap the menu bar and schedule */
 .container {
-    max-width: 1200px;
+    max-width: 1400px; /* Change this to adjust width of menu bar*/
     margin: 0 auto;
     margin-top: -50px;
     padding: 0 20px;
@@ -319,7 +319,7 @@ button:hover {
 }
 
 .top-header-content {
-    max-width: 1200px;
+    max-width: 1500px; /* Change this to match width of .container */
     margin: 0 auto;
     padding: 0 20px;
     display: flex;
@@ -363,7 +363,7 @@ button:hover {
 
 /* Ensure both image and floating bar share the same width and alignment */
 .header-image-container, .container {
-    max-width: 1200px !important;
+    max-width: 1500px !important;
     margin: 0 auto !important; /* Center both containers */
     padding: 0 20px !important; /* Matching padding to ensure same width */
 }
@@ -451,3 +451,4 @@ button:hover {
     margin-right: 8px;
     vertical-align: middle;
 }
+
