@@ -1,15 +1,20 @@
+# Use the official Node.js LTS image as the base
 FROM node:14
 
+# Set the working directory
 WORKDIR /app
 
-COPY package.json /
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
+# Install dependencies
 RUN npm install
 
-COPY . .
+# Install nodemon globally
+RUN npm install -g nodemon
 
-ENV PORT=3000
-
+# Expose the port
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+# Default command (will be overridden by Docker Compose)
+CMD ["nodemon", "server.js"]
