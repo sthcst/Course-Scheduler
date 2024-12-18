@@ -62,7 +62,7 @@ body {
 
 /* Container to wrap the menu bar and schedule */
 .container {
-    max-width: 1400px; /* Change this to adjust width of menu bar*/
+    max-width: 1700px; /* Change this to adjust width of menu bar*/
     margin: 0 auto;
     margin-top: -50px;
     padding: 0 20px;
@@ -363,7 +363,7 @@ button:hover {
 
 /* Ensure both image and floating bar share the same width and alignment */
 .header-image-container, .container {
-    max-width: 1500px !important;
+    max-width: 1700px !important;
     margin: 0 auto !important; /* Center both containers */
     padding: 0 20px !important; /* Matching padding to ensure same width */
 }
