@@ -66,7 +66,6 @@ body {
     margin: 0 auto;
     margin-top: -50px;
     padding: 0 20px;
-    width: 100%;
     box-sizing: border-box;
 }
 
@@ -319,7 +318,7 @@ button:hover {
 }
 
 .top-header-content {
-    max-width: 1500px; /* Change this to match width of .container */
+    max-width: 1700px; /* Change this to match width of .container */
     margin: 0 auto;
     padding: 0 20px;
     display: flex;
@@ -452,3 +451,46 @@ button:hover {
     vertical-align: middle;
 }
 
+/* Existing styles... */
+
+/* Keyframes for slide-up animation */
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Common styles for animated boxes */
+.animated-box {
+    opacity: 0; /* Start hidden */
+    animation: slideUp 0.6s forwards;
+}
+
+/* Optional: Add staggered delays for multiple boxes */
+.summary-item:nth-child(1),
+.semester-box:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.summary-item:nth-child(2),
+.semester-box:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.summary-item:nth-child(3),
+.semester-box:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+/* Add more nth-child selectors if you have more boxes */
+
+/* Ensure parent containers allow animated elements to move */
+#schedule-container {
+    position: relative;
+    overflow: visible; /* or remove this if not needed */
+}

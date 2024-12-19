@@ -305,7 +305,7 @@ document.getElementById("calculate-single-schedule").addEventListener("click", a
 
         const scheduleDiv = document.getElementById("schedule");
         scheduleDiv.innerHTML = schedule.map(sem => `
-            <div class="semester">
+            <div class="semester animated-box">
                 <h3>${sem.name} - Total Credits: ${sem.credits}</h3>
                 <ul>
                     ${sem.courses.map(c => {
