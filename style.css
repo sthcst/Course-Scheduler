@@ -338,24 +338,40 @@ button:hover {
 .top-nav {
     display: flex;
     align-items: center;
+    background-color: #f0f0f0; 
+    border: 2px solid #ccc; /* Border color */
+    border-radius: 25px; /* Rounded corners */
+    overflow: hidden;
+    width: 400px;
+    height: 40px;
+    
 }
 
 .nav-link {
-    display: inline-block;
-    text-decoration: none;
-    color: #000000;
-    font-weight: bold;
-    font-size: 16px;
-    transition: background 0.3s ease;
-    margin-left: 20px;
+    display: flex; /* Use Flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    text-decoration: none; /* Removes underline from links */
+    color: #000000; /* Text color */
+    font-weight: bold; /* Bold text for emphasis */
+    font-size: 16px; /* Consistent font size */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    flex: 1; /* Distributes equal space to each link */
+    height: 40px; /* Fixed height for consistency */
+    margin: 0; /* Removes default margins */
+    padding: 0; /* Removes default padding */
+    border-radius: 0; /* Removes default border-radius */
 }
 
 .nav-link.active {
-    color: #9e1b34;
+    color: #ffffff; /* Text color for active link */
+    background-color: #9e1b34; /* Background color for active link */
+    border-radius: 25px; /* Fully rounded corners for slider effect */
+    /* Removed transform: scale(1.05); to prevent text shifting */
 }
 
 .nav-link:hover {
-    background: rgba(158, 27, 52, 0.2);
+    background: rgba(216, 18, 54, 0.2);
 }
 
 /* Override styles to make the image and floating bar appear combined */
