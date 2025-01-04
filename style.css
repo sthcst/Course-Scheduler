@@ -95,16 +95,21 @@ body {
     align-items: center;
     color: black;
     box-sizing: border-box;
+    font-size: 24px;
 }
 
 .input-group label {
     text-align: center;
+    
 }
+
+
 
 .input-group select {
     width: 100%;
     text-align: center;
     text-align-last: center;
+    font-size: 18px;
 }
 
 button {
@@ -290,7 +295,7 @@ button:hover {
     }
 
     .legend p {
-        font-size: 14px;           /* Adjust font size for better fit */
+        font-size: 200px;           /* Adjust font size for better fit */
     }
 
     .legend-color {
@@ -426,6 +431,7 @@ button:hover {
 
 .type-holokai, .type-eil {
     background-color: plum; /* purple */
+    
 }
 .type-major {
     background-color: lightcoral; /* red-ish */
