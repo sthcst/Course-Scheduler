@@ -1,15 +1,3 @@
 {
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 5438,
-            "driver": "PostgreSQL",
-            "name": "Holokai",
-            "database": "isaaccandari",
-            "username": "postgres",
-            "connectionTimeout": 30,
-            "password": "MK64athene"
-        }
-    ]
+    "sqltools.connections": []
 }

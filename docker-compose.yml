@@ -1,10 +1,18 @@
-version: '3.8'  # Specify the version of Docker Compose
+version: '3.8'  # Specify Docker Compose version
 
 services:
   app:
     build: .
+    container_name: course_scheduler_app
+    environment:
+      - MONGODB_URI=${MONGODB_URI} # Utilize environment variable from .env
     ports:
       - '3000:3000'
     volumes:
       - .:/app
-    command: nodemon server.js
+    networks:
+      - course-network
+
+networks:
+  course-network:
+    driver: bridge
