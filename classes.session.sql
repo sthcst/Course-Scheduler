@@ -1,0 +1,2 @@
+ALTER TABLE courses
+DELETE COLUMN 

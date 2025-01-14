@@ -1,9 +1,8 @@
 require('dotenv').config(); // Load environment variables from .env
 
-const mongoose = require('mongoose'); // Import mongoose
 const express = require('express');
 const path = require('path');
-const db = require('./db'); // Import db.js models (e.g., Course, Major, Minor1, Minor2)
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;

@@ -4,8 +4,6 @@ services:
   app:
     build: .
     container_name: course_scheduler_app
-    environment:
-      - MONGODB_URI=${MONGODB_URI} # Utilize environment variable from .env
     ports:
       - '3000:3000'
     volumes:
