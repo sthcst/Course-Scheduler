@@ -12,7 +12,7 @@
         "course_name": "General Chemistry I",
         "semesters_offered": ["Fall", "Winter"],
         "credits": 3,
-        "prerequisites": ["MATH 110"]
+        "prerequisites": []
       },
       {
         "course_number": "CHEM 106",
@@ -26,14 +26,14 @@
         "course_name": "General Chemistry Laboratory",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 1,
-        "prerequisites": []
+        "prerequisites": ["CHEM 106"]
       },
       {
         "course_number": "CHEM 201",
         "course_name": "Chemical and Laboratory Safety",
         "semesters_offered": ["Fall", "Winter", "Spring"],
         "credits": 1,
-        "prerequisites": []
+        "prerequisites": ["CHEM 107L"]
       },
       {
         "course_number": "CHEM 351",
@@ -70,10 +70,11 @@
         "credits": 3,
         "prerequisites": ["CHEM 351"]
       },
+      
       {
         "course_number": "CHEM 483L",
         "course_name": "Biochemistry Methods Lab - Proteins",
-        "semesters_offered": ["Fall", "Spring"],
+        "semesters_offered": ["Fall","Spring"],
         "credits": 1,
         "prerequisites": ["CHEM 351L"]
       }

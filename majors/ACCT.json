@@ -1,6 +1,7 @@
 {
     "courses": [
       {
+        
         "course_number": "ACCT 186",
         "course_name": "Introduction to Financial Computing",
         "semesters_offered": ["Fall", "Winter"],

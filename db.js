@@ -10,48 +10,63 @@ mongoose.connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected to Courses database'))
-.catch(err => console.error('MongoDB connection error:', err));
+.then(() => console.log('✅ MongoDB connected to Courses database'))
+.catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Define Schemas
+// Define Course Schema
+// ...existing code...
 const courseSchema = new mongoose.Schema({
-    course_number: {
+    category: { // e.g., "Majors", "Minors", etc.
         type: String,
         required: true,
-        unique: true
+        enum: ["Majors", "Minors", "Core", "EIL", "Religion", "Holokai"]
     },
-    name: {
+    type: { // e.g., "Accounting Major", "Accounting Minor", etc.
         type: String,
         required: true
     },
+    course_number: {
+        type: String,
+        required: true,
+        unique: true, // Ensures no duplicate course numbers
+        trim: true
+    },
+    course_name: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    semesters_offered: {
+        type: [String],
+        enum: ["Fall", "Winter", "Spring"],
+        default: []
+    },
+    credits: {
+        type: Number,
+        required: true,
+        min: [0, 'Credits cannot be negative']
+    },
     prerequisites: {
         type: [String],
-        default: []
+        default: [],
+        validate: {
+            validator: function(v) {
+                return Array.isArray(v);
+            },
+            message: props => `${props.value} is not a valid prerequisites list!`
+        }
     },
-    type: {
-        type: [String],
-        default: []
-    },
+    program: { // New field to associate courses with programs
+        type: String,
+        required: true
+    }
+}, {
+    timestamps: true // Adds createdAt and updatedAt timestamps
 });
 
-// Define Models
-const Major = mongoose.model('Major', courseSchema);
-const Minor1 = mongoose.model('Minor1', courseSchema);
-const Minor2 = mongoose.model('Minor2', courseSchema);
-const Religion = mongoose.model('Religion', courseSchema);
-const Core = mongoose.model('Core', courseSchema);
-const Holokai = mongoose.model('Holokai', courseSchema);
-const EILLevel1 = mongoose.model('EILLevel1', courseSchema);
-const EILLevel2 = mongoose.model('EILLevel2', courseSchema);
+// Create and Export the Course Model
+const Course = mongoose.model('Course', courseSchema);
 
-// Export Models
 module.exports = {
-    Major,
-    Minor1,
-    Minor2,
-    Religion,
-    Core,
-    Holokai,
-    EILLevel1,
-    EILLevel2,
+    Course,
 };
