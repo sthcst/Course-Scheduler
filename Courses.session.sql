@@ -1,0 +1,31 @@
+-- Inserting classes into the `classes` table
+INSERT INTO classes (
+    class_number,
+    class_name,
+    semesters_offered,
+    credits,
+    prerequisites,
+    corequisites,
+    days_offered,
+    times_offered,
+    created_at,
+    updated_at
+) VALUES
+    ('IT 124', 'Information Technology Essentials', ARRAY['Fall', 'Winter'], 3, ARRAY[]::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 140', 'Web Design', ARRAY['Fall', 'Spring'], 3, ARRAY[]::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 205', 'Foundations of Discrete Mathematics', ARRAY['Fall', 'Winter'], 3, ARRAY['CS 101']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 206', 'Discrete Mathematics II', ARRAY['Fall', 'Spring'], 3, ARRAY['CS 202', 'CS 205']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 202', 'Introduction to Object-Oriented Programming', ARRAY['Fall', 'Winter'], 3, ARRAY['CS 101']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 210', 'Computer Organization', ARRAY['Fall', 'Winter'], 3, ARRAY['CS 202']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('MATH 212', 'Calculus I', ARRAY['Fall', 'Winter'], 4, ARRAY['MATH 121']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 300', 'Advanced Object-Oriented Programming', ARRAY['Fall', 'Winter'], 3, ARRAY['CS 202']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 301', 'Algorithms and Complexity', ARRAY['Winter', 'Spring'], 3, ARRAY['CS 300', 'CS 206']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 311', 'Systems Engineering', ARRAY['Fall', 'Spring'], 3, ARRAY['CS 301']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 401', 'Web Applications Development', ARRAY['Fall'], 3, ARRAY['CS 250', 'CS 300']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 320', 'Introduction to Computational Theory', ARRAY['Winter', 'Spring'], 3, ARRAY['CS 206']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 415', 'Operating Systems Design', ARRAY['Fall'], 3, ARRAY['CS 210', 'CS 301']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 490R', 'Advanced Topics in Computer Science', ARRAY['Fall', 'Winter', 'Spring'], 3, ARRAY['CS 301']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 490R II', 'Advanced Topics in Computer Science', ARRAY['Fall', 'Winter', 'Spring'], 3, ARRAY['CS 301', 'CS 490R']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('CS 420', 'Programming Languages', ARRAY['Spring'], 3, ARRAY['CS 301', 'CS 320']::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('HIST 470', 'History and Ethics of Computing', ARRAY['Fall', 'Winter'], 3, ARRAY[]::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('BIOL 112/L', 'Biology I - Cell and Molecular Biology/Laboratory', ARRAY['Fall', 'Winter', 'Spring'], 4, ARRAY[]::text[], NULL, NULL, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

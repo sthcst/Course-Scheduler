@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add a New Course</title>
+    <script src="add_course.js" defer></script>
+</head>
+<header>
+    <h1>Add a New Course</h1>
+    
+</header>
+<body>
+    <a href="search.html">Back to search</a>
+    <div id="course-input">
+        <label for="courseName">Course Name:</label>
+        <input type="text" id="courseName">
+        <label for="courseCode">Course Type:</label>
+        <select id="courseType" name="courseType">
+            <option value="major">Major</option>
+            <option value="minor">Minor</option>
+        </select>
+
+       
+        <button id="addCourseButton">Add Course</button>    
+    </div>
+    
+    <ul id="classes-list"></ul>
+    <!-- The Add Class section will be injected here by course_details.js -->
+</body>
+</html>

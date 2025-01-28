@@ -15,11 +15,11 @@
         "prerequisites": []
       },
       {
-        "course_number": "THEA 141",
-        "course_name": "Introduction to Theatre Technology I: Costume and Makeup Design",
-        "semesters_offered": ["Fall"],
+        "course_number": "THEA 224",
+        "course_name": "Acting II: Advanced Scene Study and Shakespeare",
+        "semesters_offered": ["Winter"],
         "credits": 3,
-        "prerequisites": []
+        "prerequisites": ["THEA 123"]
       },
       {
         "course_number": "THEA 142",
