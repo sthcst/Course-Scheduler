@@ -2,6 +2,9 @@
 
 require('dotenv').config(); // Load environment variables from .env
 
+// Example in node_modules/gopd/index.js
+const gOPD = require('./gOPD'); // This should match the actual file name
+
 const express = require('express');
 const path = require('path');
 const { Pool } = require('pg'); // PostgreSQL client
