@@ -3,7 +3,6 @@
 require('dotenv').config(); // Load environment variables from .env
 
 // Example in node_modules/gopd/index.js
-const gopd = require('gopd');
 
 const express = require('express');
 const path = require('path');
