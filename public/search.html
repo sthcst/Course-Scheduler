@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Course Search</title>
+    <!-- Use absolute path for CSS -->
+    <link rel="stylesheet" href="/css/search.css">
+</head>
+<body>
+    <h1>Search Courses</h1>
+    <a href="/single.html">Back to scheduler</a>
+    <div>
+
+        <select id="courseDropdown">
+            <option value="">Select a Course</option>
+        </select>
+        <button id="viewCourseButton">View Course</button>
+        <button id="addCourseButton">Add New Course</button>
+        <button id="addNewClassButton">Add New Class</button>
+    </div>
+    <div id="results"></div>
+
+    <!-- ===========================
+         Class Search Section
+    =========================== -->
+    <h2>Search Classes</h2>
+    <div id="class-search-container">
+        <input type="text" id="classSearchInput" placeholder="Search for classes..." autocomplete="off">
+        <ul id="classSearchResults"></ul>
+    </div>
+
+    <!-- Use absolute path for JS -->
+    <script src="/js/search.js"></script>
+</body>
+</html>

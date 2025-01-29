@@ -1,0 +1,183 @@
+/* Import Global Styles */
+@import url('/styles.css');
+
+/* Header */
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Back Link */
+a {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3498db;
+}
+
+a:hover {
+    color: #2980b9;
+}
+
+/* Button Container */
+div > select,
+div > button {
+    display: inline-block;
+    margin: 5px;
+}
+
+#courseDropdown {
+    width: 200px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Buttons */
+#viewCourseButton,
+#addCourseButton,
+#addNewClassButton {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+#viewCourseButton:hover,
+#addCourseButton:hover,
+#addNewClassButton:hover {
+    background-color: #2980b9;
+}
+
+/* Results Section */
+#results {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#results h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+#results ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#results li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#results li:last-child {
+    border-bottom: none;
+}
+
+#results li:hover {
+    background-color: #f1f1f1;
+}
+
+#results .view-button {
+    background-color: #2ecc71;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+#results .view-button:hover {
+    background-color: #27ae60;
+}
+
+/* Class Search Container */
+#class-search-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Class Search Input */
+#classSearchInput {
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+/* Class Search Results */
+#classSearchResults {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#classSearchResults li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#classSearchResults li:last-child {
+    border-bottom: none;
+}
+
+#classSearchResults li:hover {
+    background-color: #f9f9f9;
+}
+
+/* View Class Button */
+.view-class-button {
+    background-color: #e67e22;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.view-class-button:hover {
+    background-color: #d35400;
+}
+
+/* Responsive Adjustments for Class Search */
+@media (max-width: 600px) {
+    /* Ensure buttons are full width on small screens */
+    .view-class-button {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    #classSearchResults li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+

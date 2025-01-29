@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title id="form-title">Add New Class</title>
-    <link rel="stylesheet" href="add_new_class.css">
-    <script src="add_new_class.js" defer></script>
+    <title id="form-title">Edit Class</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <script src="/js/edit_class.js" defer></script>
 </head>
 <body>
-    <!-- The href will be dynamically set based on presence of course_id -->
-    <a href="#" id="back-link">Back</a>
-    <h1 id="main-heading">Add a New Class</h1>
-    <form id="add-class-form">
-        <!-- Form fields as before -->
+    <!-- The href will be dynamically set by edit_class.js to include course_id -->
+    <a href="#" id="back-to-course">Back to Course Details</a>
+    <h1 id="main-heading">Edit Class</h1>
+    <form id="edit-class-form">
         <label for="class-number">Class Number:</label>
         <input type="text" id="class-number" name="class_number" required>
 
@@ -32,16 +31,17 @@
             <label>
                 <input type="checkbox" name="semesters_offered" value="Spring"> Spring
             </label>
-            <label>
-                <input type="checkbox" name="semesters_offered" value="Summer"> Summer
-            </label>
         </fieldset>
 
         <label for="prerequisites">Prerequisites:</label>
         <input type="text" id="prerequisites" name="prerequisites" placeholder="Search and select prerequisites">
+        <!-- Prerequisites Suggestions -->
+        <div id="prerequisites-suggestions" class="suggestions"></div>
 
         <label for="corequisites">Corequisites:</label>
         <input type="text" id="corequisites" name="corequisites" placeholder="Search and select corequisites">
+        <!-- Corequisites Suggestions -->
+        <div id="corequisites-suggestions" class="suggestions"></div>
 
         <fieldset>
             <legend>Days Offered:</legend>
@@ -71,14 +71,8 @@
         <label for="times-offered">Times Offered:</label>
         <input type="text" id="times-offered" name="times_offered" placeholder="e.g., 09:00-10:30, 14:00-15:30">
 
-        <button type="submit" id="submit-button">Add Class</button>
+        <button type="submit" id="submit-button">Update Class</button>
     </form>
     <div id="form-message"></div>
-
-    <!-- Prerequisites Autocomplete -->
-    <div id="prerequisites-suggestions" class="suggestions"></div>
-
-    <!-- Corequisites Autocomplete -->
-    <div id="corequisites-suggestions" class="suggestions"></div>
 </body>
 </html>

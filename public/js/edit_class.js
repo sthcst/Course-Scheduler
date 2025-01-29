@@ -153,31 +153,54 @@ window.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch(`/api/classes/search?query=${encodeURIComponent(query)}&limit=10`);
             if (!response.ok) {
-                throw new Error(`Error fetching prerequisites: ${response.statusText}`);
+                let errorMessage = response.statusText;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (parseError) {
+                    // Ignore JSON parse errors
+                }
+                throw new Error(`Error searching prerequisites: ${errorMessage}`);
             }
             const data = await response.json();
             const classes = data.classes;
 
             if (classes.length === 0) {
-                prerequisitesSuggestions.innerHTML = '<div class="suggestion-item">No matches found.</div>';
+                prerequisitesSuggestions.innerHTML = '<div class="suggestion-item">No matching classes found.</div>';
                 return;
             }
 
             classes.forEach(cls => {
-                const div = document.createElement('div');
-                div.classList.add('suggestion-item');
-                div.textContent = `${cls.class_number}: ${cls.class_name}`;
-                div.dataset.classId = cls.id; // Store class ID in data attribute
-                div.addEventListener('click', () => {
-                    const existing = selectedPrerequisites.find(c => c.id === cls.id);
-                    if (!existing) {
-                        selectedPrerequisites.push({ id: cls.id, name: `${cls.class_number}: ${cls.class_name}` });
-                        updateTags('prerequisites', selectedPrerequisites);
+                const suggestionItem = document.createElement('div');
+                suggestionItem.classList.add('suggestion-item');
+                suggestionItem.innerHTML = `
+                    <span>${cls.class_number}: ${cls.class_name}</span>
+                    <button type="button" class="add-button" data-class-id="${cls.id}" data-class-name="${cls.class_number}: ${cls.class_name}">Add</button>
+                `;
+                prerequisitesSuggestions.appendChild(suggestionItem);
+            });
+
+            // Add event listeners to all add buttons in prerequisites
+            const addButtons = prerequisitesSuggestions.querySelectorAll('.add-button');
+            addButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const classId = button.getAttribute('data-class-id');
+                    const className = button.getAttribute('data-class-name');
+
+                    // Check if class is already selected
+                    if (selectedPrerequisites.some(cls => cls.id === parseInt(classId, 10))) {
+                        alert('Prerequisite already added.');
+                        return;
                     }
+
+                    // Add to selectedPrerequisites
+                    selectedPrerequisites.push({ id: parseInt(classId, 10), name: className });
+                    updateTags('prerequisites', selectedPrerequisites);
+
+                    // Clear the input and suggestions
                     prerequisitesInput.value = '';
                     prerequisitesSuggestions.innerHTML = '';
                 });
-                prerequisitesSuggestions.appendChild(div);
             });
         } catch (error) {
             console.error(error);
@@ -201,31 +224,54 @@ window.addEventListener('DOMContentLoaded', async () => {
         try {
             const response = await fetch(`/api/classes/search?query=${encodeURIComponent(query)}&limit=10`);
             if (!response.ok) {
-                throw new Error(`Error fetching corequisites: ${response.statusText}`);
+                let errorMessage = response.statusText;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (parseError) {
+                    // Ignore JSON parse errors
+                }
+                throw new Error(`Error searching corequisites: ${errorMessage}`);
             }
             const data = await response.json();
             const classes = data.classes;
 
             if (classes.length === 0) {
-                corequisitesSuggestions.innerHTML = '<div class="suggestion-item">No matches found.</div>';
+                corequisitesSuggestions.innerHTML = '<div class="suggestion-item">No matching classes found.</div>';
                 return;
             }
 
             classes.forEach(cls => {
-                const div = document.createElement('div');
-                div.classList.add('suggestion-item');
-                div.textContent = `${cls.class_number}: ${cls.class_name}`;
-                div.dataset.classId = cls.id; // Store class ID in data attribute
-                div.addEventListener('click', () => {
-                    const existing = selectedCorequisites.find(c => c.id === cls.id);
-                    if (!existing) {
-                        selectedCorequisites.push({ id: cls.id, name: `${cls.class_number}: ${cls.class_name}` });
-                        updateTags('corequisites', selectedCorequisites);
+                const suggestionItem = document.createElement('div');
+                suggestionItem.classList.add('suggestion-item');
+                suggestionItem.innerHTML = `
+                    <span>${cls.class_number}: ${cls.class_name}</span>
+                    <button type="button" class="add-button" data-class-id="${cls.id}" data-class-name="${cls.class_number}: ${cls.class_name}">Add</button>
+                `;
+                corequisitesSuggestions.appendChild(suggestionItem);
+            });
+
+            // Add event listeners to all add buttons in corequisites
+            const addButtons = corequisitesSuggestions.querySelectorAll('.add-button');
+            addButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const classId = button.getAttribute('data-class-id');
+                    const className = button.getAttribute('data-class-name');
+
+                    // Check if class is already selected
+                    if (selectedCorequisites.some(cls => cls.id === parseInt(classId, 10))) {
+                        alert('Corequisite already added.');
+                        return;
                     }
+
+                    // Add to selectedCorequisites
+                    selectedCorequisites.push({ id: parseInt(classId, 10), name: className });
+                    updateTags('corequisites', selectedCorequisites);
+
+                    // Clear the input and suggestions
                     corequisitesInput.value = '';
                     corequisitesSuggestions.innerHTML = '';
                 });
-                corequisitesSuggestions.appendChild(div);
             });
         } catch (error) {
             console.error(error);
@@ -257,12 +303,14 @@ window.addEventListener('DOMContentLoaded', async () => {
             removeBtn.classList.add('remove-tag');
             removeBtn.textContent = 'x';
             removeBtn.addEventListener('click', () => {
+                // Remove the item from selectedPrerequisites or selectedCorequisites
                 if (field === 'prerequisites') {
-                    selectedPrerequisites = selectedPrerequisites.filter(c => c.id !== item.id);
+                    selectedPrerequisites = selectedPrerequisites.filter(cls => cls.id !== item.id);
+                    updateTags(field, selectedPrerequisites); // Pass updated array
                 } else if (field === 'corequisites') {
-                    selectedCorequisites = selectedCorequisites.filter(c => c.id !== item.id);
+                    selectedCorequisites = selectedCorequisites.filter(cls => cls.id !== item.id);
+                    updateTags(field, selectedCorequisites); // Pass updated array
                 }
-                updateTags(field, field === 'prerequisites' ? selectedPrerequisites : selectedCorequisites);
             });
 
             tag.appendChild(removeBtn);

@@ -1,0 +1,148 @@
+/* Import Global Styles */
+@import url('/styles.css');
+
+/* Course Info Section */
+#course-info {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-width: 800px;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#course-info h2 {
+    font-size: 1.8em;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+#course-info p {
+    font-size: 1em;
+    margin: 5px 0;
+}
+
+/* Classes List */
+#classes-list {
+    list-style-type: none;
+    padding: 0;
+    max-width: 800px;
+    margin: 0 auto 20px auto;
+}
+
+#classes-list li {
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#classes-list li h3 {
+    margin: 0 0 10px 0;
+    color: #34495e;
+}
+
+#classes-list li p {
+    margin: 5px 0;
+    color: #555;
+}
+
+/* Add Existing Class Section */
+#add-existing-class-section {
+    max-width: 800px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+}
+
+#add-existing-class-section button {
+    margin: 5px;
+}
+
+/* Search Container */
+#search-container {
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-width: 600px;
+    margin: 10px auto 0 auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#class-search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#search-results {
+    list-style-type: none;
+    padding: 0;
+}
+
+#search-results li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#search-results li:last-child {
+    border-bottom: none;
+}
+
+#search-results li:hover {
+    background-color: #f1f1f1;
+}
+
+#search-results .add-button {
+    background-color: #2ecc71;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+#search-results .add-button:hover {
+    background-color: #27ae60;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 800px) {
+    #course-info, #classes-list, #add-existing-class-section, #search-container {
+        padding: 15px;
+        margin: 0 10px 20px 10px;
+    }
+
+    #classes-list li {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    #course-info, #classes-list, #add-existing-class-section, #search-container {
+        margin: 0 5px 20px 5px;
+    }
+
+    #classes-list li {
+        padding: 8px;
+    }
+
+    #search-results li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #search-results .add-button {
+        margin-top: 5px;
+    }
+}
