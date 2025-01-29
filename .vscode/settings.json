@@ -5,9 +5,9 @@
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "Courses",
-            "database": "isaaccandari",
-            "username": "isaaccandari"
+            "name": "Postgres",
+            "database": "postgres",
+            "username": "postgres"
         }
     ]
 }
