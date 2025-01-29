@@ -14,20 +14,7 @@ services:
     ports:
       - "5432:5432"
 
-  web:
-    build: .
-    container_name: web_container
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://postgres:mysecretpassword@db:5432/postgres
-      - NODE_ENV=development
-    depends_on:
-      - db
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+  
 
 volumes:
   postgres_data:
