@@ -6,17 +6,18 @@
   <title>Holokai Planner</title>
   <link rel="stylesheet" href="css/styles.css"/>
 </head>
-<header class="top-header">
-    <div class="top-header-content">
-      <h2 class="site-logo">My University Planner</h2>
-      <nav class="top-nav">
-        <a href="single.html" class="nav-link active">Single Scheduler</a>
-        <a href="index.html" class="nav-link">Full Schedule</a>
-      </nav>
-      <a href="search.html">Edit Courses</a>
-    </div>
-</header>
 <body>
+  <header class="top-header">
+      <div class="top-header-content">
+        <h2 class="site-logo">My University Planner</h2>
+        <nav class="top-nav">
+          <a href="single.html" class="nav-link active">Single Scheduler</a>
+          <a href="index.html" class="nav-link">Full Schedule</a>
+        </nav>
+        <a href="search.html">Edit Courses</a>
+      </div>
+  </header>
+
   <div class="background-image">
     <div class="header-image-container">
       <img src="assets/Holokai.jpg" alt="University Campus" class="header-image"/>
@@ -28,120 +29,11 @@
         <div class="input-group">
           <label for="program-select">Program:</label>
           <select id="program-select">
-            <option course_name="Video Games" course_type="Major">Video Games</option>
-            <option course_name="Accounting" course_type="Major">Accounting</option>
-            <option course_name="Anthropology" course_type="Major">Anthropology</option>
-            <option course_name="Applied Mathematics" course_type="Major">Applied Mathematics</option>
-            <option course_name="Art" course_type="Major">Art</option>
-            <option course_name="Biology" course_type="Major">Biology</option>
-            <option course_name="Business Management - Economics" course_type="Major">
-              Business Management - Economics
-            </option>
-            <option course_name="Business Management - Finance" course_type="Major">
-              Business Management - Finance
-            </option>
-            <option course_name="Business Management - Marketing" course_type="Major">
-              Business Management - Marketing
-            </option>
-            <option course_name="Business Management - Organizational Leadership and Human Resources Concentration" course_type="Major">
-              Business Management - Organizational Leadership and Human
-              Resources Concentration
-            </option>
-            <option course_name="Business Management - Supply Chain, Operations, and Analytics Concentration" course_type="Major">
-              Business Management - Supply Chain, Operations, and Analytics
-              Concentration
-            </option>
-            <option course_name="Communications" course_type="Major">Communications</option>
-            <option course_name="Computer Science" course_type="Major">Computer Science</option>
-            <option course_name="Elementary Education" course_type="Major">Elementary Education</option>
-            <option course_name="English" course_type="Major">English</option>
-            <option course_name="English Education" course_type="Major">English Education</option>
-            <option course_name="Hawaiian Studies" course_type="Major">Hawaiian Studies</option>
-            <option course_name="Health and Human Science" course_type="Major">Health and Human Science</option>
-            <option course_name="History" course_type="Major">History</option>
-            <option course_name="History Education" course_type="Major">History Education</option>
-            <option course_name="Hospitality and Tourism Management" course_type="Major">
-              Hospitality and Tourism Management
-            </option>
-            <option course_name="Information Technology" course_type="Major">Information Technology</option>
-            <option course_name="Intercultural Peacebuilding" course_type="Major">
-              Intercultural Peacebuilding
-            </option>
-            <option course_name="Math Education" course_type="Major">Math Education</option>
-            <option course_name="Mathematics - Biology" course_type="Major">Mathematics - Biology</option>
-            <option course_name="Mathematics - Computer Science" course_type="Major">
-              Mathematics - Computer Science
-            </option>
-            <option course_name="Mathematics - Physics" course_type="Major">Mathematics - Physics</option>
-            <option course_name="Mathematics - Pre-Engineering" course_type="Major">
-              Mathematics - Pre-Engineering
-            </option>
-            <option course_name="Mathematics - Statistics" course_type="Major">
-              Mathematics - Statistics
-            </option>
-            <option course_name="Music" course_type="Major">Music</option>
-            <option course_name="Pacific Studies" course_type="Major">Pacific Studies</option>
-            <option course_name="Political Science" course_type="Major">Political Science</option>
-            <option course_name="Psychology" course_type="Major">Psychology</option>
-            <option course_name="Pure Mathematics" course_type="Major">Pure Mathematics</option>
-            <option course_name="Science Education" course_type="Major">Science Education</option>
-            <option course_name="Social Science Education" course_type="Major">Social Science Education</option>
-            <option course_name="Social Work" course_type="Major">Social Work</option>
-            <option course_name="TESOL" course_type="Major">TESOL</option>
-            <option course_name="TESOL Education" course_type="Major">TESOL Education</option>
-            <option course_name="Visual Arts" course_type="Major">Visual Arts</option>
-            <option course_name="Visual Arts - Fine Arts" course_type="Major">Visual Arts - Fine Arts</option>
-            <option course_name="Anthropology" course_type="Minor">Anthropology - Minor</option>
-            <option course_name="Asian Studies" course_type="Minor">Asian Studies - Minor</option>
-            <option course_name="Biochemistry" course_type="Minor">Biochemistry - Minor</option>
-            <option course_name="Biology" course_type="Minor">Biology - Minor</option>
-            <option course_name="Chemistry" course_type="Minor">Chemistry - Minor</option>
-            <option course_name="Chinese" course_type="Minor">Chinese - Minor</option>
-            <option course_name="Communications" course_type="Minor">Communications - Minor</option>
-            <option course_name="Creative Writing" course_type="Minor">Creative Writing - Minor</option>
-            <option course_name="Economics" course_type="Minor">Economics - Minor</option>
-            <option course_name="English" course_type="Minor">English - Minor</option>
-            <option course_name="Entrepreneurship" course_type="Minor">Entrepreneurship - Minor</option>
-            <option course_name="Film" course_type="Minor">Film - Minor</option>
-            <option course_name="Foundation Language Study" course_type="Minor">Foundation Language Study - Minor</option>
-            <option course_name="Hawaiian Language" course_type="Minor">Hawaiian Language - Minor</option>
-            <option course_name="Hawaiian Language Certificate" course_type="Minor">Hawaiian Language Certificate - Minor</option>
-            <option course_name="Hawaiian Studies" course_type="Minor">Hawaiian Studies - Minor</option>
-            <option course_name="Health and Human Performance" course_type="Minor">Health and Human Performance - Minor</option>
-            <option course_name="History" course_type="Minor">History - Minor</option>
-            <option course_name="Information Technology" course_type="Minor">Information Technology - Minor</option>
-            <option course_name="Integrated Humanities" course_type="Minor">Integrated Humanities - Minor</option>
-            <option course_name="International Development" course_type="Minor">International Development - Minor</option>
-            <option course_name="Intro to Linguistics" course_type="Minor">Intro to Linguistics - Minor</option>
-            <option course_name="Introduction to Chemistry" course_type="Minor">Introduction to Chemistry - Minor</option>
-            <option course_name="Introduction to Conservation Biology" course_type="Minor">Introduction to Conservation Biology - Minor</option>
-            <option course_name="Introduction to Marine Biology" course_type="Minor">Introduction to Marine Biology - Minor</option>
-            <option course_name="Japanese" course_type="Minor">Japanese - Minor</option>
-            <option course_name="Linguistics" course_type="Minor">Linguistics - Minor</option>
-            <option course_name="Marketing" course_type="Minor">Marketing - Minor</option>
-            <option course_name="Mathematics" course_type="Minor">Mathematics - Minor</option>
-            <option course_name="Music" course_type="Minor">Music - Minor</option>
-            <option course_name="Organizational Leadership" course_type="Minor">Organizational Leadership - Minor</option>
-            <option course_name="Pacific Studies" course_type="Minor">Pacific Studies - Minor</option>
-            <option course_name="Painting" course_type="Minor">Painting - Minor</option>
-            <option course_name="Piano Performance" course_type="Minor">Piano Performance - Minor</option>
-            <option course_name="Political Science" course_type="Minor">Political Science - Minor</option>
-            <option course_name="Professional Writing" course_type="Minor">Professional Writing - Minor</option>
-            <option course_name="Psychology" course_type="Minor">Psychology - Minor</option>
-            <option course_name="Public Management" course_type="Minor">Public Management - Minor</option>
-            <option course_name="Sculpting" course_type="Minor">Sculpting - Minor</option>
-            <option course_name="Social Work" course_type="Minor">Social Work - Minor</option>
-            <option course_name="Spanish" course_type="Minor">Spanish - Minor</option>
-            <option course_name="Special Education" course_type="Minor">Special Education - Minor</option>
-            <option course_name="Supply Chain, Operations, and Analytics" course_type="Minor">
-              Supply Chain, Operations, and Analytics - Minor
-            </option>
-            <option course_name="Theater" course_type="Minor">Theater - Minor</option>
-            <option course_name="Visual Arts" course_type="Minor">Visual Arts - Minor</option>
+            <!-- Options populated by JavaScript -->
           </select>
         </div>
 
-        <!-- Single Checkbox to include Holokai, Core, Religion, and EIL -->
+        <!-- Include All Extras Checkbox -->
         <div class="input-group">
           <label><input type="checkbox" id="include-all-extras"> Include Holokai, Core, Religion, and EIL</label>
         </div>
@@ -199,11 +91,14 @@
           <p><span class="legend-color type-eil"></span> EIL/Holokai Classes</p>
           <p><span class="legend-color type-religion"></span> Religion Classes</p>
         </div>
-      
 
         <button id="calculate-single-schedule">Generate Schedule</button>
       </header>
 
+      <!-- Message Display -->
+      <div id="form-message"></div>
+
+      <!-- Schedule Container -->
       <div id="schedule-container" class="hidden">
         <div id="summary" class="summary-box">
           <div class="summary-item animated-box">

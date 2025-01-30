@@ -6,22 +6,31 @@ window.addEventListener('DOMContentLoaded', async () => {
     const messageDiv = document.getElementById('form-message');
     const backToCourseLink = document.getElementById('back-to-course');
 
-    if (!courseId || !classId) {
-        messageDiv.innerHTML = '<p style="color: red;">Invalid course or class ID.</p>';
+    if (!classId) {
+        messageDiv.innerHTML = '<p style="color: red;">Invalid class ID.</p>';
         editClassForm.style.display = 'none';
         backToCourseLink.href = '#';
         return;
     }
 
-    // Update the back to course link with the correct URL
-    backToCourseLink.href = `course_details.html?course_id=${encodeURIComponent(courseId)}`;
+    // Update the back to course link based on the presence of courseId
+    if (courseId) {
+        backToCourseLink.href = `course_details.html?course_id=${encodeURIComponent(courseId)}`;
+    } else {
+        backToCourseLink.href = '/search.html'; // Redirect to search if no course context
+    }
 
     let selectedPrerequisites = []; // To store selected prerequisite IDs
     let selectedCorequisites = [];   // To store selected corequisite IDs
 
     try {
+        // Determine the appropriate API endpoint based on the presence of courseId
+        const apiEndpoint = courseId
+            ? `/api/courses/${encodeURIComponent(courseId)}/classes/${encodeURIComponent(classId)}`
+            : `/api/classes/${encodeURIComponent(classId)}`;
+
         // Fetch existing class details
-        const response = await fetch(`/api/courses/${encodeURIComponent(courseId)}/classes/${encodeURIComponent(classId)}`);
+        const response = await fetch(apiEndpoint);
         if (!response.ok) {
             throw new Error(`Failed to fetch class details: ${response.statusText}`);
         }
@@ -53,7 +62,9 @@ window.addEventListener('DOMContentLoaded', async () => {
         console.error(error);
         messageDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
         editClassForm.style.display = 'none';
-        backToCourseLink.href = `course_details.html?course_id=${encodeURIComponent(courseId)}`;
+        backToCourseLink.href = courseId
+            ? `course_details.html?course_id=${encodeURIComponent(courseId)}`
+            : '/search.html';
     }
 
     // Handle form submission
@@ -87,7 +98,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         };
 
         try {
-            const updateResponse = await fetch(`/api/courses/${encodeURIComponent(courseId)}/classes/${encodeURIComponent(classId)}`, {
+            // Determine the appropriate API endpoint based on the presence of courseId
+            const apiEndpoint = courseId
+                ? `/api/courses/${encodeURIComponent(courseId)}/classes/${encodeURIComponent(classId)}`
+                : `/api/classes/${encodeURIComponent(classId)}`;
+
+            const updateResponse = await fetch(apiEndpoint, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -109,9 +125,11 @@ window.addEventListener('DOMContentLoaded', async () => {
             const result = await updateResponse.json();
             messageDiv.innerHTML = `<p style="color: green;">${result.message}</p>`;
 
-            // Redirect back to course details after a short delay
+            // Redirect based on the presence of courseId after a short delay
             setTimeout(() => {
-                window.location.href = `course_details.html?course_id=${encodeURIComponent(courseId)}`;
+                window.location.href = courseId
+                    ? `course_details.html?course_id=${encodeURIComponent(courseId)}`
+                    : '/search.html';
             }, 2000);
         } catch (error) {
             console.error('Error updating class:', error);

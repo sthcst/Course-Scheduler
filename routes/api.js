@@ -1,5 +1,3 @@
-// filepath: /Users/isaaccandari/Folders/Work/Course-Scheduler/routes/api.js
-
 const express = require('express');
 const router = express.Router();
 const { Pool } = require('pg');
@@ -150,7 +148,6 @@ router.get('/courses/:course_id', async (req, res) => {
     }
 });
 
-
 /**
  * @route   DELETE /courses/:course_id/classes/:class_id
  * @desc    Remove a class from a specific course based on class_id
@@ -229,59 +226,354 @@ router.get('/classes/search', async (req, res) => {
 });
 
 /**
- * @route   POST /courses/:course_id/classes
- * @desc    Add an existing class to a specific course
+ * @route   GET /classes/:class_id
+ * @desc    Fetch a specific class without course association
  * @access  Public
  */
-router.post('/courses/:course_id/classes', async (req, res) => {
-    const { course_id } = req.params;
-    const { class_id } = req.body;
+router.get('/classes/:class_id', async (req, res) => {
+    const { class_id } = req.params;
 
     try {
-        // Validate that course_id and class_id are integers
-        const courseIdNum = parseInt(course_id, 10);
         const classIdNum = parseInt(class_id, 10);
-        if (isNaN(courseIdNum) || isNaN(classIdNum)) {
-            return res.status(400).json({ error: 'course_id and class_id must be integers.' });
+        if (isNaN(classIdNum)) {
+            return res.status(400).json({ error: 'class_id must be an integer.' });
         }
 
-        // Check if the course exists
-        const courseCheckQuery = `SELECT * FROM courses WHERE id = $1`;
-        const courseCheckResult = await pool.query(courseCheckQuery, [courseIdNum]);
-        if (courseCheckResult.rows.length === 0) {
-            return res.status(404).json({ error: 'Course not found.' });
-        }
+        const classQuery = `
+            SELECT 
+                id,
+                class_number,
+                class_name,
+                semesters_offered,
+                prerequisites,
+                corequisites,
+                credits,
+                is_elective,
+                days_offered,
+                times_offered,
+                created_at,
+                updated_at
+            FROM classes
+            WHERE id = $1
+        `;
+        const { rows: classRows } = await pool.query(classQuery, [classIdNum]);
 
-        // Check if the class exists
-        const classCheckQuery = `SELECT * FROM classes WHERE id = $1`;
-        const classCheckResult = await pool.query(classCheckQuery, [classIdNum]);
-        if (classCheckResult.rows.length === 0) {
+        if (classRows.length === 0) {
             return res.status(404).json({ error: 'Class not found.' });
         }
 
-        // Check if the association already exists
-        const associationCheckQuery = `
-            SELECT * FROM classes_in_course
-            WHERE course_id = $1 AND class_id = $2
-        `;
-        const { rows: associationRows } = await pool.query(associationCheckQuery, [courseIdNum, classIdNum]);
+        const classData = classRows[0];
 
-        if (associationRows.length > 0) {
-            return res.status(400).json({ error: 'Class is already associated with this course.' });
+        // Helper function to fetch class details by IDs
+        const fetchClassDetails = async (ids) => {
+            if (!ids || !Array.isArray(ids)) return [];
+            // Filter out any non-integer or invalid IDs
+            const validIds = ids.filter(id => Number.isInteger(id));
+            if (validIds.length === 0) return [];
+
+            const query = `
+                SELECT id, class_number, class_name
+                FROM classes
+                WHERE id = ANY($1::int[])
+            `;
+            try {
+                const { rows } = await pool.query(query, [validIds]);
+                return rows;
+            } catch (error) {
+                console.error('❌ Error in fetchClassDetails:', error);
+                return [];
+            }
+        };
+
+        // Fetch prerequisites and corequisites details
+        const prerequisites = await fetchClassDetails(classData.prerequisites);
+        const corequisites = await fetchClassDetails(classData.corequisites);
+
+        const response = {
+            id: classData.id,
+            class_number: classData.class_number,
+            class_name: classData.class_name,
+            semesters_offered: classData.semesters_offered,
+            credits: classData.credits,
+            prerequisites: prerequisites, // Array of objects
+            corequisites: corequisites,   // Array of objects
+            days_offered: classData.days_offered,
+            times_offered: classData.times_offered,
+            created_at: classData.created_at,
+            updated_at: classData.updated_at
+        };
+
+        res.json(response);
+    } catch (error) {
+        console.error('❌ Error fetching class details:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+/**
+ * @route   PUT /classes/:class_id
+ * @desc    Update an existing class without course association
+ * @access  Public
+ */
+router.put('/classes/:class_id', async (req, res) => {
+    try {
+        const { class_id } = req.params;
+        const classIdNum = parseInt(class_id, 10);
+
+        if (isNaN(classIdNum)) {
+            return res.status(400).json({ error: 'class_id must be a valid integer.' });
         }
 
-        // Insert the new association
-        const insertQuery = `
-            INSERT INTO classes_in_course (course_id, class_id)
-            VALUES ($1, $2)
-            RETURNING *
-        `;
-        const insertValues = [courseIdNum, classIdNum];
-        const insertResult = await pool.query(insertQuery, insertValues);
+        const {
+            class_number,
+            class_name,
+            semesters_offered = [],
+            prerequisites = [],
+            corequisites = [],
+            credits = 0,
+            is_elective = false,
+            days_offered = [],
+            times_offered = null
+        } = req.body;
 
-        res.status(201).json({ message: 'Class successfully added to the course.', data: insertResult.rows[0] });
+        // Validate that the class exists
+        const classCheckQuery = `
+            SELECT * FROM classes
+            WHERE id = $1
+        `;
+        const { rows: classRows } = await pool.query(classCheckQuery, [classIdNum]);
+
+        if (classRows.length === 0) {
+            return res.status(404).json({ error: 'Class not found.' });
+        }
+
+        // Update the class
+        const updateClassQuery = `
+            UPDATE classes
+            SET
+                class_number = $1,
+                class_name = $2,
+                semesters_offered = $3,
+                prerequisites = $4,
+                corequisites = $5,
+                credits = $6,
+                is_elective = $7,
+                days_offered = $8,
+                times_offered = $9,
+                updated_at = NOW()
+            WHERE id = $10
+            RETURNING id
+        `;
+        const updateClassValues = [
+            class_number,
+            class_name,
+            semesters_offered,
+            prerequisites,
+            corequisites,
+            credits,
+            is_elective,
+            days_offered,
+            times_offered,
+            classIdNum
+        ];
+
+        const { rows: updatedRows } = await pool.query(updateClassQuery, updateClassValues);
+
+        if (updatedRows.length === 0) {
+            return res.status(404).json({ error: 'Failed to update class.' });
+        }
+
+        res.json({ message: 'Class updated successfully!' });
+
     } catch (error) {
-        console.error('❌ Error adding class to course:', error);
+        console.error('❌ Error updating class:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+/**
+ * @route   PUT /courses/:course_id/classes/:class_id
+ * @desc    Update an existing class in the database using raw SQL
+ * @access  Public
+ */
+router.put('/courses/:course_id/classes/:class_id', async (req, res) => {
+    try {
+        const courseId = parseInt(req.params.course_id, 10);
+        const classId = parseInt(req.params.class_id, 10);
+
+        if (isNaN(courseId) || isNaN(classId)) {
+            return res.status(400).json({ error: 'course_id and class_id must be valid integers.' });
+        }
+
+        const {
+            class_number,
+            class_name,
+            semesters_offered = [],
+            prerequisites = [],
+            corequisites = [],
+            credits = 0,
+            is_elective = false,
+            days_offered = [],
+            times_offered = null
+        } = req.body;
+
+        // Check if the association exists
+        const checkAssociationQuery = `
+            SELECT 1 FROM classes_in_course
+            WHERE course_id = $1 AND class_id = $2
+        `;
+        const checkValues = [courseId, classId];
+        const { rows: associationRows } = await pool.query(checkAssociationQuery, checkValues);
+        if (associationRows.length === 0) {
+            return res.status(404).json({ error: 'The class is not associated with this course.' });
+        }
+
+        // Update this class in the "classes" table
+        const updateClassQuery = `
+            UPDATE classes
+            SET
+                class_number = $1,
+                class_name = $2,
+                semesters_offered = $3,
+                prerequisites = $4,
+                corequisites = $5,
+                credits = $6,
+                is_elective = $7,
+                days_offered = $8,
+                times_offered = $9,
+                updated_at = NOW()
+            WHERE id = $10
+            RETURNING id
+        `;
+        const updateClassValues = [
+            class_number,
+            class_name,
+            semesters_offered,
+            prerequisites,
+            corequisites,
+            credits,
+            is_elective,
+            days_offered,
+            times_offered,
+            classId
+        ];
+
+        // Perform the update
+        const { rows } = await pool.query(updateClassQuery, updateClassValues);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'No class found with the given ID.' });
+        }
+
+        res.json({ message: 'Class updated successfully!' });
+    } catch (error) {
+        console.error('Error updating class:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+/**
+ * @route   POST /courses/:course_id/classes
+ * @desc    Add a new or existing class to a specific course
+ * @access  Public
+ */
+router.post('/courses/:course_id/classes', async (req, res) => {
+    try {
+        const courseId = parseInt(req.params.course_id, 10);
+        if (isNaN(courseId)) {
+            return res.status(400).json({ error: 'course_id must be an integer.' });
+        }
+
+        if (req.body.class_id) {
+            // **Associating an Existing Class**
+            const classId = parseInt(req.body.class_id, 10);
+            if (isNaN(classId)) {
+                return res.status(400).json({ error: 'class_id must be an integer.' });
+            }
+
+            // Check if the class exists
+            const classCheckQuery = `
+                SELECT * FROM classes
+                WHERE id = $1
+            `;
+            const { rows: classRows } = await pool.query(classCheckQuery, [classId]);
+
+            if (classRows.length === 0) {
+                return res.status(404).json({ error: 'Class not found.' });
+            }
+
+            // Check if association already exists
+            const assocCheckQuery = `
+                SELECT * FROM classes_in_course
+                WHERE course_id = $1 AND class_id = $2
+            `;
+            const { rows: assocRows } = await pool.query(assocCheckQuery, [courseId, classId]);
+
+            if (assocRows.length > 0) {
+                return res.status(400).json({ error: 'Class is already associated with this course.' });
+            }
+
+            // Insert association into classes_in_course
+            const insertAssocQuery = `
+                INSERT INTO classes_in_course (course_id, class_id)
+                VALUES ($1, $2)
+            `;
+            await pool.query(insertAssocQuery, [courseId, classId]);
+
+            res.json({ message: 'Class associated successfully with the course.' });
+        } else {
+            // **Creating and Associating a New Class**
+            const { 
+                class_number,
+                class_name,
+                semesters_offered = [],
+                prerequisites = [],
+                corequisites = [],
+                credits = 0,
+                is_elective = false,
+                days_offered = [],
+                times_offered = []
+            } = req.body;
+
+            // Basic validation
+            if (!class_number || !class_name) {
+                return res.status(400).json({ error: 'class_number and class_name are required for creating a new class.' });
+            }
+
+            // Insert a new row into "classes" using raw SQL
+            const insertClassQuery = `
+                INSERT INTO classes 
+                    (class_number, class_name, semesters_offered, prerequisites, corequisites, credits, is_elective, days_offered, times_offered, created_at, updated_at)
+                VALUES 
+                    ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+                RETURNING id
+            `;
+            const insertClassValues = [
+                class_number,
+                class_name,
+                semesters_offered,
+                prerequisites,
+                corequisites,
+                credits,
+                is_elective,
+                days_offered,
+                times_offered
+            ];
+
+            const { rows } = await pool.query(insertClassQuery, insertClassValues);
+            const newClassId = rows[0].id;
+
+            // Associate the new class with the course in "classes_in_course"
+            const insertJunctionQuery = `
+                INSERT INTO classes_in_course (course_id, class_id)
+                VALUES ($1, $2)
+            `;
+            await pool.query(insertJunctionQuery, [courseId, newClassId]);
+
+            res.json({ message: 'New class created and associated successfully!', newClassId });
+        }
+    } catch (error) {
+        console.error('❌ Error in POST /courses/:course_id/classes:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -328,6 +620,63 @@ router.post('/courses', async (req, res) => {
 });
 
 /**
+ * @route   POST /classes
+ * @desc    Add a new class without associating it to a course
+ * @access  Public
+ */
+router.post('/classes', async (req, res) => {
+    try {
+        const {
+            class_number,
+            class_name,
+            semesters_offered = [],
+            prerequisites = [],
+            corequisites = [],
+            credits = 0,
+            is_elective = false,
+            days_offered = [],
+            times_offered = []
+        } = req.body;
+
+        // Basic validation
+        if (!class_number || !class_name) {
+            return res.status(400).json({ error: 'class_number and class_name are required.' });
+        }
+
+        // Insert a new row into "classes"
+        const insertClassQuery = `
+            INSERT INTO classes 
+                (class_number, class_name, semesters_offered, prerequisites, corequisites, credits, is_elective, days_offered, times_offered, created_at, updated_at)
+            VALUES 
+                ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+            RETURNING id
+        `;
+        const insertClassValues = [
+            class_number,
+            class_name,
+            semesters_offered,
+            prerequisites,
+            corequisites,
+            credits,
+            is_elective,
+            days_offered,
+            times_offered
+        ];
+
+        const { rows } = await pool.query(insertClassQuery, insertClassValues);
+        const newClassId = rows[0].id;
+
+        res.json({ 
+            message: 'Class added successfully!',
+            newClassId 
+        });
+    } catch (error) {
+        console.error('❌ Error adding a new class:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+/**
  * @route   GET /courses/:course_id/classes/:class_id
  * @desc    Fetch a specific class associated with a course
  * @access  Public
@@ -362,9 +711,10 @@ router.get('/courses/:course_id/classes/:class_id', async (req, res) => {
                 class_number,
                 class_name,
                 semesters_offered,
-                credits,
                 prerequisites,
                 corequisites,
+                credits,
+                is_elective,
                 days_offered,
                 times_offered,
                 created_at,
