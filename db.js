@@ -1,9 +1,11 @@
-const { Pool } = require('pg');
-
-// Initialize PostgreSQL Connection Pool
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://postgres:mysecretpassword@localhost:5432/postgres',
+    connectionString: process.env.DATABASE_URL,
 });
 
-// Export the pool for use in other modules
+// Handle connection errors gracefully
+pool.on('error', (err) => {
+    console.error('Unexpected error on idle client', err);
+    process.exit(-1);
+});
+
 module.exports = pool;
