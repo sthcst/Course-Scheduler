@@ -21,8 +21,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:mysecretpassword@db:5432/postgres
+      - DATABASE_URL=${DATABASE_URL}
       - NODE_ENV=development
+      - PORT=${PORT}
     depends_on:
       - db
     volumes:
