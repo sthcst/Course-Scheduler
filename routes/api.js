@@ -31,40 +31,56 @@ router.get('/courses', async (req, res) => {
         const { course_name, course_id } = req.query;
         let query = `
             SELECT 
-                courses.id,
-                courses.course_name,
-                courses.course_type,
-                COALESCE(json_agg(
-                    json_build_object(
-                        'id', classes.id,
-                        'class_name', classes.class_name,
-                        'class_number', classes.class_number,
-                        'semesters_offered', classes.semesters_offered,
-                        'prerequisites', classes.prerequisites,
-                        'corequisites', classes.corequisites,
-                        'days_offered', classes.days_offered,
-                        'times_offered', classes.times_offered
-                    ) ORDER BY classes.id
-                ) FILTER (WHERE classes.id IS NOT NULL), '[]') AS classes
-            FROM 
-                courses
-            LEFT JOIN 
-                classes_in_course cic ON cic.course_id = courses.id
-            LEFT JOIN 
-                classes ON classes.id = cic.class_id
+                c.id,
+                c.course_name,
+                c.course_type,
+                json_agg(DISTINCT jsonb_build_object(
+                    'id', cs.id,
+                    'section_name', cs.section_name,
+                    'credits_required', cs.credits_required,
+                    'electives_required', cs.electives_required,
+                    'classes', (
+                        SELECT json_agg(json_build_object(
+                            'id', cl.id,
+                            'class_name', cl.class_name,
+                            'class_number', cl.class_number,
+                            'semesters_offered', cl.semesters_offered,
+                            'prerequisites', cl.prerequisites,
+                            'corequisites', cl.corequisites,
+                            'credits', cl.credits,
+                            'is_elective', cic.is_elective,
+                            'elective_group', CASE 
+                                WHEN cic.elective_group_id IS NOT NULL THEN json_build_object(
+                                    'id', eg.id,
+                                    'name', eg.group_name,
+                                    'required_count', eg.required_count
+                                )
+                                ELSE NULL
+                            END
+                        ))
+                        FROM classes_in_course cic2
+                        JOIN classes cl ON cl.id = cic2.class_id
+                        LEFT JOIN elective_groups eg ON eg.id = cic2.elective_group_id
+                        WHERE cic2.course_id = c.id AND cic2.section_id = cs.id
+                    )
+                )) as sections
+            FROM courses c
+            LEFT JOIN course_sections cs ON cs.course_id = c.id
+            LEFT JOIN classes_in_course cic ON cic.course_id = c.id
         `;
+
         const values = [];
         const conditions = [];
         let count = 1;
 
         if (course_id) {
-            conditions.push(`courses.id = $${count}`);
+            conditions.push(`c.id = $${count}`);
             values.push(course_id);
             count++;
         }
 
         if (course_name) {
-            conditions.push(`courses.course_name ILIKE $${count}`);
+            conditions.push(`c.course_name ILIKE $${count}`);
             values.push(`%${course_name}%`);
             count++;
         }
@@ -73,21 +89,33 @@ router.get('/courses', async (req, res) => {
             query += ' WHERE ' + conditions.join(' AND ');
         }
 
-        query += ' GROUP BY courses.id';
-
-        console.log("Executing query:", query, values); // Debug log
+        query += ' GROUP BY c.id';
 
         const { rows } = await pool.query(query, values);
 
+        // Format response
+        const formattedRows = rows.map(row => ({
+            id: row.id,
+            course_name: row.course_name,
+            course_type: row.course_type,
+            sections: row.sections.filter(section => section !== null).map(section => ({
+                id: section.id,
+                section_name: section.section_name,
+                credits_required: section.credits_required,
+                electives_required: section.electives_required,
+                classes: section.classes || []
+            }))
+        }));
+
         if (course_id) {
-            const course = rows.find(c => c.id == course_id);
+            const course = formattedRows.find(c => c.id == course_id);
             if (course) {
                 res.json(course);
             } else {
                 res.status(404).json({ error: 'Course not found.' });
             }
         } else {
-            res.json(rows);
+            res.json(formattedRows);
         }
     } catch (error) {
         console.error('❌ Error fetching courses:', error);
@@ -103,42 +131,61 @@ router.get('/courses', async (req, res) => {
 router.get('/courses/:course_id', async (req, res) => {
     try {
         const { course_id } = req.params;
-        let query = `
+        const query = `
             SELECT 
-                courses.id,
-                courses.course_name,
-                courses.course_type,
-                COALESCE(json_agg(
-                    json_build_object(
-                        'id', classes.id,
-                        'class_name', classes.class_name,
-                        'class_number', classes.class_number,
-                        'semesters_offered', classes.semesters_offered,
-                        'prerequisites', classes.prerequisites,
-                        'corequisites', classes.corequisites,
-                        'days_offered', classes.days_offered,
-                        'times_offered', classes.times_offered
-                    ) ORDER BY classes.id
-                ) FILTER (WHERE classes.id IS NOT NULL), '[]') AS classes
-            FROM 
-                courses
-            LEFT JOIN 
-                classes_in_course cic ON cic.course_id = courses.id
-            LEFT JOIN 
-                classes ON classes.id = cic.class_id
-            WHERE 
-                courses.id = $1
-            GROUP BY 
-                courses.id
+                c.id,
+                c.course_name,
+                c.course_type,
+                json_agg(DISTINCT jsonb_build_object(
+                    'id', cs.id,
+                    'section_name', cs.section_name,
+                    'credits_required', cs.credits_required,
+                    'electives_required', cs.electives_required,
+                    'classes', (
+                        SELECT json_agg(json_build_object(
+                            'id', cl.id,
+                            'class_name', cl.class_name,
+                            'class_number', cl.class_number,
+                            'semesters_offered', cl.semesters_offered,
+                            'prerequisites', cl.prerequisites,
+                            'corequisites', cl.corequisites,
+                            'days_offered', cl.days_offered,
+                            'times_offered', cl.times_offered,
+                            'credits', cl.credits,
+                            'is_elective', cic2.is_elective,
+                            'elective_group', CASE 
+                                WHEN cic2.elective_group_id IS NOT NULL THEN json_build_object(
+                                    'id', eg.id,
+                                    'name', eg.group_name,
+                                    'required_count', eg.required_count
+                                )
+                                ELSE NULL
+                            END
+                        ))
+                        FROM classes_in_course cic2
+                        JOIN classes cl ON cl.id = cic2.class_id
+                        LEFT JOIN elective_groups eg ON eg.id = cic2.elective_group_id
+                        WHERE cic2.course_id = c.id AND cic2.section_id = cs.id
+                    )
+                )) as sections
+            FROM courses c
+            LEFT JOIN course_sections cs ON cs.course_id = c.id
+            LEFT JOIN classes_in_course cic ON cic.course_id = c.id
+            WHERE c.id = $1
+            GROUP BY c.id;
         `;
-        const values = [course_id];
 
-        console.log("Executing query for specific course:", query, values); // Debug log
-
-        const { rows } = await pool.query(query, values);
+        const { rows } = await pool.query(query, [course_id]);
 
         if (rows.length > 0) {
-            res.json(rows[0]);
+            const course = {
+                ...rows[0],
+                sections: rows[0].sections.filter(section => section !== null).map(section => ({
+                    ...section,
+                    classes: section.classes || []
+                }))
+            };
+            res.json(course);
         } else {
             res.status(404).json({ error: 'Course not found.' });
         }
@@ -166,8 +213,10 @@ router.delete('/courses/:course_id/classes/:class_id', async (req, res) => {
 
         // Check if the association exists
         const checkQuery = `
-            SELECT * FROM classes_in_course
-            WHERE course_id = $1 AND class_id = $2
+            SELECT c.*, cic.section_id, cic.is_elective, cic.elective_group_id
+            FROM classes_in_course cic
+            JOIN classes c ON c.id = cic.class_id
+            WHERE cic.course_id = $1 AND cic.class_id = $2
         `;
         const checkValues = [courseIdNum, classIdNum];
         const { rows: associationRows } = await pool.query(checkQuery, checkValues);
@@ -176,16 +225,47 @@ router.delete('/courses/:course_id/classes/:class_id', async (req, res) => {
             return res.status(404).json({ error: 'Association not found between the specified course and class.' });
         }
 
-        // Delete the association
-        const deleteQuery = `
-            DELETE FROM classes_in_course
-            WHERE course_id = $1 AND class_id = $2
-            RETURNING *
-        `;
-        const deleteValues = [courseIdNum, classIdNum];
-        const deleteResult = await pool.query(deleteQuery, deleteValues);
+        // Begin transaction
+        await pool.query('BEGIN');
 
-        res.json({ message: 'Class successfully removed from the course.', data: deleteResult.rows[0] });
+        try {
+            // Delete the association
+            const deleteAssocQuery = `
+                DELETE FROM classes_in_course
+                WHERE course_id = $1 AND class_id = $2
+                RETURNING *
+            `;
+            const deleteAssocResult = await pool.query(deleteAssocQuery, [courseIdNum, classIdNum]);
+
+            // Check if this class is used in any other courses
+            const checkUsageQuery = `
+                SELECT COUNT(*) 
+                FROM classes_in_course 
+                WHERE class_id = $1
+            `;
+            const { rows: usageRows } = await pool.query(checkUsageQuery, [classIdNum]);
+
+            // If class is not used anywhere else, delete it from classes table
+            if (parseInt(usageRows[0].count) === 0) {
+                const deleteClassQuery = `
+                    DELETE FROM classes 
+                    WHERE id = $1 
+                    RETURNING *
+                `;
+                await pool.query(deleteClassQuery, [classIdNum]);
+            }
+
+            await pool.query('COMMIT');
+            res.json({ 
+                message: 'Class successfully removed from the course.',
+                data: deleteAssocResult.rows[0]
+            });
+
+        } catch (err) {
+            await pool.query('ROLLBACK');
+            throw err;
+        }
+
     } catch (error) {
         console.error('❌ Error deleting class from course:', error);
         res.status(500).json({ error: 'Internal Server Error' });
