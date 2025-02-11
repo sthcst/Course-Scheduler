@@ -349,66 +349,40 @@ router.get('/classes/:class_id', async (req, res) => {
             return res.status(400).json({ error: 'class_id must be an integer.' });
         }
 
+        // Updated query with proper type casting
         const classQuery = `
             SELECT 
                 c.*,
-                json_agg(DISTINCT jsonb_build_object(
-                    'course_id', co.id,
-                    'course_name', co.course_name,
-                    'section_id', cs.id,
-                    'section_name', cs.section_name,
-                    'is_required', cs.is_required,
-                    'classes_to_choose', cs.classes_to_choose,
-                    'is_elective', cic.is_elective,
-                    'elective_group', CASE 
-                        WHEN cic.elective_group_id IS NOT NULL THEN jsonb_build_object(
-                            'id', eg.id,
-                            'name', eg.group_name,
-                            'required_count', eg.required_count
-                        )
-                        ELSE NULL
-                    END
-                )) FILTER (WHERE co.id IS NOT NULL) as course_sections
+                json_agg(DISTINCT prereq.*) FILTER (WHERE prereq.id IS NOT NULL) as prerequisites,
+                json_agg(DISTINCT coreq.*) FILTER (WHERE coreq.id IS NOT NULL) as corequisites
             FROM classes c
-            LEFT JOIN classes_in_course cic ON c.id = cic.class_id
-            LEFT JOIN courses co ON cic.course_id = co.id
-            LEFT JOIN course_sections cs ON cic.section_id = cs.id
-            LEFT JOIN elective_groups eg ON cic.elective_group_id = eg.id
-            WHERE c.id = $1
+            LEFT JOIN LATERAL (
+                SELECT p.id, p.class_number, p.class_name
+                FROM classes p
+                WHERE p.id = ANY(c.prerequisites::int[])
+            ) prereq ON true
+            LEFT JOIN LATERAL (
+                SELECT co.id, co.class_number, co.class_name
+                FROM classes co
+                WHERE co.id = ANY(c.corequisites::int[])
+            ) coreq ON true
+            WHERE c.id = $1::int
             GROUP BY c.id
         `;
 
-        const { rows: classRows } = await pool.query(classQuery, [classIdNum]);
+        const { rows: [classData] } = await pool.query(classQuery, [classIdNum]);
 
-        if (classRows.length === 0) {
+        if (!classData) {
             return res.status(404).json({ error: 'Class not found.' });
         }
 
-        const classData = classRows[0];
-
-        // Helper function to fetch class details by IDs
-        const fetchClassDetails = async (ids) => {
-            if (!ids || !Array.isArray(ids)) return [];
-            const validIds = ids.filter(id => Number.isInteger(id));
-            if (validIds.length === 0) return [];
-
-            const query = `
-                SELECT id, class_number, class_name
-                FROM classes
-                WHERE id = ANY($1::int[])
-            `;
-            try {
-                const { rows } = await pool.query(query, [validIds]);
-                return rows;
-            } catch (error) {
-                console.error('❌ Error in fetchClassDetails:', error);
-                return [];
-            }
-        };
-
-        // Fetch prerequisites and corequisites details
-        const prerequisites = await fetchClassDetails(classData.prerequisites);
-        const corequisites = await fetchClassDetails(classData.corequisites);
+        // Format prerequisites and corequisites arrays
+        const prerequisites = Array.isArray(classData.prerequisites) && classData.prerequisites[0] !== null
+            ? classData.prerequisites 
+            : [];
+        const corequisites = Array.isArray(classData.corequisites) && classData.corequisites[0] !== null
+            ? classData.corequisites 
+            : [];
 
         const response = {
             id: classData.id,
@@ -419,19 +393,18 @@ router.get('/classes/:class_id', async (req, res) => {
             prerequisites: prerequisites,
             corequisites: corequisites,
             days_offered: classData.days_offered,
-            times_offered: classData.times_offered,
-            course_sections: classData.course_sections || [],
+            times_offered: classData.times_offered || [],
             created_at: classData.created_at,
             updated_at: classData.updated_at
         };
 
         res.json(response);
+
     } catch (error) {
         console.error('❌ Error fetching class details:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
 
 /**
  * @route   PUT /courses/:course_id/classes/:class_id
