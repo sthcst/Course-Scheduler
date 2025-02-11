@@ -2,15 +2,68 @@ window.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const courseId = urlParams.get('course_id');
     const courseInfoDiv = document.getElementById('course-info');
-    const classesList = document.getElementById('classes-list');
+    const courseSectionsDiv = document.getElementById('course-sections');
+    const addSectionButton = document.getElementById('add-section-button');
+    const addSectionModal = document.getElementById('add-section-modal');
+    const addSectionForm = document.getElementById('add-section-form');
+    const sectionTypeSelect = document.getElementById('section-type');
+    const electiveOptions = document.getElementById('elective-options');
 
     if (!courseId) {
         courseInfoDiv.innerHTML = '<p>No valid course found.</p>';
         return;
     }
 
+    // Show/hide elective options based on section type
+    sectionTypeSelect.addEventListener('change', () => {
+        electiveOptions.style.display = 
+            sectionTypeSelect.value === 'elective' ? 'block' : 'none';
+    });
+
+    // Handle section modal
+    addSectionButton.addEventListener('click', () => {
+        addSectionModal.style.display = 'block';
+    });
+
+    document.getElementById('cancel-section').addEventListener('click', () => {
+        addSectionModal.style.display = 'none';
+        addSectionForm.reset();
+    });
+
+    // Handle section form submission
+    addSectionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const sectionData = {
+            section_name: document.getElementById('section-name').value,
+            is_required: sectionTypeSelect.value === 'required',
+            classes_to_choose: sectionTypeSelect.value === 'elective' ? 
+                parseInt(document.getElementById('classes-to-choose').value) : null
+        };
+
+        try {
+            const response = await fetch(`/api/courses/${courseId}/sections`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(sectionData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create section');
+            }
+            
+            addSectionModal.style.display = 'none';
+            addSectionForm.reset();
+            location.reload();
+        } catch (error) {
+            console.error('Error creating section:', error);
+            alert(error.message);
+        }
+    });
+
     try {
-        // Fetch course details along with associated classes
+        // Fetch course details with sections
         const response = await fetch(`/api/courses/${encodeURIComponent(courseId)}`);
         if (!response.ok) {
             throw new Error(`Failed to fetch course details: ${response.statusText}`);
@@ -21,203 +74,263 @@ window.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // Display the course name and type
-        courseInfoDiv.innerHTML = `
-            <h2>${data.course_name} (ID: ${data.id})</h2>
-            <p>Type: ${data.course_type || 'N/A'}</p>
-        `;
-
-        // Clear existing classes list
-        classesList.innerHTML = '';
-
-        // Check if there are classes associated with the course
-        if (Array.isArray(data.classes) && data.classes.length > 0) {
-            data.classes.forEach(cls => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${cls.class_number}: ${cls.class_name}
-                    <button class="update-class-button" data-class-id="${cls.id}">Update</button>
-                    <button class="delete-class-button" data-class-id="${cls.id}">Delete</button>
-                `;
-                classesList.appendChild(li);
-            });
-        } else {
-            classesList.innerHTML = '<li>No classes available for this course.</li>';
-        }
-
-        // Add event listeners to all delete buttons
-        const deleteButtons = document.querySelectorAll('.delete-class-button');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', async (event) => {
-                const classId = event.target.getAttribute('data-class-id');
-                const className = event.target.parentElement.textContent.split(':')[1].trim();
-
-                const confirmDelete = confirm(`Are you sure you want to delete class "${className}"?`);
-
-                if (confirmDelete) {
-                    try {
-                        const deleteResponse = await fetch(`/api/courses/${encodeURIComponent(courseId)}/classes/${encodeURIComponent(classId)}`, {
-                            method: 'DELETE',
-                        });
-
-                        if (!deleteResponse.ok) {
-                            let errorMessage = deleteResponse.statusText;
-                            try {
-                                const errorData = await deleteResponse.json();
-                                errorMessage = errorData.error || errorMessage;
-                            } catch (parseError) {
-                                // Ignore JSON parse errors
-                            }
-                            throw new Error(`Failed to delete class: ${errorMessage}`);
-                        }
-
-                        const result = await deleteResponse.json();
-                        alert(result.message);
-
-                        // Refresh the classes list
-                        location.reload();
-                    } catch (error) {
-                        console.error('Error deleting class:', error);
-                        alert(`Error: ${error.message}`);
-                    }
-                }
-            });
-        });
-
-        // Add event listeners to all update buttons
-        const updateButtons = document.querySelectorAll('.update-class-button');
-        updateButtons.forEach(button => {
-            button.addEventListener('click', (event) => {
-                const classId = event.target.getAttribute('data-class-id');
-                window.location.href = `edit_class.html?course_id=${encodeURIComponent(courseId)}&class_id=${encodeURIComponent(classId)}`;
-            });
-        });
+        // Display course info
+        displayCourse(data);
 
     } catch (error) {
         console.error(error);
         courseInfoDiv.innerHTML = `<p>Error: ${error.message}</p>`;
     }
 
-    // =======================
-    // Add Existing Class Functionality
-    // =======================
-
-    const addExistingClassButton = document.getElementById('add-existing-class-button');
-    const addNewClassButton = document.getElementById('add-new-class-button');
-    const searchContainer = document.getElementById('search-container');
-    const classSearchInput = document.getElementById('class-search-input');
-    const searchResults = document.getElementById('search-results');
-
-    addExistingClassButton.addEventListener('click', () => {
-        searchContainer.style.display = searchContainer.style.display === 'none' ? 'block' : 'none';
-        classSearchInput.value = '';
-        searchResults.innerHTML = '';
-        classSearchInput.focus();
-    });
-
-    addNewClassButton.addEventListener('click', () => {
-        window.location.href = `add_new_class.html?course_id=${encodeURIComponent(courseId)}`;
-    });
-
-    // Implement Debouncing with increased delay
-    let debounceTimeout;
-    classSearchInput.addEventListener('input', () => {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => {
-            performSearch();
-        }, 500); // Increased to 500 milliseconds delay
-    });
-
-    async function performSearch() {
-        const query = classSearchInput.value.trim().toLowerCase();
-        searchResults.innerHTML = '';
-
-        if (query === '') return;
-
-        try {
-            // Updated fetch URL with limit parameter
-            const response = await fetch(`/api/classes/search?query=${encodeURIComponent(query)}&limit=10`);
-            if (!response.ok) {
-                let errorMessage = response.statusText;
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.message || errorMessage;
-                } catch (parseError) {
-                    // Ignore JSON parse errors
-                }
-                throw new Error(`Error searching classes: ${errorMessage}`);
-            }
-            const data = await response.json();
-            const classes = data.classes;
-
-            if (!Array.isArray(classes)) {
-                throw new Error('Invalid response format from server.');
-            }
-
-            if (classes.length === 0) {
-                searchResults.innerHTML = '<li>No matching classes found.</li>';
-                return;
-            }
-
-            // Limit to 10 results if not already handled by the backend
-            const limitedClasses = classes.slice(0, 10);
-
-            limitedClasses.forEach(cls => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${cls.class_number}: ${cls.class_name}
-                    <button class="add-class-button" data-class-id="${cls.id}">Add</button>
-                `;
-                searchResults.appendChild(li);
-            });
-
-            // Add event listeners to all add buttons
-            const addButtons = document.querySelectorAll('.add-class-button');
-            addButtons.forEach(button => {
-                button.addEventListener('click', async (event) => {
-                    const classIdStr = event.target.getAttribute('data-class-id');
-                    const classId = parseInt(classIdStr, 10); // Convert to integer
-
-                    if (isNaN(classId)) {
-                        alert('Invalid Class ID.');
-                        return;
-                    }
-
-                    try {
-                        const addResponse = await fetch(`/api/courses/${encodeURIComponent(courseId)}/classes`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ class_id: classId }), // Ensure class_id is an integer
+    // Display course and its sections
+    function displayCourse(data) {
+        // Display the course name and type
+        courseInfoDiv.innerHTML = `
+            <h2>${data.course_name} (ID: ${data.id})</h2>
+            <p>Type: ${data.course_type || 'N/A'}</p>
+        `;
+    
+        // Clear the sections div
+        courseSectionsDiv.innerHTML = '';
+        
+        // Only proceed if sections exist and there's at least one
+        if (data.sections && Array.isArray(data.sections) && data.sections.length > 0) {
+            data.sections.forEach(section => {
+                if (section && section.id) {  // Additional check to ensure section is valid
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'course-section';
+                    sectionDiv.innerHTML = `
+                        <div class="section-header">
+                            <div class="section-info-container">
+                                <h3 class="section-title">${section.section_name}</h3>
+                                <div class="section-info">
+                                    ${section.is_required ? 'Required' : `Choose ${section.classes_to_choose} classes`}
+                                </div>
+                            </div>
+                            <button class="delete-section-button" data-section="${section.id}">Delete Section</button>
+                        </div>
+                        <ul class="classes-list" id="section-${section.id}-classes"></ul>
+                        <div class="section-controls">
+                            <button class="add-existing-class-button" data-section="${section.id}">
+                                Add Existing Class
+                            </button>
+                            <button class="add-new-class-button" data-section="${section.id}">
+                                Add New Class
+                            </button>
+                            <div class="search-container" id="search-container-${section.id}" style="display: none;">
+                                <input type="text" class="class-search-input" placeholder="Search by Class Number">
+                                <ul class="search-results"></ul>
+                            </div>
+                        </div>
+                    `;
+                    courseSectionsDiv.appendChild(sectionDiv);
+    
+                    // Display classes for this section
+                    const sectionClassesList = document.getElementById(`section-${section.id}-classes`);
+                    if (section.classes && section.classes.length > 0) {
+                        section.classes.forEach(cls => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `
+                                ${cls.class_number}: ${cls.class_name}
+                                <button class="update-class-button" 
+                                    data-class-id="${cls.id}" 
+                                    data-section-id="${section.id}">Update</button>
+                                <button class="delete-class-button" 
+                                    data-class-id="${cls.id}"
+                                    data-section-id="${section.id}">Delete</button>
+                            `;
+                            sectionClassesList.appendChild(li);
                         });
+                    } else {
+                        sectionClassesList.innerHTML = '<li>No classes in this section</li>';
+                    }
+                }
+            });
+    
+            // Add event listeners for the section-specific buttons
+            attachSectionEventListeners();
+        }
+    
+        // Show add section button (always visible)
+        addSectionButton.style.display = 'block';
+    }
 
-                        if (!addResponse.ok) {
-                            let errorMessage = addResponse.statusText;
-                            try {
-                                const errorData = await addResponse.json();
-                                errorMessage = errorData.error || errorMessage;
-                            } catch (parseError) {
-                                // Ignore JSON parse errors
-                            }
-                            throw new Error(`Failed to add class: ${errorMessage}`);
+    // Attach event listeners for section controls
+    function attachSectionEventListeners() {
+        // Add existing class buttons
+        document.querySelectorAll('.add-existing-class-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const sectionId = e.target.dataset.section;
+                showSearchContainer(sectionId);
+            });
+        });
+
+        // Add new class buttons
+        document.querySelectorAll('.add-new-class-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const sectionId = e.target.dataset.section;
+                window.location.href = `add_new_class.html?course_id=${courseId}&section_id=${sectionId}`;
+            });
+        });
+
+        // Update class buttons
+        document.querySelectorAll('.update-class-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const classId = e.target.dataset.classId;
+                const sectionId = e.target.dataset.sectionId;
+                window.location.href = `edit_class.html?course_id=${courseId}&class_id=${classId}&section_id=${sectionId}`;
+            });
+        });
+
+        // Delete class buttons
+        document.querySelectorAll('.delete-class-button').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const classId = e.target.dataset.classId;
+                const sectionId = e.target.dataset.sectionId;
+                
+                if (confirm('Are you sure you want to remove this class from the section?')) {
+                    try {
+                        const response = await fetch(
+                            `/api/courses/${courseId}/sections/${sectionId}/classes/${classId}`,
+                            { method: 'DELETE' }
+                        );
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Failed to delete class');
                         }
 
-                        const result = await addResponse.json();
-                        alert(result.message);
-
-                        // Refresh the classes list
                         location.reload();
                     } catch (error) {
-                        console.error('Error adding class:', error);
-                        alert(`Error: ${error.message}`);
+                        console.error('Error deleting class:', error);
+                        alert(error.message);
                     }
-                });
+                }
             });
+        });
 
-        } catch (error) {
-            console.error('Error during class search:', error);
-            searchResults.innerHTML = `<li style="color: red;">${error.message}</li>`;
+        // Delete section buttons
+        document.querySelectorAll('.delete-section-button').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const sectionId = e.target.dataset.section;
+                
+                if (confirm('Are you sure you want to delete this section? This will remove all class associations.')) {
+                    try {
+                        const response = await fetch(
+                            `/api/courses/${courseId}/sections/${sectionId}`,
+                            { method: 'DELETE' }
+                        );
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Failed to delete section');
+                        }
+
+                        location.reload();
+                    } catch (error) {
+                        console.error('Error deleting section:', error);
+                        alert(error.message);
+                    }
+                }
+            });
+        });
+
+        // Add search input listeners for each section
+        document.querySelectorAll('.class-search-input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const sectionId = e.target.closest('.section-controls')
+                    .querySelector('.add-existing-class-button').dataset.section;
+                
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => performSearch(sectionId), 500);
+            });
+        });
+    }
+
+    let searchTimeout;
+
+    function showSearchContainer(sectionId) {
+        // Hide all search containers first
+        document.querySelectorAll('.search-container').forEach(container => {
+            container.style.display = 'none';
+        });
+        
+        const searchContainer = document.getElementById(`search-container-${sectionId}`);
+        const searchInput = searchContainer.querySelector('.class-search-input');
+        searchContainer.style.display = 'block';
+        searchInput.value = '';
+        searchContainer.querySelector('.search-results').innerHTML = '';
+        searchInput.focus();
+    }
+
+    async function performSearch(sectionId) {
+        const searchContainer = document.getElementById(`search-container-${sectionId}`);
+        const searchInput = searchContainer.querySelector('.class-search-input');
+        const searchResults = searchContainer.querySelector('.search-results');
+        const query = searchInput.value.trim();
+        
+        if (!query) {
+            searchResults.innerHTML = '';
+            return;
         }
+
+        try {
+            const response = await fetch(`/api/classes/search?query=${encodeURIComponent(query)}`);
+            if (!response.ok) throw new Error('Search failed');
+
+            const data = await response.json();
+            displaySearchResults(data.classes, sectionId, searchResults);
+        } catch (error) {
+            console.error('Search error:', error);
+            searchResults.innerHTML = '<li class="error">Search failed. Please try again.</li>';
+        }
+    }
+
+    function displaySearchResults(classes, sectionId, searchResults) {
+        searchResults.innerHTML = '';
+        if (!classes.length) {
+            searchResults.innerHTML = '<li>No classes found</li>';
+            return;
+        }
+
+        classes.forEach(cls => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                ${cls.class_number}: ${cls.class_name}
+                <button class="add-class-button" 
+                    data-class-id="${cls.id}" 
+                    data-section-id="${sectionId}">Add</button>
+            `;
+            searchResults.appendChild(li);
+        });
+
+        // Add event listeners to add buttons
+        searchResults.querySelectorAll('.add-class-button').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const classId = e.target.dataset.classId;
+                const sectionId = e.target.dataset.sectionId;
+
+                try {
+                    const response = await fetch(
+                        `/api/courses/${courseId}/sections/${sectionId}/classes`, 
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ class_id: classId })
+                        }
+                    );
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to add class');
+                    }
+
+                    location.reload();
+                } catch (error) {
+                    console.error('Error adding class:', error);
+                    alert(error.message);
+                }
+            });
+        });
     }
 });

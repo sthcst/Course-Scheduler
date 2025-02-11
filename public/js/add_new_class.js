@@ -6,36 +6,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     const mainHeading = document.getElementById('main-heading');
     const submitButton = document.getElementById('submit-button');
 
-    // Extract course_id from the URL (if any)
+    // Extract both course_id and section_id from URL
     const urlParams = new URLSearchParams(window.location.search);
     const courseId = urlParams.get('course_id');
+    const sectionId = urlParams.get('section_id');
 
-    // Update the "Back" link based on the presence of course_id
-    if (courseId) {
+    // Update UI based on context
+    if (courseId && sectionId) {
+        backLink.href = `course_details.html?course_id=${encodeURIComponent(courseId)}`;
+        formTitle.textContent = 'Add New Class to Section';
+        mainHeading.textContent = 'Add a New Class to This Section';
+        submitButton.textContent = 'Add Class to Section';
+    } else if (courseId) {
         backLink.href = `course_details.html?course_id=${encodeURIComponent(courseId)}`;
         formTitle.textContent = 'Add New Class to Course';
         mainHeading.textContent = 'Add a New Class to This Course';
         submitButton.textContent = 'Add Class to Course';
     } else {
-        backLink.href = 'search.html'; // Redirect to search if no course_id
+        backLink.href = 'search.html';
         formTitle.textContent = 'Add New Class';
         mainHeading.textContent = 'Add a New Class';
         submitButton.textContent = 'Add Class';
     }
 
-    // Elements for Prerequisites Autocomplete
+    // Prerequisites and Corequisites elements
     const prerequisitesInput = document.getElementById('prerequisites');
     const prerequisitesSuggestions = document.getElementById('prerequisites-suggestions');
-
-    // Elements for Corequisites Autocomplete
     const corequisitesInput = document.getElementById('corequisites');
     const corequisitesSuggestions = document.getElementById('corequisites-suggestions');
 
-    // Selected Prerequisites and Corequisites
+    // Track selected items with full object data
     let selectedPrerequisites = [];
     let selectedCorequisites = [];
 
-    // Function to create suggestion items
+    // Create suggestion item
     function createSuggestionItem(text, handler) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -44,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return div;
     }
 
-    // Debounce function to limit API calls
+    // Debounce function
     function debounce(func, delay) {
         let timeout;
         return function(...args) {
@@ -53,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // Fetch suggestions for Prerequisites
+    // Fetch prerequisites suggestions
     const fetchPrereqSuggestions = debounce(async () => {
         const query = prerequisitesInput.value.trim();
         if (query.length === 0) {
@@ -63,24 +67,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const response = await fetch(`/api/classes/search?query=${encodeURIComponent(query)}&limit=10`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch prerequisites');
-            }
+            if (!response.ok) throw new Error('Failed to fetch prerequisites');
+            
             const data = await response.json();
             displaySuggestions(data.classes, prerequisitesSuggestions, (classItem) => {
-                if (!selectedPrerequisites.includes(classItem.id)) { // Assuming classItem has 'id'
-                    selectedPrerequisites.push(classItem.id);
-                    addSelectedItem(prerequisitesInput, selectedPrerequisites, `${classItem.class_number}: ${classItem.class_name}`, 'prereq');
+                const prereqObject = {
+                    id: classItem.id,
+                    class_number: classItem.class_number,
+                    class_name: classItem.class_name
+                };
+                
+                if (!selectedPrerequisites.some(p => p.id === classItem.id)) {
+                    selectedPrerequisites.push(prereqObject);
+                    addSelectedItem(prerequisitesInput, selectedPrerequisites, 
+                        `${classItem.class_number}: ${classItem.class_name}`, 'prereq');
                 }
                 prerequisitesSuggestions.innerHTML = '';
                 prerequisitesInput.value = '';
             });
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching prerequisites:', error);
         }
     }, 300);
 
-    // Fetch suggestions for Corequisites
+    // Fetch corequisites suggestions
     const fetchCoreqSuggestions = debounce(async () => {
         const query = corequisitesInput.value.trim();
         if (query.length === 0) {
@@ -90,33 +100,42 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const response = await fetch(`/api/classes/search?query=${encodeURIComponent(query)}&limit=10`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch corequisites');
-            }
+            if (!response.ok) throw new Error('Failed to fetch corequisites');
+            
             const data = await response.json();
             displaySuggestions(data.classes, corequisitesSuggestions, (classItem) => {
-                if (!selectedCorequisites.includes(classItem.id)) { // Assuming classItem has 'id'
-                    selectedCorequisites.push(classItem.id);
-                    addSelectedItem(corequisitesInput, selectedCorequisites, `${classItem.class_number}: ${classItem.class_name}`, 'coreq');
+                const coreqObject = {
+                    id: classItem.id,
+                    class_number: classItem.class_number,
+                    class_name: classItem.class_name
+                };
+                
+                if (!selectedCorequisites.some(c => c.id === classItem.id)) {
+                    selectedCorequisites.push(coreqObject);
+                    addSelectedItem(corequisitesInput, selectedCorequisites, 
+                        `${classItem.class_number}: ${classItem.class_name}`, 'coreq');
                 }
                 corequisitesSuggestions.innerHTML = '';
                 corequisitesInput.value = '';
             });
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching corequisites:', error);
         }
     }, 300);
 
-    // Display suggestions in the suggestions container
+    // Display suggestions
     function displaySuggestions(classes, container, onSelect) {
         container.innerHTML = '';
         classes.forEach(cls => {
-            const item = createSuggestionItem(`${cls.class_number}: ${cls.class_name}`, () => onSelect(cls));
+            const item = createSuggestionItem(
+                `${cls.class_number}: ${cls.class_name}`, 
+                () => onSelect(cls)
+            );
             container.appendChild(item);
         });
     }
 
-    // Add selected item as a tag
+    // Add selected item as tag
     function addSelectedItem(inputElement, selectedArray, value, type) {
         const tag = document.createElement('span');
         tag.classList.add('selected-item');
@@ -124,10 +143,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
-        removeBtn.textContent = 'x';
+        removeBtn.textContent = '×';
         removeBtn.addEventListener('click', () => {
-            const classIdToRemove = value.split(':')[0].trim();
-            selectedArray = selectedArray.filter(id => id !== classIdToRemove);
+            if (type === 'prereq') {
+                selectedPrerequisites = selectedPrerequisites.filter(item => 
+                    value !== `${item.class_number}: ${item.class_name}`);
+            } else {
+                selectedCorequisites = selectedCorequisites.filter(item => 
+                    value !== `${item.class_number}: ${item.class_name}`);
+            }
             tag.remove();
         });
 
@@ -135,22 +159,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         inputElement.parentElement.insertBefore(tag, inputElement);
     }
 
-    // Event listeners for Prerequisites
+    // Clear selected items
+    function clearSelectedItems(type) {
+        if (type === 'prereq') {
+            selectedPrerequisites = [];
+            document.querySelectorAll('#prerequisites + .selected-item')
+                .forEach(tag => tag.remove());
+        } else if (type === 'coreq') {
+            selectedCorequisites = [];
+            document.querySelectorAll('#corequisites + .selected-item')
+                .forEach(tag => tag.remove());
+        }
+    }
+
+    // Event listeners for prerequisites
     prerequisitesInput.addEventListener('input', fetchPrereqSuggestions);
     document.addEventListener('click', (e) => {
-        if (!prerequisitesSuggestions.contains(e.target) && e.target !== prerequisitesInput) {
+        if (!prerequisitesSuggestions.contains(e.target) && 
+            e.target !== prerequisitesInput) {
             prerequisitesSuggestions.innerHTML = '';
         }
     });
 
-    // Event listeners for Corequisites
+    // Event listeners for corequisites
     corequisitesInput.addEventListener('input', fetchCoreqSuggestions);
     document.addEventListener('click', (e) => {
-        if (!corequisitesSuggestions.contains(e.target) && e.target !== corequisitesInput) {
+        if (!corequisitesSuggestions.contains(e.target) && 
+            e.target !== corequisitesInput) {
             corequisitesSuggestions.innerHTML = '';
         }
     });
 
+    // Form submission
     addClassForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -158,18 +198,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         const className = document.getElementById('class-name').value.trim();
         const credits = parseInt(document.getElementById('credits').value, 10);
 
-        // Get selected Semesters Offered
-        const semestersOffered = Array.from(document.querySelectorAll('input[name="semesters_offered"]:checked'))
-            .map(input => input.value);
+        const semestersOffered = Array.from(
+            document.querySelectorAll('input[name="semesters_offered"]:checked')
+        ).map(input => input.value);
 
-        // Get selected Days Offered
-        const daysOffered = Array.from(document.querySelectorAll('input[name="days_offered"]:checked'))
-            .map(input => input.value);
+        const daysOffered = Array.from(
+            document.querySelectorAll('input[name="days_offered"]:checked')
+        ).map(input => input.value);
 
         const timesOfferedInput = document.getElementById('times-offered').value.trim();
-        const times_offered = timesOfferedInput ? timesOfferedInput.split(',').map(s => s.trim()) : [];
+        const times_offered = timesOfferedInput ? 
+            timesOfferedInput.split(',').map(s => s.trim()) : [];
 
-        // Basic validation
         if (!classNumberInput || !className || isNaN(credits) || credits < 1) {
             formMessage.textContent = 'Please provide valid inputs for required fields.';
             formMessage.style.color = 'red';
@@ -182,54 +222,62 @@ document.addEventListener('DOMContentLoaded', async () => {
                 class_name: className,
                 credits: credits,
                 semesters_offered: semestersOffered,
-                prerequisites: selectedPrerequisites,
-                corequisites: selectedCorequisites,
+                prerequisites: selectedPrerequisites.map(p => p.id),
+                corequisites: selectedCorequisites.map(c => c.id),
                 days_offered: daysOffered,
                 times_offered: times_offered
             };
 
             let response, resultMessage;
 
-            if (courseId) {
-                // Associate class with a course
-                response = await fetch(`/api/courses/${encodeURIComponent(courseId)}/classes`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
+            if (courseId && sectionId) {
+                response = await fetch(
+                    `/api/courses/${courseId}/sections/${sectionId}/classes`, 
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
+                resultMessage = 'Class added successfully to the section!';
+            } else if (courseId) {
+                response = await fetch(
+                    `/api/courses/${courseId}/classes`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
                 resultMessage = 'Class added successfully to the course!';
             } else {
-                // Add class independently
-                response = await fetch(`/api/classes`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
+                response = await fetch(
+                    '/api/classes',
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }
+                );
                 resultMessage = 'Class added successfully!';
             }
 
             if (!response.ok) {
                 const errorData = await response.json();
-                const errorMessage = errorData.error || response.statusText;
-                throw new Error(errorMessage);
+                throw new Error(errorData.error || 'Failed to add class');
             }
 
             const result = await response.json();
             formMessage.textContent = result.message || resultMessage;
             formMessage.style.color = 'green';
+            
             addClassForm.reset();
-            // Clear selected prerequisites and corequisites
             clearSelectedItems('prereq');
             clearSelectedItems('coreq');
 
-            // Redirect based on scenario
             setTimeout(() => {
                 if (courseId) {
-                    window.location.href = `course_details.html?course_id=${encodeURIComponent(courseId)}`;
+                    window.location.href = `course_details.html?course_id=${courseId}`;
                 } else {
                     window.location.href = 'search.html';
                 }
@@ -241,23 +289,4 @@ document.addEventListener('DOMContentLoaded', async () => {
             formMessage.style.color = 'red';
         }
     });
-
-    /**
-     * Helper function to clear selected items for prerequisites or corequisites
-     */
-    function clearSelectedItems(type) {
-        if (type === 'prereq') {
-            selectedPrerequisites = [];
-            const tags = document.querySelectorAll('#prerequisites + .selected-item');
-            tags.forEach(tag => {
-                tag.remove();
-            });
-        } else if (type === 'coreq') {
-            selectedCorequisites = [];
-            const tags = document.querySelectorAll('#corequisites + .selected-item');
-            tags.forEach(tag => {
-                tag.remove();
-            });
-        }
-    }
 });

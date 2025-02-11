@@ -10,18 +10,35 @@
     <a href="search.html">Back to Search</a>
     <div id="course-info"></div>
     
-    <ul id="classes-list"></ul>
-    
-    <!-- Add Existing Class Section -->
-    <div id="add-existing-class-section">
-        <button id="add-existing-class-button">Add Existing Class</button>
-        <button id="add-new-class-button">Add a New Class</button>
-        <div id="search-container" style="display: none; margin-top: 10px;">
-            <input type="text" id="class-search-input" placeholder="Search by Class Number">
-            <ul id="search-results"></ul>
+    <div id="course-sections"></div>
+    <button id="add-section-button">Add New Section</button>
+
+    <!-- Add Section Modal -->
+    <div id="add-section-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Section</h2>
+            <form id="add-section-form" class="modal-form">
+                <div>
+                    <label for="section-name">Section Name:</label>
+                    <input type="text" id="section-name" required>
+                </div>
+                <div>
+                    <label for="section-type">Section Type:</label>
+                    <select id="section-type" required>
+                        <option value="required">Required</option>
+                        <option value="elective">Elective</option>
+                    </select>
+                </div>
+                <div id="elective-options" style="display: none;">
+                    <label for="classes-to-choose">Number of Classes to Choose:</label>
+                    <input type="number" id="classes-to-choose" min="1">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-section">Cancel</button>
+                    <button type="submit">Add Section</button>
+                </div>
+            </form>
         </div>
     </div>
-
-    <!-- Optionally, you can include modal or additional sections for better UI -->
 </body>
 </html>
