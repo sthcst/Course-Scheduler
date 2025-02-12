@@ -6,6 +6,85 @@ window.addEventListener('DOMContentLoaded', async () => {
     const messageDiv = document.getElementById('form-message');
     const backToCourseLink = document.getElementById('back-to-course');
 
+    // Create header container and set its position
+    const headerContainer = document.createElement('div');
+    headerContainer.className = 'header-container';
+    editClassForm.insertAdjacentElement('beforebegin', headerContainer);
+    
+    // Move back link to left side of header
+    headerContainer.appendChild(backToCourseLink);
+    
+    // Create delete button and add to right side
+    const deleteButton = document.createElement('button');
+    deleteButton.id = 'delete-class-btn';
+    deleteButton.className = 'delete-button';
+    deleteButton.textContent = 'Delete Class';
+    headerContainer.appendChild(deleteButton);
+
+    // Create modal for delete confirmation
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>Delete Class</h2>
+            <p>Are you sure you want to delete this class? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="confirm-delete">Delete</button>
+                <button class="cancel-delete">Cancel</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Delete button click handler
+    deleteButton.addEventListener('click', () => {
+        modal.style.display = 'block';
+    });
+
+    // Modal button handlers
+    modal.querySelector('.cancel-delete').addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    modal.querySelector('.confirm-delete').addEventListener('click', async () => {
+        try {
+            const deleteEndpoint = courseId
+                ? `/api/courses/${encodeURIComponent(courseId)}/classes/${encodeURIComponent(classId)}`
+                : `/api/classes/${encodeURIComponent(classId)}`;
+
+            const response = await fetch(deleteEndpoint, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to delete class');
+            }
+
+            messageDiv.innerHTML = '<p style="color: green;">Class deleted successfully!</p>';
+            modal.style.display = 'none';
+            
+            // Redirect after short delay
+            setTimeout(() => {
+                window.location.href = courseId
+                    ? `course_details.html?course_id=${encodeURIComponent(courseId)}`
+                    : 'search.html';
+            }, 1500);
+
+        } catch (error) {
+            console.error('Error deleting class:', error);
+            messageDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            modal.style.display = 'none';
+        }
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
     if (!classId) {
         messageDiv.innerHTML = '<p style="color: red;">Invalid class ID.</p>';
         editClassForm.style.display = 'none';
@@ -149,6 +228,15 @@ window.addEventListener('DOMContentLoaded', async () => {
             
             const data = await response.json();
             displaySuggestions(data.classes, prerequisitesSuggestions, (classItem) => {
+                // Check if class is already a corequisite
+                if (selectedCorequisites.some(c => c.id === classItem.id)) {
+                    messageDiv.innerHTML = '<p style="color: red;">This class is already added as a corequisite</p>';
+                    setTimeout(() => {
+                        messageDiv.innerHTML = '';
+                    }, 3000);
+                    return;
+                }
+
                 const prereqObject = {
                     id: classItem.id,
                     class_number: classItem.class_number,
@@ -187,6 +275,15 @@ window.addEventListener('DOMContentLoaded', async () => {
             
             const data = await response.json();
             displaySuggestions(data.classes, corequisitesSuggestions, (classItem) => {
+                // Check if class is already a prerequisite
+                if (selectedPrerequisites.some(p => p.id === classItem.id)) {
+                    messageDiv.innerHTML = '<p style="color: red;">This class is already added as a prerequisite</p>';
+                    setTimeout(() => {
+                        messageDiv.innerHTML = '';
+                    }, 3000);
+                    return;
+                }
+
                 const coreqObject = {
                     id: classItem.id,
                     class_number: classItem.class_number,

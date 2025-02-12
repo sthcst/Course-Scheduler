@@ -39,15 +39,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let selectedPrerequisites = [];
     let selectedCorequisites = [];
 
-    // Create suggestion item
-    function createSuggestionItem(text, handler) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        div.classList.add('suggestion-item');
-        div.addEventListener('click', handler);
-        return div;
-    }
-
     // Debounce function
     function debounce(func, delay) {
         let timeout;
@@ -55,6 +46,80 @@ document.addEventListener('DOMContentLoaded', async () => {
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), delay);
         };
+    }
+
+    // Display suggestions
+    function displaySuggestions(classes, container, onSelect) {
+        container.innerHTML = '';
+        if (!classes.length) {
+            container.innerHTML = '<div class="suggestion-item">No classes found</div>';
+            return;
+        }
+
+        classes.forEach(cls => {
+            const item = document.createElement('div');
+            item.classList.add('suggestion-item');
+            item.innerHTML = `
+                <span>${cls.class_number}: ${cls.class_name}</span>
+                <button type="button" class="add-button">Add</button>
+            `;
+            item.querySelector('.add-button').addEventListener('click', () => onSelect(cls));
+            container.appendChild(item);
+        });
+    }
+
+    // Create tags container
+    function createTagsContainer(field) {
+        const container = document.createElement('div');
+        container.id = `${field}-tags`;
+        container.classList.add('tags-container');
+        document.getElementById(field).parentNode.insertBefore(
+            container,
+            document.getElementById(field).nextSibling
+        );
+        return container;
+    }
+
+    // Update tags display
+    function updateTags(field, selectedItems) {
+        const container = document.getElementById(`${field}-tags`) || createTagsContainer(field);
+        container.innerHTML = '';
+
+        selectedItems.forEach(item => {
+            const tag = document.createElement('span');
+            tag.classList.add('tag');
+            tag.textContent = item.name;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.classList.add('remove-tag');
+            removeBtn.textContent = '×';
+            removeBtn.addEventListener('click', () => {
+                if (field === 'prerequisites') {
+                    selectedPrerequisites = selectedPrerequisites.filter(p => p.id !== item.id);
+                    updateTags('prerequisites', selectedPrerequisites);
+                } else {
+                    selectedCorequisites = selectedCorequisites.filter(c => c.id !== item.id);
+                    updateTags('corequisites', selectedCorequisites);
+                }
+            });
+
+            tag.appendChild(removeBtn);
+            container.appendChild(tag);
+        });
+    }
+
+    // Clear selected items
+    function clearSelectedItems(type) {
+        if (type === 'prereq') {
+            selectedPrerequisites = [];
+            const container = document.getElementById('prerequisites-tags');
+            if (container) container.innerHTML = '';
+        } else if (type === 'coreq') {
+            selectedCorequisites = [];
+            const container = document.getElementById('corequisites-tags');
+            if (container) container.innerHTML = '';
+        }
     }
 
     // Fetch prerequisites suggestions
@@ -71,22 +136,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const data = await response.json();
             displaySuggestions(data.classes, prerequisitesSuggestions, (classItem) => {
+                if (selectedCorequisites.some(c => c.id === classItem.id)) {
+                    formMessage.textContent = 'This class is already added as a corequisite';
+                    formMessage.style.color = 'red';
+                    setTimeout(() => {
+                        formMessage.textContent = '';
+                    }, 3000);
+                    return;
+                }
+
                 const prereqObject = {
                     id: classItem.id,
                     class_number: classItem.class_number,
-                    class_name: classItem.class_name
+                    class_name: classItem.class_name,
+                    name: `${classItem.class_number}: ${classItem.class_name}`
                 };
                 
                 if (!selectedPrerequisites.some(p => p.id === classItem.id)) {
                     selectedPrerequisites.push(prereqObject);
-                    addSelectedItem(prerequisitesInput, selectedPrerequisites, 
-                        `${classItem.class_number}: ${classItem.class_name}`, 'prereq');
+                    updateTags('prerequisites', selectedPrerequisites);
                 }
                 prerequisitesSuggestions.innerHTML = '';
                 prerequisitesInput.value = '';
             });
         } catch (error) {
             console.error('Error fetching prerequisites:', error);
+            prerequisitesSuggestions.innerHTML = `
+                <div class="suggestion-item error">Error: ${error.message}</div>
+            `;
         }
     }, 300);
 
@@ -104,73 +181,36 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             const data = await response.json();
             displaySuggestions(data.classes, corequisitesSuggestions, (classItem) => {
+                if (selectedPrerequisites.some(p => p.id === classItem.id)) {
+                    formMessage.textContent = 'This class is already added as a prerequisite';
+                    formMessage.style.color = 'red';
+                    setTimeout(() => {
+                        formMessage.textContent = '';
+                    }, 3000);
+                    return;
+                }
+
                 const coreqObject = {
                     id: classItem.id,
                     class_number: classItem.class_number,
-                    class_name: classItem.class_name
+                    class_name: classItem.class_name,
+                    name: `${classItem.class_number}: ${classItem.class_name}`
                 };
                 
                 if (!selectedCorequisites.some(c => c.id === classItem.id)) {
                     selectedCorequisites.push(coreqObject);
-                    addSelectedItem(corequisitesInput, selectedCorequisites, 
-                        `${classItem.class_number}: ${classItem.class_name}`, 'coreq');
+                    updateTags('corequisites', selectedCorequisites);
                 }
                 corequisitesSuggestions.innerHTML = '';
                 corequisitesInput.value = '';
             });
         } catch (error) {
             console.error('Error fetching corequisites:', error);
+            corequisitesSuggestions.innerHTML = `
+                <div class="suggestion-item error">Error: ${error.message}</div>
+            `;
         }
     }, 300);
-
-    // Display suggestions
-    function displaySuggestions(classes, container, onSelect) {
-        container.innerHTML = '';
-        classes.forEach(cls => {
-            const item = createSuggestionItem(
-                `${cls.class_number}: ${cls.class_name}`, 
-                () => onSelect(cls)
-            );
-            container.appendChild(item);
-        });
-    }
-
-    // Add selected item as tag
-    function addSelectedItem(inputElement, selectedArray, value, type) {
-        const tag = document.createElement('span');
-        tag.classList.add('selected-item');
-        tag.textContent = value;
-
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.textContent = '×';
-        removeBtn.addEventListener('click', () => {
-            if (type === 'prereq') {
-                selectedPrerequisites = selectedPrerequisites.filter(item => 
-                    value !== `${item.class_number}: ${item.class_name}`);
-            } else {
-                selectedCorequisites = selectedCorequisites.filter(item => 
-                    value !== `${item.class_number}: ${item.class_name}`);
-            }
-            tag.remove();
-        });
-
-        tag.appendChild(removeBtn);
-        inputElement.parentElement.insertBefore(tag, inputElement);
-    }
-
-    // Clear selected items
-    function clearSelectedItems(type) {
-        if (type === 'prereq') {
-            selectedPrerequisites = [];
-            document.querySelectorAll('#prerequisites + .selected-item')
-                .forEach(tag => tag.remove());
-        } else if (type === 'coreq') {
-            selectedCorequisites = [];
-            document.querySelectorAll('#corequisites + .selected-item')
-                .forEach(tag => tag.remove());
-        }
-    }
 
     // Event listeners for prerequisites
     prerequisitesInput.addEventListener('input', fetchPrereqSuggestions);

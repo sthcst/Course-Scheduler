@@ -196,6 +196,115 @@ button[type="button"]:hover {
     color: #555;
 }
 
+/* Update the Suggestions Dropdown styles */
+.suggestions {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#prerequisites-suggestions,
+#corequisites-suggestions {
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 4px 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Add styles for the input container */
+.input-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+/* Add these styles */
+/* Update the header container styles */
+/* Update the header container styles */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* Update the delete button styles */
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.cancel-delete {
+    background-color: #6c757d;
+    color: white;
+}
+
 /* Responsive Design */
 @media (max-width: 600px) {
     form {

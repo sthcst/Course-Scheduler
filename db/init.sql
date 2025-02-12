@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS classes (
     credits INTEGER DEFAULT 0,
     days_offered VARCHAR(50)[] DEFAULT '{}',
     times_offered VARCHAR(50)[] DEFAULT '{}',
+    is_senior_class BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );

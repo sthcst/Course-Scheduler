@@ -7,11 +7,9 @@
     <script src="/js/add_new_class.js" defer></script>
 </head>
 <body>
-    <!-- The href will be dynamically set based on presence of course_id -->
     <a href="/search.html" id="back-link">Back</a>
     <h1 id="main-heading">Add a New Class</h1>
     <form id="add-class-form">
-        <!-- Form fields as before -->
         <label for="class-number">Class Number:</label>
         <input type="text" id="class-number" name="class_number" required>
 
@@ -37,11 +35,25 @@
             </label>
         </fieldset>
 
-        <label for="prerequisites">Prerequisites:</label>
-        <input type="text" id="prerequisites" name="prerequisites" placeholder="Search and select prerequisites">
+        <!-- Add this after the credits input and before the semesters fieldset -->
+        <div class="input-group">
+            <label class="checkbox-label">
+                <input type="checkbox" id="is-senior-class" name="is_senior_class">
+                This is a Senior Class
+            </label>
+        </div>
 
-        <label for="corequisites">Corequisites:</label>
-        <input type="text" id="corequisites" name="corequisites" placeholder="Search and select corequisites">
+        <div class="input-container">
+            <label for="prerequisites">Prerequisites:</label>
+            <input type="text" id="prerequisites" name="prerequisites" placeholder="Search and select prerequisites">
+            <div id="prerequisites-suggestions" class="suggestions"></div>
+        </div>
+
+        <div class="input-container">
+            <label for="corequisites">Corequisites:</label>
+            <input type="text" id="corequisites" name="corequisites" placeholder="Search and select corequisites">
+            <div id="corequisites-suggestions" class="suggestions"></div>
+        </div>
 
         <fieldset>
             <legend>Days Offered:</legend>
@@ -74,11 +86,5 @@
         <button type="submit" id="submit-button">Add Class</button>
     </form>
     <div id="form-message"></div>
-
-    <!-- Prerequisites Autocomplete -->
-    <div id="prerequisites-suggestions" class="suggestions"></div>
-
-    <!-- Corequisites Autocomplete -->
-    <div id="corequisites-suggestions" class="suggestions"></div>
 </body>
 </html>
