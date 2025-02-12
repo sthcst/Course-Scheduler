@@ -1,30 +1,39 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // Elements for stats box
+    const statsInfo = document.getElementById('stats-info');
+
+    // Elements for Search Courses box
     const courseDropdown = document.getElementById('courseDropdown');
     const viewCourseButton = document.getElementById('viewCourseButton');
     const addCourseButton = document.getElementById('addCourseButton');
-    const addNewClassButton = document.getElementById('addNewClassButton'); // Defined the button
     const resultsDiv = document.getElementById('results');
 
-    // Ensure the button exists before adding event listener
-    if (addNewClassButton) {
-        addNewClassButton.addEventListener('click', () => {
-            // Redirect to add_new_class.html using absolute path
-            window.location.href = '/add_new_class.html';
-        });
-    } else {
-        console.warn('addNewClassButton not found in the DOM.');
+    // Elements for Search Classes box
+    const classSearchInput = document.getElementById('classSearchInput');
+    const classSearchResults = document.getElementById('classSearchResults');
+    const addNewClassButton = document.getElementById('addNewClassButton');
+
+    // Load statistics (Assuming an endpoint exists; otherwise, this is a placeholder)
+    try {
+        const response = await fetch('/api/stats');
+        if (response.ok) {
+            const stats = await response.json();
+            statsInfo.textContent = `Majors: ${stats.majors}, Minors: ${stats.minors}, Classes: ${stats.classes}`;
+        } else {
+            statsInfo.textContent = 'Unable to load statistics.';
+        }
+    } catch (err) {
+        console.error('Error fetching stats:', err);
+        statsInfo.textContent = 'Error loading statistics.';
     }
 
+    // Fetch courses for dropdown
     try {
-        // Fetch all courses to populate the dropdown
         const response = await fetch('/api/courses');
         if (!response.ok) {
             throw new Error(`Error fetching courses: ${response.statusText}`);
         }
         const courses = await response.json();
-        console.log("Fetched courses:", courses);
-
-        // Populate the dropdown with courses
         courses.forEach(course => {
             const option = document.createElement('option');
             option.value = course.id;
@@ -36,31 +45,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         resultsDiv.innerHTML = `<p style="color: red;">An error occurred while loading courses: ${error.message}</p>`;
     }
 
-    // Event listener for View Course button
     viewCourseButton.addEventListener('click', () => {
         const selectedCourseId = courseDropdown.value;
         if (!selectedCourseId) {
             resultsDiv.innerHTML = '<p style="color: red;">Please select a course to view.</p>';
             return;
         }
-        // Redirect to course details page with selected course ID using absolute path
         window.location.href = `/course_details.html?course_id=${encodeURIComponent(selectedCourseId)}`;
     });
 
-    // Event listener for Add New Course button
     addCourseButton.addEventListener('click', () => {
-        // Redirect to add new course page using absolute path
         window.location.href = '/add_course.html';
     });
 
-    // =======================
-    // Class Search Functionality
-    // =======================
-
-    const classSearchInput = document.getElementById('classSearchInput');
-    const classSearchResults = document.getElementById('classSearchResults');
-
-    // Implement Debouncing with 300 milliseconds delay
+    // Search Classes Functionality
     let classDebounceTimeout;
     classSearchInput.addEventListener('input', () => {
         clearTimeout(classDebounceTimeout);
@@ -76,16 +74,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (query === '') return;
 
         try {
-            // Fetch matching classes with a limit of 5 results
             const response = await fetch(`/api/classes/search?query=${encodeURIComponent(query)}&limit=5`);
             if (!response.ok) {
                 let errorMessage = response.statusText;
                 try {
                     const errorData = await response.json();
                     errorMessage = errorData.error || errorMessage;
-                } catch (parseError) {
-                    // Ignore JSON parse errors
-                }
+                } catch (parseError) { }
                 throw new Error(`Error searching classes: ${errorMessage}`);
             }
             const data = await response.json();
@@ -109,7 +104,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 classSearchResults.appendChild(li);
             });
 
-            // Add event listeners to all view buttons
             const viewButtons = document.querySelectorAll('.view-class-button');
             viewButtons.forEach(button => {
                 button.addEventListener('click', (event) => {
@@ -118,7 +112,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         alert('Invalid Class ID.');
                         return;
                     }
-                    // Redirect to edit_class.html with the class_id as a query parameter
                     window.location.href = `/edit_class.html?class_id=${encodeURIComponent(classId)}`;
                 });
             });
@@ -128,4 +121,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             classSearchResults.innerHTML = `<li style="color: red;">${error.message}</li>`;
         }
     }
+
+    addNewClassButton.addEventListener('click', () => {
+        window.location.href = '/add_new_class.html';
+    });
 });

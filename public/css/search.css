@@ -1,136 +1,87 @@
-/* Import Global Styles */
-@import url('/styles.css');
+/* Global Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background: white;
+    margin: 0;
+    padding: 20px;
+}
 
-/* Header */
-h1 {
+/* Container */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Grid Layout for Boxes */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     text-align: center;
+}
+
+/* Make the full row box span both columns */
+.full-box {
+    grid-column: span 2;
+}
+
+/* Header for each box */
+.box h2 {
+    margin-top: 0;
     color: #2c3e50;
-    margin-bottom: 20px;
 }
 
-/* Back Link */
-a {
-    display: block;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #3498db;
-}
-
-a:hover {
-    color: #2980b9;
-}
-
-/* Button Container */
-div > select,
-div > button {
-    display: inline-block;
+/* Course Actions (used in search courses box) */
+.course-actions select,
+.course-actions button {
     margin: 5px;
-}
-
-#courseDropdown {
-    width: 200px;
-    padding: 8px 10px;
+    padding: 10px 15px;
+    font-size: 1em;
     border: 1px solid #ccc;
     border-radius: 4px;
-}
-
-/* Buttons */
-#viewCourseButton,
-#addCourseButton,
-#addNewClassButton {
-    background-color: #3498db;
-    color: #fff;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
     cursor: pointer;
-    font-size: 1em;
     transition: background-color 0.3s ease;
 }
 
-#viewCourseButton:hover,
-#addCourseButton:hover,
-#addNewClassButton:hover {
+.course-actions select {
+    width: 220px;
+}
+
+.course-actions button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+}
+
+.course-actions button:hover {
     background-color: #2980b9;
 }
 
-/* Results Section */
-#results {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#results h2 {
-    color: #2c3e50;
-    margin-bottom: 15px;
-}
-
-#results ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-#results li {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#results li:last-child {
-    border-bottom: none;
-}
-
-#results li:hover {
-    background-color: #f1f1f1;
-}
-
-#results .view-button {
-    background-color: #2ecc71;
-    border: none;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.3s ease;
-}
-
-#results .view-button:hover {
-    background-color: #27ae60;
-}
-
-/* Class Search Container */
+/* Class Search Container (used in search classes box) */
 #class-search-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 15px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
 }
 
-/* Class Search Input */
 #classSearchInput {
     width: 100%;
-    padding: 10px 15px;
-    margin-bottom: 10px;
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box;
     font-size: 1em;
+    margin-bottom: 10px;
+    box-sizing: border-box;
 }
 
-/* Class Search Results */
 #classSearchResults {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
     margin: 0;
 }
@@ -141,6 +92,7 @@ div > button {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.3s ease;
 }
 
 #classSearchResults li:last-child {
@@ -157,7 +109,7 @@ div > button {
     border: none;
     color: #fff;
     padding: 5px 10px;
-    border-radius: 3px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 0.9em;
     transition: background-color 0.3s ease;
@@ -167,17 +119,9 @@ div > button {
     background-color: #d35400;
 }
 
-/* Responsive Adjustments for Class Search */
+/* Responsive Adjustments */
 @media (max-width: 600px) {
-    /* Ensure buttons are full width on small screens */
-    .view-class-button {
-        width: 100%;
-        margin-top: 5px;
-    }
-
-    #classSearchResults li {
-        flex-direction: column;
-        align-items: flex-start;
+    .grid-container {
+        grid-template-columns: 1fr;
     }
 }
-

@@ -117,6 +117,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('class-name').value = classData.class_name || '';
         document.getElementById('credits').value = classData.credits != null ? classData.credits : '';
 
+        // Populate is-senior-class checkbox if present
+        const isSeniorCheckbox = document.getElementById('is-senior-class');
+        if (isSeniorCheckbox) {
+            isSeniorCheckbox.checked = Boolean(classData.is_senior_class);
+        }
+
         // Handle checkboxes
         populateCheckboxes('semesters_offered', classData.semesters_offered || []);
         populateCheckboxes('days_offered', classData.days_offered || []);
@@ -179,7 +185,10 @@ window.addEventListener('DOMContentLoaded', async () => {
             prerequisites: selectedPrerequisites.map(p => p.id),
             corequisites: selectedCorequisites.map(c => c.id),
             days_offered: daysOffered,
-            times_offered: timesOffered ? timesOffered.split(',').map(t => t.trim()) : []
+            times_offered: timesOffered ? timesOffered.split(',').map(t => t.trim()) : [],
+            is_senior_class: document.getElementById('is-senior-class')
+                ? document.getElementById('is-senior-class').checked
+                : false
         };
 
         try {
