@@ -1604,6 +1604,27 @@ router.put('/courses/:course_id/classes/:class_id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+router.get('/stats', async (req, res) => {
+    try {
+        const majorsQuery = 'SELECT COUNT(*) AS count FROM courses WHERE LOWER(course_type) = LOWER($1)';
+        const minorsQuery = 'SELECT COUNT(*) AS count FROM courses WHERE LOWER(course_type) = LOWER($1)';
+        const classesQuery = 'SELECT COUNT(*) AS count FROM classes';
+
+        const majorsResult = await pool.query(majorsQuery, ['Major']);
+        const minorsResult = await pool.query(minorsQuery, ['Minor']);
+        const classesResult = await pool.query(classesQuery);
+
+        const majors = parseInt(majorsResult.rows[0].count, 10);
+        const minors = parseInt(minorsResult.rows[0].count, 10);
+        const classes = parseInt(classesResult.rows[0].count, 10);
+
+        res.json({ majors, minors, classes });
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 // [Include all other API routes here following the same pattern...]
 
 module.exports = router;
