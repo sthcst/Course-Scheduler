@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Holokai Planner</title>
-  <link rel="stylesheet" href="css/styles.css"/>
-</head>
-<body>
-  <header class="top-header">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Holokai Planner</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swiper/swiper-bundle.min.css"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="top-header">
       <div class="top-header-content">
         <h2 class="site-logo">My University Planner</h2>
         <nav class="top-nav">
@@ -16,110 +20,157 @@
         </nav>
         <a href="search.html">Edit Courses</a>
       </div>
-  </header>
+    </header>
 
-  <div class="background-image">
-    <div class="header-image-container">
-      <img src="assets/Holokai.jpg" alt="University Campus" class="header-image"/>
-    </div>
+    <div class="background-image">
+      <div class="header-image-container">
+        <img
+          src="assets/Holokai.jpg"
+          alt="University Campus"
+          class="header-image"
+        />
+      </div>
 
-    <div class="container">
-      <header class="floating-bar">
-        <!-- Single Program Selection -->
-        <div class="input-group">
-          <label for="program-select">Program:</label>
-          <select id="program-select">
-            <!-- Options populated by JavaScript -->
-          </select>
-        </div>
-
-        <!-- Include All Extras Checkbox -->
-        <div class="input-group">
-          <label><input type="checkbox" id="include-all-extras"> Include Holokai, Core, Religion, and EIL</label>
-        </div>
-
-        <!-- EIL Level Dropdown, disabled by default -->
-        <div class="input-group">
-          <label for="eil-level">EIL Level:</label>
-          <select id="eil-level" disabled>
-            <option value="fluent">Fluent</option>
-            <option value="academic-english-2">Academic English 2</option>
-            <option value="academic-english-1">Academic English 1</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label for="start-semester">Starting Semester:</label>
-          <select id="start-semester">
-            <option value="Fall 2024">Fall 2024</option>
-            <option value="Winter 2025">Winter 2025</option>
-            <option value="Spring 2025">Spring 2025</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label for="major-class-limit">Max Major Classes:</label>
-          <select id="major-class-limit">
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4" selected>4</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label for="fall-winter-credits">Fall/Winter Credits:</label>
-          <select id="fall-winter-credits">
-            <option value="12">12</option>
-            <option value="16" selected>16</option>
-            <option value="18">18</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label for="spring-credits">Spring Credits:</label>
-          <select id="spring-credits">
-            <option value="8">8</option>
-            <option value="10" selected>10</option>
-            <option value="12">12</option>
-          </select>
-        </div>
-
-        <div class="legend">
-          <p><span class="legend-color type-major"></span> Major Classes</p>
-          <p><span class="legend-color type-minor"></span> Minor Classes</p>
-          <p><span class="legend-color type-core"></span> Core Classes</p>
-          <p><span class="legend-color type-eil"></span> EIL/Holokai Classes</p>
-          <p><span class="legend-color type-religion"></span> Religion Classes</p>
-        </div>
-
-        <button id="calculate-single-schedule">Generate Schedule</button>
-      </header>
-
-      <!-- Message Display -->
-      <div id="form-message"></div>
-
-      <!-- Schedule Container -->
-      <div id="schedule-container" class="hidden">
-        <div id="summary" class="summary-box">
-          <div class="summary-item animated-box">
-            <p>Total Credits Taken</p>
-            <h2 id="total-credits">0</h2>
+      <div class="container">
+        <header class="floating-bar">
+          <!-- Single Program Selection -->
+          <div class="input-group">
+            <label for="program-select">Program:</label>
+            <select id="program-select">
+              <!-- Options populated by JavaScript -->
+            </select>
           </div>
-          <div class="summary-item animated-box">
-            <p>Graduation Date</p>
-            <h2 id="graduation-date">TBD</h2>
+
+          <!-- Include All Extras Checkbox -->
+          <div class="input-group">
+            <label
+              ><input type="checkbox" id="include-all-extras" /> Include
+              Holokai, Core, Religion, and EIL</label
+            >
           </div>
-          <div class="summary-item animated-box">
-            <p>Elective Credits Needed</p>
-            <h2 id="electives-needed">0</h2>
+
+          <!-- EIL Level Dropdown, disabled by default -->
+          <div class="input-group">
+            <label for="eil-level">EIL Level:</label>
+            <select id="eil-level" disabled>
+              <option value="fluent">Fluent</option>
+              <option value="academic-english-2">Academic English 2</option>
+              <option value="academic-english-1">Academic English 1</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="start-semester">Starting Semester:</label>
+            <select id="start-semester">
+              <option value="Fall 2024">Fall 2024</option>
+              <option value="Winter 2025">Winter 2025</option>
+              <option value="Spring 2025">Spring 2025</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="major-class-limit">Max Major Classes:</label>
+            <select id="major-class-limit">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4" selected>4</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="fall-winter-credits">Fall/Winter Credits:</label>
+            <select id="fall-winter-credits">
+              <option value="12">12</option>
+              <option value="16" selected>16</option>
+              <option value="18">18</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="spring-credits">Spring Credits:</label>
+            <select id="spring-credits">
+              <option value="8">8</option>
+              <option value="10" selected>10</option>
+              <option value="12">12</option>
+            </select>
+          </div>
+
+          <div class="legend">
+            <p><span class="legend-color type-major"></span> Major Classes</p>
+            <p><span class="legend-color type-minor"></span> Minor Classes</p>
+            <p><span class="legend-color type-core"></span> Core Classes</p>
+            <p>
+              <span class="legend-color type-eil"></span> EIL/Holokai Classes
+            </p>
+            <p>
+              <span class="legend-color type-religion"></span> Religion Classes
+            </p>
+          </div>
+
+          <button id="calculate-single-schedule">Generate Schedule</button>
+        </header>
+
+        <!-- Message Display -->
+        <div id="form-message"></div>
+
+        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+        <!-- Schedule Container -->
+        <div id="schedule-container" class="hidden">
+          <div id="summary" class="summary-box">
+            <div class="summary-item animated-box">
+              <p>Total Credits Taken</p>
+              <h2 id="total-credits">0</h2>
+            </div>
+            <div class="summary-item animated-box">
+              <p>Graduation Date</p>
+              <h2 id="graduation-date">TBD</h2>
+            </div>
+            <div class="summary-item animated-box">
+              <p>Elective Credits Needed</p>
+              <h2 id="electives-needed">0</h2>
+            </div>
+          </div>
+
+          <div id="schedule"></div>
+          <!-- Choose Your Electives Container -->
+          <button id="show-swiper-btn" class="hidden">Show Electives</button>
+          <div class="swiper-container hidden">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide choose-elective">
+                <h1>Major Here</h1>
+                <button class="next-btn">Next &raquo;</button>
+                <p>CHEM 101: General Chemistry I & Lab</p>
+                <p>4.0 Credits</p>
+              </div>
+
+              <div class="swiper-slide choose-elective">
+                <button class="prev-btn">&laquo; Previous</button>
+                <h1>Major Here</h1>
+                <button class="next-btn">Next &raquo;</button>
+                <p>CHEM 101: General Chemistry I & Lab</p>
+                <p>4.0 Credits</p>
+              </div>
+
+              <div class="swiper-slide choose-elective">
+                <button class="prev-btn">&laquo; Previous</button>
+                <h1>Major Here</h1>
+                <p>Physics</p>
+                <p>4.0 Credits</p>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim
+                  eius obcaecati fugit sapiente rerum aperiam, quae ad, cum
+                  neque excepturi omnis sunt dicta quis, modi recusandae
+                  doloremque tenetur quisquam at.
+                </p>
+                <p>See less...</p>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div id="schedule"></div>
       </div>
     </div>
-  </div>
 
-  <script src="/js/single-script.js"></script>
-</body>
+    <script src="/js/single-script.js"></script>
+  </body>
 </html>
