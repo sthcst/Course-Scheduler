@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Elements for stats box
     const statsInfo = document.getElementById('stats-info');
 
+    const profilebutton = document.getElementById('profilebutton');
+    const menubutton = document.getElementById('menubutton');
+
     // Elements for Search Courses box
     const courseDropdown = document.getElementById('courseDropdown');
     const viewCourseButton = document.getElementById('viewCourseButton');
@@ -14,17 +17,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     const addNewClassButton = document.getElementById('addNewClassButton');
 
     // Load statistics (Assuming an endpoint exists; otherwise, this is a placeholder)
+    const majorsCount = document.getElementById('majors-count');
+    const minorsCount = document.getElementById('minors-count');
+    const classesCount = document.getElementById('classes-count');
+
+
+    // Animate a numeric count from start to end over duration (in ms)
+    function animateCount(element, start, end, duration) {
+        let startTime = null;
+        
+        function updateCount(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = Math.floor(start + (end - start) * progress);
+        element.textContent = current;
+        if (progress < 1) {
+            window.requestAnimationFrame(updateCount);
+        } else {
+            element.textContent = end; // Ensure final value is exact
+        }
+        }
+        
+        window.requestAnimationFrame(updateCount);
+    }
+
     try {
         const response = await fetch('/api/stats');
         if (response.ok) {
             const stats = await response.json();
-            statsInfo.textContent = `Majors: ${stats.majors}, Minors: ${stats.minors}, Classes: ${stats.classes}`;
+            animateCount(majorsCount, 0, stats.majors, 200);
+            animateCount(minorsCount, 0, stats.minors, 200);
+            animateCount(classesCount, 0, stats.classes, 200);
         } else {
-            statsInfo.textContent = 'Unable to load statistics.';
+            majorsCount.textContent = '—';
+            minorsCount.textContent = '—';
+            classesCount.textContent = '—';
         }
     } catch (err) {
         console.error('Error fetching stats:', err);
-        statsInfo.textContent = 'Error loading statistics.';
+        majorsCount.textContent = 'Error';
+        minorsCount.textContent = 'Error';
+        classesCount.textContent = 'Error';
     }
 
     // Fetch courses for dropdown

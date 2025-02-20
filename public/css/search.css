@@ -1,15 +1,155 @@
 /* Global Styles */
+#menubar {
+    position: fixed; /* Fix to viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;       /* Adjust height as needed */
+    pointer-events: none; /* Optional: prevents menubar from blocking clicks if empty */
+    z-index: 1000;      /* Ensure they appear on top */
+  }
+  
+  /* Style the icons */
+  #menubar .icon {
+    position: fixed; /* Fixed relative to viewport */
+    top: 10px;       /* Adjust distance from top as needed */
+    width: 65px;     /* Adjust icon size */
+    height: auto;
+    pointer-events: auto; /* Allow clicks on icons */
+  }
+  
+  /* Left icon */
+  #menubar .icon.left {
+    left: 30px;      /* Adjust distance from left */
+    top: 25px;
+  }
+  
+  /* Right icon */
+  #menubar .icon.right {
+    right: 30px;     /* Adjust distance from right */
+    top: 25px;
+  }
+
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Inter', sans-serif;
     background: white;
     margin: 0;
     padding: 20px;
+}
+
+/* Container for profile button and dropdown */
+#profile-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 50px;       /* Adjust as needed */
+    height: 50px;
+    z-index: 1100;
+    overflow: visible;
+  }
+  
+  #profilebutton {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease; /* Smooth transition */
+  }
+  
+  #profile-container:hover #profilebutton {
+    transform: scale(1.1); /* Increase size by 10% on hover */
+  }
+  
+  .profile-dropdown {
+    position: fixed;           /* Fixed relative to the viewport */
+    top: 20px;                 /* Align vertically with the profile container/profile button */
+    right: -300px;             /* Start off-screen on the right */
+    width: 300px;              /* Desired width for the bar */
+    height: 80px;              /* Same height as the profile button */
+    background-color: rgb(199, 194, 194);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    transition: right 0.3s ease-in-out; /* Animate sliding in/out */
+    z-index: 1;
+  }
+  
+  /* On hover, bring the bar flush with the right edge */
+  #profile-container:hover .profile-dropdown {
+    right: 0;          /* Flush with the screen’s right edge */
+    pointer-events: all;
+  }
+  
+
+  .profile-dropdown a:first-child img {
+    position: absolute;  /* Positioned relative to .profile-dropdown */
+    top: 30%;            /* Vertically centered */
+    left: 94%;           /* Adjust as needed */
+    transform: translate(-50%, 30%); /* Center the image on those coordinates */
+    width: 40px;         /* Adjust size as needed */
+  }
+  
+  .profile-dropdown a:last-child img {
+    position: absolute;  /* Positioned relative to .profile-dropdown */
+    top: 50%;            /* Vertically centered */
+    left: 90%;           /* Adjust as needed */
+    transform: translate(-50%, 30%);
+    width: 40px;
+  }
+  
+  
+
+
+header h1 {
+    text-align: center;
+    margin-top: 100px;
 }
 
 /* Container */
 .container {
     max-width: 1000px;
     margin: 0 auto;
+}
+
+/* Style for the individual stat boxes */
+.stat {
+    display: inline-block;
+    width: 30%;         /* Adjust based on your layout */
+    text-align: center;
+    margin: 10px;
+    padding-top: 20px;
+  }
+  
+  .stat h2 {
+    font-size: 2em;
+    margin: 0;
+    
+  }
+  
+  .stat p {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+    font-weight: bold;
+  }
+
+/* Style for the Add New Course link */
+#addcoursebox {
+    display: flex;                   /* Use flex to align items */
+    align-items: center;             /* Vertically center image and text */
+    justify-content: center;         /* Center the contents horizontally */
+    text-decoration: none;           /* Remove underline */
+    color: inherit;                  /* Inherit font color */
+    margin: 20px auto;               /* Center the link within its container */
+}
+
+#addcoursebox img {
+    width: 40px;                     /* Control image size */
+    height: auto;                    /* Maintain aspect ratio */
+    margin-right: 10px;              /* Space between image and text */
 }
 
 /* Grid Layout for Boxes */
@@ -20,12 +160,36 @@ body {
     margin-top: 20px;
 }
 
+.grid-container .box:nth-child(1) {
+    animation-delay: 0.2s;
+}
+.grid-container .box:nth-child(2) {
+    animation-delay: 0.4s;
+}
+.grid-container .box:nth-child(3) {
+    animation-delay: 0.6s;
+}
+.grid-container .box:nth-child(4) {
+    animation-delay: 0.8s;
+}
+.grid-container .box:nth-child(5) {
+    animation-delay: 1s;
+}
+/* etc., adjust according to number of boxes */
+
 .box {
     background: #F1F0F0;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 3px rgba(0, 0, 0, 0.1);
     text-align: center;
+
+    /* Initial state: off-screen and invisible */
+    transform: translateY(50%);
+    opacity: 0;
+    
+    /* Animate to final state */
+    animation: slideUp 0.6s ease-out forwards;
 }
 
 /* Make the full row box span both columns */
@@ -36,7 +200,7 @@ body {
 /* Header for each box */
 .box h2 {
     margin-top: 0;
-    color: #2c3e50;
+    color: #000000;
 }
 
 /* Course Actions (used in search courses box) */
@@ -119,9 +283,37 @@ body {
     background-color: #d35400;
 }
 
+#addNewClassButton {
+    padding: 10px 15px;
+    font-size: 1em;
+    border: 1px solid #ccc; /* Optional, if you want a border */
+    border-radius: 4px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px; /* Adjust margin as needed */
+}
+
+#addNewClassButton:hover {
+    background-color: #2980b9;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 600px) {
     .grid-container {
         grid-template-columns: 1fr;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
 }
