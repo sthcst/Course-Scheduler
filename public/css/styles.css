@@ -113,10 +113,6 @@ body {
 }
 
 button {
-    position: absolute;
-    bottom: -25px; /* Adjusted to protrude slightly */
-    left: 50%;
-    transform: translateX(-50%);
     padding: 12px 30px;
     background: #9e1b34;
     color: white;
@@ -124,6 +120,7 @@ button {
     border-radius: 20px;
     cursor: pointer;
     font-size: 18px;
+    margin: 0 10px;
 }
 
 button:hover {
@@ -132,8 +129,8 @@ button:hover {
 
 /* Hidden class to hide elements */
 .hidden {
-    display: none;
-}
+    display: none !important;
+  }
 
 /* Schedule Grid Container */
 #schedule {
@@ -430,20 +427,25 @@ button:hover {
 }
 
 .type-holokai, .type-eil {
-    background-color: plum; /* purple */
+    background-color: #aeb7e9
+    ; /* lilac */
     
 }
 .type-major {
-    background-color: lightcoral; /* red-ish */
+    background-color: #aed5e9
+    ; /* soft blue */
 }
 .type-minor {
-    background-color: rgb(251, 251, 150); /* yellow-ish */
+    background-color: #e9aeb7
+    ; /* salmon */
 }
 .type-core {
-    background-color: lightgray; /* grey */
+    background-color: #c2aee9
+    ; /* purple */
 }
 .type-religion {
-    background-color: lightgreen; /* green */
+    background-color: #e9aed5
+    ; /* pink */
 }
 
 /* Updated Legend Styles */
@@ -515,5 +517,85 @@ button:hover {
 #schedule-container {
     position: relative;
     overflow: visible; /* or remove this if not needed */
+}
+
+.choose-elective {
+    flex: 1 1 1; 
+    background: #ffffff;
+    color: #333;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    box-sizing: border-box;
+    margin-top: 30px;
+}
+
+.choose-elective h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #000;
+    padding-right: 20px;
+    display: inline-block; 
+}
+
+.elective-box {
+    flex: 1 1 1;
+    background: #d4d4d4;
+    color: #333;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    box-sizing: border-box;
+    display: block;
+}
+
+.choose-elective button {
+    background-color: #f1f1f1;
+    display: inline-block;
+    color: #000;
+}
+
+.swiper-container {
+    width: 96%;
+    height: 100%;
+    margin: 0 auto;
+  }
+  .swiper-slide {
+    display: block;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    background: #ddd;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-left: 10px;
+    margin-right: 20px;
+  }
+
+/* Center the h1 element horizontally */
+.swiper-container h1 {
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    padding: 0; /* Remove padding to ensure proper centering */
+}
+
+/* Position the next-btn element to the right side */
+.swiper-container .next-btn {
+    right: 10px; /* Adjust as needed */
+    top: 18%;
+    transform: translateY(-50%);
+    position: absolute;
+    background-color: #f1f1f1;
+    display: inline-block;
+    color: #000;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 18px;
+    margin: 0 10px;
 }
 

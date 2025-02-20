@@ -1,10 +1,10 @@
-version: '3.8'
+version: "3.8"
 
 services:
   db:
     image: postgres:14
     container_name: postgres_container
-    restart: unless-stopped
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
@@ -31,7 +31,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    command: npm run dev  # Added line to use nodemon
+    command: npm run dev # Added line to use nodemon
 
 volumes:
   postgres_data:
