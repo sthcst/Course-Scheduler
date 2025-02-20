@@ -37,13 +37,48 @@ body {
     padding: 20px;
 }
 
+/* More Dropdown - slide in from left */
+.more-dropdown {
+    position: fixed;           /* Fixed relative to the viewport */
+    top: 20px;                 /* Align vertically with the more button */
+    left: -300px;              /* Start off-screen on the left */
+    width: 300px;              /* Desired width for the bar */
+    height: 80px;              /* Same height as the more button */
+    background-color: #a9a9a9;
+    /* Round only the right corners */
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transition: left 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;                /* Hide by default */
+    pointer-events: none;      /* Disable interactions until visible */
+    z-index: 1;
+  }
+  
+  /* On hover of the more-container, slide the dropdown into view */
+  #more-container:hover .more-dropdown {
+    left: 0;                   /* Bring the bar flush with the left edge */
+    opacity: 1;                /* Fade it in */
+    pointer-events: all;
+  }
+  
+  /* Position the return button inside the more-dropdown */
+  .more-dropdown a img {
+    position: absolute;        /* Position relative to .more-dropdown */
+    top: 40px;                 /* Fixed vertical position */
+    left: 190px;               /* Fixed horizontal placement from the left edge of the dropdown */
+    transform: translate(50%, 55%);
+    width: 50px !important;
+  }
+
 /* Container for profile button and dropdown */
 #profile-container {
     position: fixed;
     top: 10px;
     right: 10px;
-    width: 50px;       /* Adjust as needed */
-    height: 50px;
+    width: 30px;       /* Adjust as needed */
+    height: 30px;
     z-index: 1100;
     overflow: visible;
   }
@@ -64,40 +99,43 @@ body {
   
   .profile-dropdown {
     position: fixed;           /* Fixed relative to the viewport */
-    top: 20px;                 /* Align vertically with the profile container/profile button */
+    top: 20px;                 /* Align vertically with the profile button */
     right: -300px;             /* Start off-screen on the right */
     width: 300px;              /* Desired width for the bar */
     height: 80px;              /* Same height as the profile button */
-    background-color: rgb(199, 194, 194);
+    background-color: #a9a9a9;
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    transition: right 0.3s ease-in-out; /* Animate sliding in/out */
+    transition: right 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;                /* Hide by default */
+    pointer-events: none;      /* Disable interactions until visible */
     z-index: 1;
   }
   
-  /* On hover, bring the bar flush with the right edge */
+  /* On hover, slide the bar in and show it */
   #profile-container:hover .profile-dropdown {
-    right: 0;          /* Flush with the screen’s right edge */
+    right: 0;                  /* Bring the bar flush with the screen's right edge */
+    opacity: 1;                /* Fade it in */
     pointer-events: all;
   }
   
 
   .profile-dropdown a:first-child img {
     position: absolute;  /* Positioned relative to .profile-dropdown */
-    top: 30%;            /* Vertically centered */
-    left: 94%;           /* Adjust as needed */
-    transform: translate(-50%, 30%); /* Center the image on those coordinates */
-    width: 40px;         /* Adjust size as needed */
+    top: 40px ;         /* Vertically centered (adjust as needed) */
+    right: 190px;         /* Fixed pixel value from left */
+    transform: translate(-50%, 55%);
+    width: 50px !important;
   }
   
   .profile-dropdown a:last-child img {
     position: absolute;  /* Positioned relative to .profile-dropdown */
-    top: 50%;            /* Vertically centered */
-    left: 90%;           /* Adjust as needed */
-    transform: translate(-50%, 30%);
-    width: 40px;
+    top: 40px ;           /* Vertically centered (adjust as needed) */
+    right: 115px;         /* Fixed pixel value from left */
+    transform: translate(-50%, 55%);
+    width: 45px !important;
   }
   
   
