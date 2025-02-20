@@ -46,6 +46,7 @@ router.get('/courses', async (req, res) => {
                             'credits', cl.credits,
                             'days_offered', cl.days_offered,
                             'times_offered', cl.times_offered,
+                            'is_senior_class', cl.is_senior_class,
                             'is_elective', cic2.is_elective,
                             'elective_group', CASE 
                                 WHEN cic2.elective_group_id IS NOT NULL THEN json_build_object(
@@ -146,6 +147,7 @@ router.get('/courses/:course_id', async (req, res) => {
                             'corequisites', cl.corequisites,
                             'days_offered', cl.days_offered,
                             'times_offered', cl.times_offered,
+                            'is_senior_class', cl.is_senior_class,
                             'credits', cl.credits,
                             'is_elective', cic2.is_elective,
                             'elective_group', CASE 
@@ -288,6 +290,7 @@ router.get('/classes/search', async (req, res) => {
                 c.class_name,
                 c.credits,
                 c.semesters_offered,
+                c.is_senior_class,  -- <-- Added this field
                 json_agg(DISTINCT jsonb_build_object(
                     'course_id', co.id,
                     'course_name', co.course_name,
@@ -327,6 +330,7 @@ router.get('/classes/search', async (req, res) => {
             class_name: row.class_name,
             credits: row.credits,
             semesters_offered: row.semesters_offered,
+            is_senior_class: row.is_senior_class,  // <-- Include the senior flag here
             course_sections: row.course_sections || []
         }));
 
@@ -390,6 +394,7 @@ router.get('/classes/:class_id', async (req, res) => {
             class_name: classData.class_name,
             semesters_offered: classData.semesters_offered,
             credits: classData.credits,
+            is_senior_class: classData.is_senior_class,  // <-- Include the senior flag here
             prerequisites: prerequisites,
             corequisites: corequisites,
             days_offered: classData.days_offered,
@@ -406,12 +411,6 @@ router.get('/classes/:class_id', async (req, res) => {
     }
 });
 
-/**
- * @route   PUT /courses/:course_id/classes/:class_id
- * @desc    Update an existing class in a course with section information
- * @access  Public
- */
-// PUT route for updating existing classes
 router.put('/classes/:class_id', async (req, res) => {
     try {
         const { class_id } = req.params;
@@ -429,7 +428,8 @@ router.put('/classes/:class_id', async (req, res) => {
             corequisites = [],
             credits = 0,
             days_offered = [],
-            times_offered = null
+            times_offered = null,
+            is_senior_class = false
         } = req.body;
 
         if (!class_number || !class_name) {
@@ -466,10 +466,11 @@ router.put('/classes/:class_id', async (req, res) => {
                     credits = $6,
                     days_offered = $7,
                     times_offered = $8,
+                    is_senior_class = $9,
                     updated_at = NOW()
-                WHERE id = $9
+                WHERE id = $10
                 RETURNING id, class_number, class_name, semesters_offered,
-                    prerequisites, corequisites, credits, days_offered, times_offered
+                    prerequisites, corequisites, credits, days_offered, times_offered, is_senior_class
             `;
 
             const { rows: [updatedClass] } = await pool.query(updateQuery, [
@@ -481,6 +482,7 @@ router.put('/classes/:class_id', async (req, res) => {
                 credits,
                 days_offered,
                 times_offered,
+                is_senior_class,
                 classIdNum
             ]);
 
@@ -523,7 +525,6 @@ router.put('/classes/:class_id', async (req, res) => {
 });
 
 // POST route for creating new classes
-// POST route for creating new classes
 router.post('/classes', async (req, res) => {
     try {
         const {
@@ -534,8 +535,15 @@ router.post('/classes', async (req, res) => {
             corequisites = [],
             credits = 0,
             days_offered = [],
-            times_offered = []
+            times_offered = [],
+            is_senior_class = false
         } = req.body;
+
+        if (!class_number || !class_name) {
+            return res.status(400).json({ 
+                error: 'class_number and class_name are required.' 
+            });
+        }
 
         await pool.query('BEGIN');
 
@@ -558,13 +566,24 @@ router.post('/classes', async (req, res) => {
                 }
             }
 
+            // Check for duplicate class_number
+            const duplicateCheck = await pool.query(
+                'SELECT id FROM classes WHERE class_number = $1',
+                [class_number]
+            );
+
+            if (duplicateCheck.rows.length > 0) {
+                throw new Error('A class with this number already exists');
+            }
+
             const insertQuery = `
                 INSERT INTO classes 
                 (class_number, class_name, semesters_offered, prerequisites, 
-                 corequisites, credits, days_offered, times_offered)
-                VALUES ($1, $2, $3, $4::int[], $5::int[], $6, $7, $8)
+                 corequisites, credits, days_offered, times_offered, is_senior_class)
+                VALUES ($1, $2, $3, $4::int[], $5::int[], $6, $7, $8, $9)
                 RETURNING id, class_number, class_name, semesters_offered,
-                    prerequisites, corequisites, credits, days_offered, times_offered
+                    prerequisites, corequisites, credits, days_offered, times_offered,
+                    is_senior_class
             `;
 
             const { rows: [newClass] } = await pool.query(insertQuery, [
@@ -575,7 +594,8 @@ router.post('/classes', async (req, res) => {
                 coreqIds,
                 credits,
                 days_offered,
-                times_offered
+                times_offered,
+                is_senior_class
             ]);
 
             // Fetch full prerequisite details
@@ -645,7 +665,7 @@ router.post('/courses/:course_id/classes', async (req, res) => {
                     `;
                     const { rows: sectionRows } = await pool.query(sectionCheckQuery, [section_id, courseId]);
                     if (sectionRows.length === 0) {
-                        throw new Error('Section not found in this course.');
+                        throw new Error('Section not found in the current course.');
                     }
                 }
 
@@ -700,19 +720,20 @@ router.post('/courses/:course_id/classes', async (req, res) => {
                     times_offered = [],
                     section_id,
                     is_elective = false,
-                    elective_group_id = null
+                    elective_group_id = null,
+                    is_senior_class = false  // <-- New field included here
                 } = req.body;
 
                 if (!class_number || !class_name) {
                     throw new Error('class_number and class_name are required for creating a new class.');
                 }
 
-                // Insert new class
+                // Insert new class — note the addition of is_senior_class
                 const insertClassQuery = `
                     INSERT INTO classes 
                     (class_number, class_name, semesters_offered, prerequisites, 
-                     corequisites, credits, days_offered, times_offered)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                     corequisites, credits, days_offered, times_offered, is_senior_class)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                     RETURNING *
                 `;
                 const insertClassValues = [
@@ -723,7 +744,8 @@ router.post('/courses/:course_id/classes', async (req, res) => {
                     corequisites,
                     credits,
                     days_offered,
-                    times_offered
+                    times_offered,
+                    is_senior_class  // <-- Passed as the 9th value
                 ];
 
                 const { rows: newClass } = await pool.query(insertClassQuery, insertClassValues);
@@ -762,7 +784,6 @@ router.post('/courses/:course_id/classes', async (req, res) => {
         res.status(400).json({ error: error.message || 'Internal Server Error' });
     }
 });
-
 router.post('/courses', async (req, res) => {
     const { course_name, course_type, sections } = req.body;
 
@@ -989,11 +1010,6 @@ router.post('/courses', async (req, res) => {
 });
 
 
-/**
- * @route   GET /courses/:course_id/classes/:class_id
- * @desc    Fetch a specific class associated with a course
- * @access  Public
- */
 router.get('/courses/:course_id/classes/:class_id', async (req, res) => {
     const { course_id, class_id } = req.params;
 
@@ -1056,6 +1072,7 @@ router.get('/courses/:course_id/classes/:class_id', async (req, res) => {
             class_name: classDetails.class_name,
             semesters_offered: classDetails.semesters_offered,
             credits: classDetails.credits,
+            is_senior_class: classDetails.is_senior_class, // <-- Include is_senior_class
             prerequisites: prerequisites,
             corequisites: corequisites,
             days_offered: classDetails.days_offered,
@@ -1347,11 +1364,6 @@ router.post('/classes', async (req, res) => {
     }
 });
 
-/**
- * @route   POST /api/courses/:course_id/sections/:section_id/classes
- * @desc    Create a new class and add it to a specific section
- * @access  Public
- */
 router.post('/courses/:course_id/sections/:section_id/classes', async (req, res) => {
     try {
         const courseId = parseInt(req.params.course_id, 10);
@@ -1365,7 +1377,8 @@ router.post('/courses/:course_id/sections/:section_id/classes', async (req, res)
             credits = 0,
             days_offered = [],
             times_offered = [],
-            class_id // This will be undefined for new classes
+            class_id, // This will be undefined for new classes
+            is_senior_class = false  // Added is_senior_class extraction with default false
         } = req.body;
 
         if (isNaN(courseId) || isNaN(sectionId)) {
@@ -1413,12 +1426,12 @@ router.post('/courses/:course_id/sections/:section_id/classes', async (req, res)
                     throw new Error('class_number and class_name are required for new classes.');
                 }
 
-                // Insert new class
+                // Insert new class with is_senior_class included
                 const insertClassQuery = `
                     INSERT INTO classes 
                     (class_number, class_name, semesters_offered, prerequisites, 
-                     corequisites, credits, days_offered, times_offered)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                     corequisites, credits, days_offered, times_offered, is_senior_class)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                     RETURNING *
                 `;
                 const classValues = [
@@ -1429,7 +1442,8 @@ router.post('/courses/:course_id/sections/:section_id/classes', async (req, res)
                     corequisites,
                     credits,
                     days_offered,
-                    times_offered
+                    times_offered,
+                    is_senior_class  // Added is_senior_class value in the parameter list
                 ];
 
                 const { rows: newClass } = await pool.query(insertClassQuery, classValues);
@@ -1485,7 +1499,8 @@ router.put('/courses/:course_id/classes/:class_id', async (req, res) => {
             corequisites = [],
             credits = 0,
             days_offered = [],
-            times_offered = null
+            times_offered = null,
+            is_senior_class = false
         } = req.body;
 
         if (!class_number || !class_name) {
@@ -1532,10 +1547,11 @@ router.put('/courses/:course_id/classes/:class_id', async (req, res) => {
                     credits = $6,
                     days_offered = $7,
                     times_offered = $8,
+                    is_senior_class = $9,
                     updated_at = NOW()
-                WHERE id = $9
+                WHERE id = $10
                 RETURNING id, class_number, class_name, semesters_offered,
-                    prerequisites, corequisites, credits, days_offered, times_offered
+                    prerequisites, corequisites, credits, days_offered, times_offered, is_senior_class
             `;
 
             const { rows: [updatedClass] } = await pool.query(updateQuery, [
@@ -1547,6 +1563,7 @@ router.put('/courses/:course_id/classes/:class_id', async (req, res) => {
                 credits,
                 days_offered,
                 times_offered,
+                is_senior_class,
                 classIdNum
             ]);
 
@@ -1588,6 +1605,26 @@ router.put('/courses/:course_id/classes/:class_id', async (req, res) => {
     }
 });
 
+router.get('/stats', async (req, res) => {
+    try {
+        const majorsQuery = 'SELECT COUNT(*) AS count FROM courses WHERE LOWER(course_type) = LOWER($1)';
+        const minorsQuery = 'SELECT COUNT(*) AS count FROM courses WHERE LOWER(course_type) = LOWER($1)';
+        const classesQuery = 'SELECT COUNT(*) AS count FROM classes';
+
+        const majorsResult = await pool.query(majorsQuery, ['Major']);
+        const minorsResult = await pool.query(minorsQuery, ['Minor']);
+        const classesResult = await pool.query(classesQuery);
+
+        const majors = parseInt(majorsResult.rows[0].count, 10);
+        const minors = parseInt(minorsResult.rows[0].count, 10);
+        const classes = parseInt(classesResult.rows[0].count, 10);
+
+        res.json({ majors, minors, classes });
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 // [Include all other API routes here following the same pattern...]
 
 module.exports = router;

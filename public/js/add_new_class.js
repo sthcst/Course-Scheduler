@@ -231,6 +231,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Form submission
+    // ...existing code...
     addClassForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -256,6 +257,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        // Retrieve the is-senior-class checkbox value, defaulting to false if missing
+        const isSeniorCheckbox = document.getElementById('is-senior-class');
+        const is_senior_class = isSeniorCheckbox ? isSeniorCheckbox.checked : false;
+
         try {
             const payload = {
                 class_number: classNumberInput,
@@ -265,7 +270,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 prerequisites: selectedPrerequisites.map(p => p.id),
                 corequisites: selectedCorequisites.map(c => c.id),
                 days_offered: daysOffered,
-                times_offered: times_offered
+                times_offered: times_offered,
+                is_senior_class: is_senior_class  // Now properly included
             };
 
             let response, resultMessage;
@@ -329,4 +335,5 @@ document.addEventListener('DOMContentLoaded', async () => {
             formMessage.style.color = 'red';
         }
     });
+// ...existing code...
 });

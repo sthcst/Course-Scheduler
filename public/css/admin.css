@@ -305,6 +305,22 @@ button[type="button"]:hover {
     color: white;
 }
 
+.input-group {
+    margin-bottom: 15px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 600px) {
     form {
