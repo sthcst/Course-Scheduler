@@ -1377,8 +1377,8 @@ router.post('/courses/:course_id/sections/:section_id/classes', async (req, res)
             credits = 0,
             days_offered = [],
             times_offered = [],
-            class_id, // This will be undefined for new classes
-            is_senior_class = false  // Added is_senior_class extraction with default false
+            class_id, // undefined for new classes
+            is_senior_class = false  // default false
         } = req.body;
 
         if (isNaN(courseId) || isNaN(sectionId)) {
@@ -1391,42 +1391,51 @@ router.post('/courses/:course_id/sections/:section_id/classes', async (req, res)
         await pool.query('BEGIN');
 
         try {
-            // If class_id is provided, associate existing class
+            // First, retrieve section info to determine elective status.
+            const sectionQuery = 'SELECT is_required FROM course_sections WHERE id = $1';
+            const { rows: sectionRows } = await pool.query(sectionQuery, [sectionId]);
+            if (sectionRows.length === 0) {
+                throw new Error('Section not found.');
+            }
+            // If the section is not required, then classes added here should be elective.
+            const is_elective = (sectionRows[0].is_required === false);
+
             if (class_id) {
-                // Check if class exists
-                const classCheckQuery = `SELECT * FROM classes WHERE id = $1`;
+                // Associate an existing class
+
+                // Check if the class exists
+                const classCheckQuery = 'SELECT * FROM classes WHERE id = $1';
                 const { rows: classRows } = await pool.query(classCheckQuery, [class_id]);
-                
                 if (classRows.length === 0) {
                     throw new Error('Class not found.');
                 }
 
-                // Check if already in this section
+                // Check if this association already exists
                 const assocCheckQuery = `
                     SELECT * FROM classes_in_course
                     WHERE course_id = $1 AND class_id = $2 AND section_id = $3
                 `;
                 const { rows: assocRows } = await pool.query(assocCheckQuery, [courseId, class_id, sectionId]);
-                
                 if (assocRows.length > 0) {
                     throw new Error('Class is already in this section.');
                 }
 
-                // Add association
+                // Insert association, using the computed is_elective value
                 const insertAssocQuery = `
-                    INSERT INTO classes_in_course (course_id, class_id, section_id)
-                    VALUES ($1, $2, $3)
+                    INSERT INTO classes_in_course (course_id, class_id, section_id, is_elective)
+                    VALUES ($1, $2, $3, $4)
                     RETURNING *
                 `;
-                await pool.query(insertAssocQuery, [courseId, class_id, sectionId]);
+                await pool.query(insertAssocQuery, [courseId, class_id, sectionId, is_elective]);
 
             } else {
-                // Create new class
+                // Create and associate a new class
+
                 if (!class_number || !class_name) {
                     throw new Error('class_number and class_name are required for new classes.');
                 }
 
-                // Insert new class with is_senior_class included
+                // Insert new class (with is_senior_class as provided)
                 const insertClassQuery = `
                     INSERT INTO classes 
                     (class_number, class_name, semesters_offered, prerequisites, 
@@ -1443,22 +1452,21 @@ router.post('/courses/:course_id/sections/:section_id/classes', async (req, res)
                     credits,
                     days_offered,
                     times_offered,
-                    is_senior_class  // Added is_senior_class value in the parameter list
+                    is_senior_class
                 ];
 
                 const { rows: newClass } = await pool.query(insertClassQuery, classValues);
 
-                // Create association with section
+                // Create association with the new class and computed elective status
                 const insertAssocQuery = `
-                    INSERT INTO classes_in_course (course_id, class_id, section_id)
-                    VALUES ($1, $2, $3)
+                    INSERT INTO classes_in_course (course_id, class_id, section_id, is_elective)
+                    VALUES ($1, $2, $3, $4)
                     RETURNING *
                 `;
-                await pool.query(insertAssocQuery, [courseId, newClass[0].id, sectionId]);
+                await pool.query(insertAssocQuery, [courseId, newClass[0].id, sectionId, is_elective]);
             }
 
             await pool.query('COMMIT');
-
             res.status(201).json({
                 message: 'Class successfully added to section!'
             });
@@ -1473,7 +1481,6 @@ router.post('/courses/:course_id/sections/:section_id/classes', async (req, res)
         res.status(400).json({ error: error.message || 'Internal Server Error' });
     }
 });
-
 /**
  * @route   PUT /courses/:course_id/classes/:class_id
  * @desc    Update a class that's associated with a course
