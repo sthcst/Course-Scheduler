@@ -8,6 +8,27 @@ window.addEventListener('DOMContentLoaded', async () => {
     const addSectionForm = document.getElementById('add-section-form');
     const sectionTypeSelect = document.getElementById('section-type');
     const electiveOptions = document.getElementById('elective-options');
+    const deleteCourseButton = document.getElementById('delete-course-button');
+    
+    if (deleteCourseButton) {
+        deleteCourseButton.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to delete this course?')) return;
+            try {
+                const response = await fetch(`/api/courses/${courseId}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to delete course');
+                }
+               
+                window.location.href = 'search.html'; // Redirect to search after deletion
+            } catch (error) {
+                console.error('Error deleting course:', error);
+                alert(`Error: ${error.message}`);
+            }
+        });
+    }
 
     if (!courseId) {
         courseInfoDiv.innerHTML = '<p>No valid course found.</p>';
