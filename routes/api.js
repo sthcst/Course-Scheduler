@@ -1632,6 +1632,25 @@ router.get('/stats', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+router.delete('/courses/:course_id', async (req, res) => {
+    try {
+      const courseId = parseInt(req.params.course_id, 10);
+      if (isNaN(courseId)) {
+        return res.status(400).json({ error: 'Invalid course_id' });
+      }
+      // Delete the course. (Assumes ON DELETE CASCADE is defined on related tables.)
+      const deleteQuery = 'DELETE FROM courses WHERE id = $1 RETURNING *';
+      const { rows } = await pool.query(deleteQuery, [courseId]);
+      if (rows.length === 0) {
+        return res.status(404).json({ error: 'Course not found' });
+      }
+      res.json({ message: 'Course deleted successfully', course: rows[0] });
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      res.status(500).json({ error: error.message || 'Internal Server Error' });
+    }
+  });
 // [Include all other API routes here following the same pattern...]
 
 module.exports = router;
