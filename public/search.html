@@ -1,98 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Course & Class Search</title>
-  <!-- Link to Google Fonts for a modern look -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/search.css">
-</head>
-<body>
-  <div class="container">
-    <div id="menubar">
-      <div id="more-container">
-        <img class="icon left" id="morebutton" src="./assets/morebutton.png" alt="more">
-        <div class="more-dropdown">
-          <a id="returnbutton" href="">
-            <img class="icon"  src="./assets/returnbutton.png" alt="edit">
-          </a>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Course & Class Search</title>
+    <!-- Link to Google Fonts for a modern look -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/search.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="menubar">
+        <img
+          class="icon left"
+          id="morebutton"
+          src="./assets/morebutton.png"
+          alt="more"
+        />
+
+        <div id="profile-container">
+          <img
+            class="icon right"
+            id="profilebutton"
+            src="./assets/profilebutton.png"
+            alt="more"
+          />
+          <div class="profile-dropdown">
+            <a id="editbutton" href="">
+              <img class="icon" src="./assets/editbutton.png" alt="edit" />
+            </a>
+            <a id="logoutbutton" href="">
+              <img class="icon" src="./assets/logoutbutton.png" alt="edit" />
+            </a>
+          </div>
         </div>
       </div>
-      
-      
-      <div id="profile-container">
-        <img class="icon right" id="profilebutton" src="./assets/profilebutton.png" alt="more">
-        <div class="profile-dropdown">
-          
-          <a id="editbutton" href="">
-            <img class="icon"  src="./assets/editbutton.png" alt="edit">
-            
-          </a>
-          <a id="logoutbutton" href="">
-            <img class="icon" src="./assets/logoutbutton.png" alt="edit">
-            
-          </a>
+      <header>
+        <h1>Welcome, Isaac</h1>
+        <a class="back-link" href="/single.html">Back to Scheduler</a>
+      </header>
+
+      <div class="grid-container">
+        <!-- Row 1, Full Width Statistics Box -->
+        <div class="box full-box" id="stats-box">
+          <div class="stat" id="majors-stat">
+            <h2 id="majors-count">0</h2>
+            <p>Majors</p>
+          </div>
+          <div class="stat" id="minors-stat">
+            <h2 id="minors-count">0</h2>
+            <p>Minors</p>
+          </div>
+          <div class="stat" id="classes-stat">
+            <h2 id="classes-count">0</h2>
+            <p>Classes</p>
+          </div>
+        </div>
+
+        <!-- Row 2, Left Box: Search Majors and Minors -->
+        <div class="box" id="search-courses-box">
+          <h2>Programs</h2>
+          <div class="course-actions">
+            <select id="courseDropdown">
+              <option value="">Select a Course</option>
+            </select>
+            <button id="viewCourseButton">View Course</button>
+            <button id="addCourseButton">Add Course</button>
+          </div>
+          <div id="results"></div>
+        </div>
+
+        <!-- Row 2, Right Box: Search Classes -->
+        <div class="box" id="search-classes-box">
+          <h2>Classes</h2>
+          <div id="class-search-container">
+            <input
+              type="text"
+              id="classSearchInput"
+              placeholder="Search for classes..."
+              autocomplete="off"
+            />
+            <ul id="classSearchResults"></ul>
+            <button id="addNewClassButton">Add Class</button>
+          </div>
+        </div>
+
+        <!-- Row 3, Full Width: Reserved Content -->
+        <div class="box" id="search-classes-box">
+          <h2>Users</h2>
+          <div id="class-search-container">
+            <input
+              type="text"
+              id="classSearchInput"
+              placeholder="Search for classes..."
+              autocomplete="off"
+            />
+            <ul id="classSearchResults"></ul>
+            <button id="addNewClassButton">Add User</button>
+          </div>
         </div>
       </div>
     </div>
-    <header>
-      <h1>Welcome, Isaac</h1>
-      <a class="back-link" href="/single.html">Back to Scheduler</a>
-    </header>
-    
-    <div class="grid-container">
-      <!-- Row 1, Full Width Statistics Box -->
-      <div class="box full-box" id="stats-box">
-        <div class="stat" id="majors-stat">
-          <h2 id="majors-count">0</h2>
-          <p>Majors</p>
-        </div>
-        <div class="stat" id="minors-stat">
-          <h2 id="minors-count"> 0</h2>
-          <p>Minors</p>
-        </div>
-        <div class="stat" id="classes-stat">
-          <h2 id="classes-count"> 0</h2>
-          <p>Classes</p>
-        </div>
-        
-      </div>
-      
-      <!-- Row 2, Left Box: Search Majors and Minors -->
-      <div class="box" id="search-courses-box">
-        <h2>Programs</h2>
-        <div class="course-actions">
-          <select id="courseDropdown">
-            <option value="">Select a Course</option>
-          </select>
-          <button id="viewCourseButton">View Course</button>
-          <button id="addCourseButton">Add Course</button>
-        </div>
-        <div id="results"></div>
-      </div>
-      
-      <!-- Row 2, Right Box: Search Classes -->
-      <div class="box" id="search-classes-box">
-        <h2>Classes</h2>
-        <div id="class-search-container">
-          <input type="text" id="classSearchInput" placeholder="Search for classes..." autocomplete="off">
-          <ul id="classSearchResults"></ul>
-          <button id="addNewClassButton">Add Class</button>
-        </div>
-      </div>
-      
-      <!-- Row 3, Full Width: Reserved Content -->
-      <div class="box" id="search-classes-box">
-        <h2>Users</h2>
-        <div id="class-search-container">
-          <input type="text" id="classSearchInput" placeholder="Search for classes..." autocomplete="off">
-          <ul id="classSearchResults"></ul>
-          <button id="addNewClassButton">Add User</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <script src="/js/search.js"></script>
-</body>
+
+    <script src="/js/search.js"></script>
+  </body>
 </html>
