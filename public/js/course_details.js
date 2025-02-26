@@ -153,12 +153,18 @@ window.addEventListener('DOMContentLoaded', async () => {
                             const li = document.createElement('li');
                             li.innerHTML = `
                                 ${cls.class_number}: ${cls.class_name}
-                                <button class="update-class-button" 
-                                    data-class-id="${cls.id}" 
-                                    data-section-id="${section.id}">Update</button>
-                                <button class="delete-class-button" 
-                                    data-class-id="${cls.id}"
-                                    data-section-id="${section.id}">Delete</button>
+                                <div class="class-actions">
+                                    <img class="update-class-button" 
+                                        src="./assets/editclassbutton.png" 
+                                        alt="Edit class"
+                                        data-class-id="${cls.id}" 
+                                        data-section-id="${section.id}">
+                                    <img class="delete-class-button" 
+                                        src="./assets/removebutton.png" 
+                                        alt="Remove class"
+                                        data-class-id="${cls.id}"
+                                        data-section-id="${section.id}">
+                                </div>
                             `;
                             sectionClassesList.appendChild(li);
                         });

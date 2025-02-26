@@ -1,12 +1,99 @@
-/* Add after existing styles */
+
+
+body {
+    font-family: 'Inter', sans-serif;
+    width: 90%;
+    max-width: 1200px;
+    align-items: center;
+    padding: 20px;
+    margin: 0 auto;  /* Add this to center horizontally */
+    margin-top: 50px; /* Add this to add some space from the top */
+
+}
+
+
+
+.back-link {
+    display: block;  /* Make it a block element */
+    width: inherit;  /* Explicitly inherit width */
+    max-width: inherit;  /* Explicitly inherit max-width */
+    margin: 0 auto 20px;  /* Center horizontally and add bottom margin */
+    text-decoration: none;
+    color: inherit;
+    padding-right: 40px;  /* Match the body-card's padding */
+}
+
+#course-info {
+    position: relative;
+    padding-top: 0px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+
+.body-card {
+    
+    background-color: #e9e9e9;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 90%;
+    max-width: 1200px;
+    align-items: center;
+    margin: 0 auto;  /* Add this to center horizontally */
+    position: relative;
+    
+}
+
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;  /* Space between image and text */
+}
+
+.back-button img {
+    width: 24px;  /* Adjust size as needed */
+    height: auto;
+}
+
+.back-button span {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+}
+
+/* Optionally, style the back link and delete button if needed */
+#course-header .back-link,
+#course-header #delete-course-button {
+    font-size: 1em;
+}
+
+/* Existing delete button styles also apply */
+#delete-course-button {
+    position: absolute;
+    top: 40px;          /* Adjust these values as needed */
+    right: 20px;        /* Adjust these values as needed */
+    width: 40px;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#delete-course-button:hover {
+    background-color: #d6d6d6;
+}
+
+
 
 /* Course Sections */
 .course-section {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
+    position: relative;
+    background-color: #c4c2c2;
+    width: 95%;  /* Make it 95% of the body's width */
+    max-width: 1100px;  /* Slightly less than body's max-width of 1200px */
     border-radius: 5px;
-    margin: 20px auto;
-    max-width: 800px;
+    margin: 10px auto;
     padding: 15px;
 }
 
@@ -16,7 +103,7 @@
     align-items: center;
     margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #e9ecef;
+    border-bottom: 2px solid #afafaf;
 }
 
 .section-title {
@@ -28,6 +115,26 @@
 .section-info {
     font-size: 0.9em;
     color: #666;
+}
+
+.class-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 10px;
+}
+
+.update-class-button,
+.delete-class-button {
+    width: 24px;  /* Adjust size as needed */
+    height: auto;
+    cursor: pointer;
+}
+
+/* Optional hover effect */
+.update-class-button:hover,
+.delete-class-button:hover {
+    opacity: 0.8;
 }
 
 #add-section-button {
@@ -57,7 +164,7 @@
 }
 
 .modal-content {
-    background-color: white;
+    background-color: rgb(70, 70, 70);
     margin: 15% auto;
     padding: 20px;
     border-radius: 5px;
@@ -104,7 +211,11 @@
     flex-grow: 1;
 }
 
-.delete-section-button  {
+/* Position the delete button in the upper right corner of the section */
+.delete-section-button {
+    position: absolute;
+    top: 10px;  /* adjust as needed */
+    right: 10px; /* adjust as needed */
     background-color: #dc3545;
     color: white;
     border: none;
@@ -113,18 +224,10 @@
     cursor: pointer;
 }
 
-.delete-course-button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-}
 
-.delete-section-button:hover {
-    background-color: #c82333;
-}
+
+
+
 
 /* Add to your existing CSS */
 
