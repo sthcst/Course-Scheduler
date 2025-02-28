@@ -40,18 +40,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       const option = document.createElement('option');
       option.value = course.id;
       option.textContent = course.course_name;
-      // Use cloneNode(true) to reuse the same option element for both dropdowns
       minor1Select.appendChild(option.cloneNode(true));
       minor2Select.appendChild(option.cloneNode(true));
     });
 
     // --- Populate English Level Dropdown ---
-    // Use the course name as the option value so we can decide by name later.
     const englishCourses = courses.filter(course =>
       course.course_type && course.course_type.toLowerCase() === "eil/holokai"
     );
     const englishLevelSelect = document.getElementById("english-level");
-    englishLevelSelect.innerHTML = ""; // Clear any existing options
+    englishLevelSelect.innerHTML = "";
     englishCourses.forEach(course => {
       const option = document.createElement("option");
       option.value = course.course_name; // e.g., "Academic English I" or "Academic English II"
@@ -66,9 +64,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // --- Helper Functions ---
 
+  // isReligionClass: returns true if a class's course_type (if available) is "religion"
+  // or if the class_number starts with "REL" (fallback).
+  function isReligionClass(cls) {
+    if (cls.course_type) {
+      return cls.course_type.toLowerCase() === "religion";
+    } else if (cls.class_number) {
+      return cls.class_number.toUpperCase().startsWith("REL");
+    }
+    return false;
+  }
+
   // extractClasses: extracts classes from program details (directly or from sections),
-  // attaches a given category, and (if isMajor is true) marks each class as major.
-  // For courses with sections, it also attaches the sectionId to each class.
+  // attaches a given category, marks classes as major if isMajor is true,
+  // attaches sectionId for classes coming from a section, and attaches course_type if available.
   function extractClasses(programDetails, isMajor = false, category = '') {
     let classes = [];
     if (programDetails.classes) {
@@ -77,82 +86,118 @@ document.addEventListener('DOMContentLoaded', async () => {
       let allClassesArr = [];
       programDetails.sections.forEach(section => {
         if (Array.isArray(section.classes)) {
-          // Attach sectionId to each class from this section.
           const classesWithSection = section.classes.map(cls => ({ ...cls, sectionId: section.id }));
           allClassesArr = allClassesArr.concat(classesWithSection);
         }
       });
       classes = allClassesArr;
     }
+    // Attach the provided category.
     classes = classes.map(cls => ({ ...cls, category: category }));
+    // Also attach course_type if available.
+    if (programDetails.course_type) {
+      classes = classes.map(cls => ({ ...cls, course_type: programDetails.course_type }));
+    }
     if (isMajor) {
       classes = classes.map(cls => ({ ...cls, isMajor: true }));
     }
     return classes;
   }
 
-  // Simplified priority function:
+  // getPriority: returns a numeric priority based solely on category.
   // Order: English (1), Religion (2), Major (3), Minor (4)
   function getPriority(cls) {
     if (cls.category === "english") return 1;
-    if (cls.category === "religion") return 2;
     if (cls.category === "major") return 3;
     if (cls.category === "minor") return 4;
     return 10;
   }
 
-  // filterElectivesFromCombined: given an array of combined classes, remove extra elective classes.
-  // It groups elective classes (category "elective") by sectionId and retains only the first N (sorted by class_number),
-  // where N is the allowed count (classes_to_choose) from that section.
-  function filterElectivesFromCombined(combinedClasses) {
-    const electiveGroups = {};
-    // Group elective classes by sectionId.
-    combinedClasses.forEach(cls => {
-      if (cls.category === "elective" && cls.sectionId !== undefined) {
-        if (!electiveGroups[cls.sectionId]) {
-          electiveGroups[cls.sectionId] = [];
-        }
-        electiveGroups[cls.sectionId].push(cls);
+  // getAllowedElectives: returns an array of allowed elective classes (only the first N per section).
+  function getAllowedElectives(allCourses) {
+    let allowedElectives = [];
+    allCourses.forEach(course => {
+      if (course.sections && Array.isArray(course.sections)) {
+        course.sections.forEach(section => {
+          if (!section.is_required) {
+            let candidates = (section.classes || []).filter(cls => cls.is_elective === true)
+              .map(cls => ({ ...cls, category: "elective", sectionId: section.id }));
+            candidates.sort((a, b) => {
+              const numA = parseInt(a.class_number.match(/\d+/)?.[0] || "0", 10);
+              const numB = parseInt(b.class_number.match(/\d+/)?.[0] || "0", 10);
+              return numA - numB;
+            });
+            let allowedCount = section.classes_to_choose || 0;
+            for (let i = 0; i < candidates.length; i++) {
+              if (i < allowedCount) {
+                candidates[i].allowed = true;
+                allowedElectives.push(candidates[i]);
+              } else {
+                candidates[i].allowed = false;
+              }
+            }
+          }
+        });
       }
     });
-    // For each group, sort numerically by class_number and keep only allowed number.
-    let filteredElectives = [];
-    for (let sectionId in electiveGroups) {
-      let electives = electiveGroups[sectionId];
-      electives.sort((a, b) => {
-        const numA = parseInt(a.class_number.match(/\d+/)?.[0] || "0", 10);
-        const numB = parseInt(b.class_number.match(/\d+/)?.[0] || "0", 10);
-        return numA - numB;
+    return allowedElectives;
+  }
+
+  // computeDepthMap: builds a dependency map for prerequisite chains.
+  function computeDepthMap(classes) {
+    let classMap = {};
+    classes.forEach(cls => {
+      classMap[cls.id] = cls;
+    });
+    let memo = {};
+    function getDepth(cls) {
+      if (!cls.prerequisites || cls.prerequisites.length === 0) return 0;
+      if (memo[cls.id] !== undefined) return memo[cls.id];
+      let depths = cls.prerequisites.map(reqId => {
+        let req = classMap[reqId];
+        return req ? 1 + getDepth(req) : 0;
       });
-      // Determine allowed count for this elective section by looking up in allCourses.
-      let allowedCount = 0;
-      allCourses.forEach(course => {
-        if (course.sections && Array.isArray(course.sections)) {
-          course.sections.forEach(section => {
-            if (!section.is_required && section.id == sectionId) {
-              allowedCount = section.classes_to_choose || 0;
-            }
-          });
-        }
-      });
-      filteredElectives.push(...electives.slice(0, allowedCount));
+      let d = Math.max(...depths);
+      memo[cls.id] = d;
+      return d;
     }
-    // Remove all elective classes from the combined array and add the filtered ones.
-    const nonElectives = combinedClasses.filter(cls => cls.category !== "elective");
-    return nonElectives.concat(filteredElectives);
+    return getDepth;
+  }
+
+  // We'll compute a weighted priority that incorporates availability and critical path.
+  let depthFunction; // computed later
+  function computePriority(cls) {
+    let basePriority;
+    if (cls.category === "english") {
+      basePriority = 1;
+    } else if (isReligionClass(cls)) {
+      // For religion electives, assign same base priority as core (major) if elective; else 2.
+      basePriority = cls.is_elective ? 3 : 2;
+    } else if (cls.category === "major") {
+      basePriority = 3;
+    } else if (cls.category === "minor") {
+      basePriority = 4;
+    } else {
+      basePriority = 10;
+    }
+    
+    let availabilityPenalty = 0;
+    if (cls.semesters_offered && cls.semesters_offered.length > 0) {
+      availabilityPenalty = cls.semesters_offered.length - 1;
+    }
+    let depth = depthFunction(cls);
+    return basePriority + availabilityPenalty - depth;
   }
 
   // --- Generate Schedule Button Handler ---
   const generateButton = document.getElementById("calculate-schedule");
   if (generateButton) {
     generateButton.addEventListener('click', async (event) => {
-      event.preventDefault(); // Prevent default behavior
+      event.preventDefault();
 
-      // Retrieve selected values from dropdowns and inputs
       const selectedMajorId = document.getElementById('major').value;
       const selectedMinor1Id = document.getElementById('minor1').value;
       const selectedMinor2Id = document.getElementById('minor2').value;
-      // englishLevel is now a course name (e.g., "Academic English I" or "Academic English II")
       const englishLevel = document.getElementById("english-level").value;
       const startSemester = document.getElementById("start-semester").value;
       const majorClassLimit = parseInt(document.getElementById("major-class-limit").value, 10);
@@ -170,13 +215,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         springCredits
       });
 
-      // Convert selected IDs for Major and Minors to numbers
       const majorId = Number(selectedMajorId);
       const minor1Id = Number(selectedMinor1Id);
       const minor2Id = Number(selectedMinor2Id);
 
       try {
-        // Fetch program details concurrently for Major, Minor 1, and Minor 2
         const [majorRes, minor1Res, minor2Res] = await Promise.all([
           fetch(`/api/courses/${majorId}`),
           fetch(`/api/courses/${minor1Id}`),
@@ -189,7 +232,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const minor1Details = await minor1Res.json();
         const minor2Details = await minor2Res.json();
 
-        // --- Fetch English Level Course Details ---
         const selectedEnglishCourse = allCourses.find(course =>
           course.course_name === englishLevel
         );
@@ -222,7 +264,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           englishClasses = extractClasses(englishDetails, false, "english");
         }
 
-        // --- Fetch Religion Courses Details ---
         const religionCoursesArray = allCourses.filter(course =>
           course.course_type && course.course_type.toLowerCase() === "religion"
         );
@@ -242,21 +283,34 @@ document.addEventListener('DOMContentLoaded', async () => {
           religionClasses = religionClasses.concat(relClasses);
         });
 
-        // Extract classes from major and minor details with proper categories.
         const majorClasses = extractClasses(majorDetails, true, "major");
         const minor1Classes = extractClasses(minor1Details, false, "minor");
         const minor2Classes = extractClasses(minor2Details, false, "minor");
 
-        // Combine classes in desired order: English, Religion, Major, Minor.
-        let combinedClasses = [
+        // Combine required classes (English, Religion, Major, Minor) and remove electives.
+        let requiredClasses = [
           ...englishClasses,
           ...religionClasses,
           ...majorClasses,
           ...minor1Classes,
           ...minor2Classes
-        ];
+        ].filter(cls => !cls.is_elective);
 
-        // Mark prerequisite classes (for reference).
+        // Get allowed elective classes.
+        const allowedElectives = getAllowedElectives(allCourses);
+        console.log("Allowed elective classes:", allowedElectives);
+
+        // Combine required classes with allowed electives.
+        let combinedClasses = requiredClasses.concat(allowedElectives);
+
+        // Sort combinedClasses by numeric portion of class_number.
+        combinedClasses.sort((a, b) => {
+          const numA = parseInt(a.class_number.match(/\d+/)?.[0] || "0", 10);
+          const numB = parseInt(b.class_number.match(/\d+/)?.[0] || "0", 10);
+          return numA - numB;
+        });
+
+        // Mark prerequisite classes.
         const prereqSet = new Set();
         combinedClasses.forEach(cls => {
           if (cls.prerequisites && cls.prerequisites.length > 0) {
@@ -273,11 +327,34 @@ document.addEventListener('DOMContentLoaded', async () => {
           uniqueClassesMap.set(cls.id, cls);
         });
         combinedClasses = Array.from(uniqueClassesMap.values());
-        console.log("Combined Unique Classes Array before elective filtering:", combinedClasses);
+        console.log("Combined Unique Classes Array (with electives filtered and sorted):", combinedClasses);
 
-        // --- Filter Out Extra Elective Classes BEFORE Scheduling ---
-        combinedClasses = filterElectivesFromCombined(combinedClasses);
-        console.log("Combined Unique Classes Array after elective filtering:", combinedClasses);
+        // Compute critical path depth.
+        depthFunction = computeDepthMap(combinedClasses);
+
+        // Define weighted priority function.
+        function computePriority(cls) {
+          let basePriority;
+          if (cls.category === "english") {
+            basePriority = 1;
+          } else if (isReligionClass(cls)) {
+            // For religion electives, assign same base priority as core (major) if elective; else 2.
+            basePriority = cls.is_elective ? 3 : 2;
+          } else if (cls.category === "major") {
+            basePriority = 3;
+          } else if (cls.category === "minor") {
+            basePriority = 4;
+          } else {
+            basePriority = 10;
+          }
+          
+          let availabilityPenalty = 0;
+          if (cls.semesters_offered && cls.semesters_offered.length > 0) {
+            availabilityPenalty = cls.semesters_offered.length - 1;
+          }
+          let depth = depthFunction(cls);
+          return basePriority + availabilityPenalty - depth;
+        }
 
         // --- Scheduling Algorithm ---
         const maxCreditsPerSemester = {
@@ -292,104 +369,135 @@ document.addEventListener('DOMContentLoaded', async () => {
         let semesterCounter = 0;
         const semesterSchedule = [];
         const scheduledClassIDs = [];
-        const unscheduledClasses = combinedClasses.map(cls => ({ ...cls, scheduled: false }));
+        // Duplicate array for scheduling.
+        let unscheduledClasses = combinedClasses.map(cls => ({ ...cls, scheduled: false }));
 
-        while (unscheduledClasses.some(cls => !cls.scheduled)) {
+        // For each semester, fill it completely before moving on.
+        while (unscheduledClasses.length > 0) {
           const maxCreditsAllowed = maxCreditsPerSemester[currentSemesterType];
+          // Create a new semester object with a dedicated religion counter.
           const semesterObj = {
             semester: currentSemesterType,
             year: currentYear,
             classes: [],
             totalCredits: 0,
-            majorCount: 0
+            majorCount: 0,
+            religionCount: 0
           };
 
-          let availableClasses = unscheduledClasses.filter(cls =>
-            !cls.scheduled &&
-            Array.isArray(cls.semesters_offered) &&
-            cls.semesters_offered.includes(currentSemesterType)
-          );
+          // Compute IDs of classes scheduled in previous semesters.
+          const prevScheduledIDs = new Set();
+          semesterSchedule.forEach(sem => {
+            sem.classes.forEach(cls => prevScheduledIDs.add(cls.id));
+          });
 
-          availableClasses.sort((a, b) => getPriority(a) - getPriority(b));
+          let addedSomething;
+          do {
+            addedSomething = false;
+            let availableIndexes = [];
+            for (let i = 0; i < unscheduledClasses.length; i++) {
+              const cls = unscheduledClasses[i];
+              if (cls.semesters_offered && cls.semesters_offered.includes(currentSemesterType)) {
+                availableIndexes.push(i);
+              }
+            }
+            availableIndexes.sort((i, j) => computePriority(unscheduledClasses[i]) - computePriority(unscheduledClasses[j]));
 
-          for (let cls of availableClasses) {
-            if (englishLevel === "Academic English I" && cls.class_number === "EIL 320" && semesterCounter !== 1) {
-              continue;
-            }
-            if (cls.category === "religion" && semesterObj.classes.some(c => c.category === "religion")) {
-              continue;
-            }
-            if (semesterObj.totalCredits + cls.credits > maxCreditsAllowed) continue;
-            if (cls.prerequisites && cls.prerequisites.length > 0) {
-              const prerequisitesMet = cls.prerequisites.every(reqId => scheduledClassIDs.includes(reqId));
-              if (!prerequisitesMet) continue;
-            }
-            if (cls.corequisites && cls.corequisites.length > 0) {
-              let group = [cls];
-              let canGroup = true;
-              for (let coreqId of cls.corequisites) {
-                let coreqClass = unscheduledClasses.find(x =>
-                  x.id === coreqId &&
-                  !x.scheduled &&
-                  Array.isArray(x.semesters_offered) &&
-                  x.semesters_offered.includes(currentSemesterType)
-                );
-                if (!coreqClass) {
-                  canGroup = false;
-                  break;
+            for (let index of availableIndexes) {
+              let cls = unscheduledClasses[index];
+              // Check prerequisites: they must be scheduled in previous semesters.
+              if (cls.prerequisites && cls.prerequisites.length > 0) {
+                const prerequisitesMet = cls.prerequisites.every(reqId => prevScheduledIDs.has(reqId));
+                if (!prerequisitesMet) continue;
+              }
+              if (englishLevel === "Academic English I" && cls.class_number === "EIL 320" && semesterCounter !== 1) {
+                continue;
+              }
+              // Religion check using course_type via isReligionClass.
+              if (isReligionClass(cls)) {
+                if (semesterObj.religionCount >= 1) {
+                  continue;
                 }
-                if (coreqClass.prerequisites && coreqClass.prerequisites.length > 0) {
-                  const coreqPrereqMet = coreqClass.prerequisites.every(reqId => scheduledClassIDs.includes(reqId));
-                  if (!coreqPrereqMet) {
+              }
+              if (semesterObj.totalCredits + cls.credits > maxCreditsAllowed) continue;
+
+              // Check corequisites as a group.
+              if (cls.corequisites && cls.corequisites.length > 0) {
+                let group = [cls];
+                let canGroup = true;
+                for (let coreqId of cls.corequisites) {
+                  let coreqIndex = unscheduledClasses.findIndex(x =>
+                    x.id === coreqId &&
+                    x.semesters_offered &&
+                    x.semesters_offered.includes(currentSemesterType)
+                  );
+                  if (coreqIndex === -1) {
                     canGroup = false;
                     break;
                   }
+                  let coreqClass = unscheduledClasses[coreqIndex];
+                  if (coreqClass.prerequisites && coreqClass.prerequisites.length > 0) {
+                    const coreqPrereqMet = coreqClass.prerequisites.every(reqId => prevScheduledIDs.has(reqId));
+                    if (!coreqPrereqMet) {
+                      canGroup = false;
+                      break;
+                    }
+                  }
+                  if (!group.find(x => x.id === coreqClass.id)) {
+                    group.push(coreqClass);
+                  }
                 }
-                if (!group.find(x => x.id === coreqClass.id)) {
-                  group.push(coreqClass);
+                // For group, if any member is religion, ensure religionCount is 0.
+                if (group.some(item => isReligionClass(item)) && semesterObj.religionCount >= 1) {
+                  continue;
                 }
-              }
-              if (englishLevel === "Academic English I" && group.some(item => item.class_number === "EIL 320") && semesterCounter !== 1) {
-                continue;
-              }
-              if (!canGroup) continue;
-              let groupTotalCredits = group.reduce((sum, item) => sum + item.credits, 0);
-              let groupMajorCount = group.filter(item => item.isMajor).length;
-              if (semesterObj.totalCredits + groupTotalCredits <= maxCreditsAllowed &&
-                  semesterObj.majorCount + groupMajorCount <= majorClassLimit) {
-                group.forEach(item => {
-                  semesterObj.classes.push(item);
-                  semesterObj.totalCredits += item.credits;
-                  if (item.isMajor) semesterObj.majorCount++;
-                  item.scheduled = true;
-                });
-                group.forEach(item => {
-                  if (!scheduledClassIDs.includes(item.id)) {
+                if (englishLevel === "Academic English I" && group.some(item => item.class_number === "EIL 320") && semesterCounter !== 1) {
+                  continue;
+                }
+                if (!canGroup) continue;
+                let groupTotalCredits = group.reduce((sum, item) => sum + item.credits, 0);
+                let groupMajorCount = group.filter(item => item.isMajor).length;
+                if (semesterObj.totalCredits + groupTotalCredits <= maxCreditsAllowed &&
+                    semesterObj.majorCount + groupMajorCount <= majorClassLimit) {
+                  group.forEach(item => {
+                    semesterObj.classes.push(item);
+                    semesterObj.totalCredits += item.credits;
+                    if (item.isMajor) semesterObj.majorCount++;
+                    if (isReligionClass(item)) {
+                      semesterObj.religionCount++;
+                      console.log(`Religion counter incremented in group to: ${semesterObj.religionCount}`);
+                    }
                     scheduledClassIDs.push(item.id);
-                  }
-                });
-              }
-            } else {
-              if (semesterObj.totalCredits + cls.credits <= maxCreditsAllowed) {
-                if (cls.isMajor) {
-                  if (semesterObj.majorCount < majorClassLimit) {
-                    semesterObj.classes.push(cls);
-                    semesterObj.totalCredits += cls.credits;
-                    cls.scheduled = true;
-                    semesterObj.majorCount++;
-                    scheduledClassIDs.push(cls.id);
-                  }
-                } else {
-                  semesterObj.classes.push(cls);
-                  semesterObj.totalCredits += cls.credits;
-                  cls.scheduled = true;
-                  scheduledClassIDs.push(cls.id);
+                  });
+                  unscheduledClasses = unscheduledClasses.filter(item => !group.some(g => g.id === item.id));
+                  addedSomething = true;
+                  break;
                 }
+              } else {
+                // For a single class.
+                if (isReligionClass(cls)) {
+                  if (semesterObj.religionCount >= 1) {
+                    continue;
+                  }
+                }
+                semesterObj.classes.push(cls);
+                semesterObj.totalCredits += cls.credits;
+                if (cls.isMajor) {
+                  semesterObj.majorCount++;
+                }
+                if (isReligionClass(cls)) {
+                  semesterObj.religionCount++;
+                  console.log(`Religion counter incremented for single class to: ${semesterObj.religionCount}`);
+                }
+                scheduledClassIDs.push(cls.id);
+                unscheduledClasses.splice(index, 1);
+                addedSomething = true;
+                break;
               }
             }
-          }
+          } while (addedSomething);
 
-          // Sort classes within this semester numerically by digits in class_number.
+          // Sort classes within this semester numerically.
           semesterObj.classes.sort((a, b) => {
             const numA = parseInt(a.class_number.match(/\d+/)?.[0] || "0", 10);
             const numB = parseInt(b.class_number.match(/\d+/)?.[0] || "0", 10);
@@ -418,7 +526,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
           document.getElementById("graduation-date").textContent = "TBD";
         }
-        document.getElementById("electives-needed").textContent = 120 - totalCredits;
+        document.getElementById("electives-needed").textContent = Math.max(120 - totalCredits, 0);
 
         renderSchedule(semesterSchedule);
       } catch (error) {
