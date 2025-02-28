@@ -156,16 +156,19 @@ body {
 
 .class-actions {
     display: inline-flex;
-    align-items: center;
+    align-items: center;  /* This centers the buttons vertically */
     gap: 8px;
     margin-left: 10px;
 }
 
 .update-class-button,
 .delete-class-button {
-    width: 24px;  /* Adjust size as needed */
-    height: auto;
+    width: 15px;
+    height: 15px;     /* Set explicit height to match width */
     cursor: pointer;
+    display: block;   /* Ensure consistent display */
+    padding: 0;       /* Remove any padding that might affect alignment */
+    object-fit: contain; /* Ensure image scales properly */
 }
 
 /* Optional hover effect */
@@ -356,4 +359,12 @@ body {
     display: flex;
     gap: 10px;
     justify-content: flex-start; /* Change from center */
+}
+
+/* Update the class list items to properly align content */
+.classes-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;  /* This centers items vertically */
+    padding: 8px 0;      /* Add some vertical padding */
 }
