@@ -231,24 +231,13 @@ router.delete('/courses/:course_id/sections/:section_id/classes/:class_id', asyn
                 throw new Error('Class not found in this section.');
             }
 
-            // Delete the association
+            // Only delete the association, not the class itself
             const deleteQuery = `
                 DELETE FROM classes_in_course
                 WHERE course_id = $1 AND section_id = $2 AND class_id = $3
                 RETURNING *
             `;
             const { rows: deleted } = await pool.query(deleteQuery, [courseId, sectionId, classId]);
-
-            // Check if class is used anywhere else
-            const checkUsageQuery = `
-                SELECT COUNT(*) FROM classes_in_course WHERE class_id = $1
-            `;
-            const { rows: usageRows } = await pool.query(checkUsageQuery, [classId]);
-
-            // If class is not used anywhere else, delete it
-            if (parseInt(usageRows[0].count) === 0) {
-                await pool.query('DELETE FROM classes WHERE id = $1', [classId]);
-            }
 
             await pool.query('COMMIT');
 
@@ -263,7 +252,7 @@ router.delete('/courses/:course_id/sections/:section_id/classes/:class_id', asyn
         }
 
     } catch (error) {
-        console.error('❌ Error deleting class from section:', error);
+        console.error('❌ Error removing class from section:', error);
         res.status(400).json({ error: error.message || 'Internal Server Error' });
     }
 });
@@ -894,121 +883,6 @@ router.post('/courses', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
-
-
-
-router.post('/courses', async (req, res) => {
-    const { course_name, course_type, sections } = req.body;
-
-    // Basic validation
-    if (!course_name || !course_type) {
-        return res.status(400).json({ error: 'Course name and type are required.' });
-    }
-
-    // Begin transaction
-    await pool.query('BEGIN');
-
-    try {
-        // Insert the new course
-        const insertCourseQuery = `
-            INSERT INTO courses (course_name, course_type)
-            VALUES ($1, $2)
-            RETURNING id, course_name, course_type
-        `;
-        const courseValues = [course_name, course_type];
-        const { rows: courseRows } = await pool.query(insertCourseQuery, courseValues);
-        const newCourse = courseRows[0];
-
-        // If sections are provided, create them
-        if (sections && Array.isArray(sections)) {
-            for (const section of sections) {
-                // Create section
-                const insertSectionQuery = `
-                    INSERT INTO course_sections 
-                    (course_id, section_name, credits_required, is_required, classes_to_choose)
-                    VALUES ($1, $2, $3, $4, $5)
-                    RETURNING id
-                `;
-                const sectionValues = [
-                    newCourse.id,
-                    section.section_name,
-                    section.credits_required,
-                    section.is_required || true,
-                    section.classes_to_choose
-                ];
-                const { rows: sectionRows } = await pool.query(insertSectionQuery, sectionValues);
-                const sectionId = sectionRows[0].id;
-
-                // If section has an elective group, create it
-                if (section.elective_group) {
-                    const insertGroupQuery = `
-                        INSERT INTO elective_groups 
-                        (section_id, group_name, required_count)
-                        VALUES ($1, $2, $3)
-                        RETURNING id
-                    `;
-                    const groupValues = [
-                        sectionId,
-                        section.elective_group.name,
-                        section.elective_group.required_count
-                    ];
-                    await pool.query(insertGroupQuery, groupValues);
-                }
-            }
-        }
-
-        await pool.query('COMMIT');
-
-        // Fetch the complete course data with sections
-        const getCourseQuery = `
-            SELECT 
-                c.id,
-                c.course_name,
-                c.course_type,
-                json_agg(DISTINCT jsonb_build_object(
-                    'id', cs.id,
-                    'section_name', cs.section_name,
-                    'credits_required', cs.credits_required,
-                    'is_required', cs.is_required,
-                    'classes_to_choose', cs.classes_to_choose,
-                    'elective_group', CASE 
-                        WHEN eg.id IS NOT NULL THEN jsonb_build_object(
-                            'id', eg.id,
-                            'name', eg.group_name,
-                            'required_count', eg.required_count
-                        )
-                        ELSE NULL
-                    END
-                )) FILTER (WHERE cs.id IS NOT NULL) as sections
-            FROM courses c
-            LEFT JOIN course_sections cs ON cs.course_id = c.id
-            LEFT JOIN elective_groups eg ON eg.section_id = cs.id
-            WHERE c.id = $1
-            GROUP BY c.id
-        `;
-        const { rows: finalCourse } = await pool.query(getCourseQuery, [newCourse.id]);
-
-        res.status(201).json({
-            message: 'Course created successfully.',
-            course: {
-                ...finalCourse[0],
-                sections: finalCourse[0].sections || []
-            }
-        });
-
-    } catch (error) {
-        await pool.query('ROLLBACK');
-        console.error('❌ Error creating course:', error);
-
-        if (error.code === '23505') {
-            return res.status(409).json({ error: 'Course with this name already exists.' });
-        }
-
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
 
 router.get('/courses/:course_id/classes/:class_id', async (req, res) => {
     const { course_id, class_id } = req.params;
@@ -1650,7 +1524,68 @@ router.delete('/courses/:course_id', async (req, res) => {
       console.error('Error deleting course:', error);
       res.status(500).json({ error: error.message || 'Internal Server Error' });
     }
-  });
-// [Include all other API routes here following the same pattern...]
+});
 
+// Remove one of these duplicate routes
+// Keep only ONE of these DELETE routes
+router.delete('/classes/:class_id', async (req, res) => {
+    try {
+        const classId = parseInt(req.params.class_id, 10);
+        
+        if (isNaN(classId)) {
+            return res.status(400).json({ 
+                error: 'class_id must be a valid integer.' 
+            });
+        }
+
+        // Begin transaction
+        await pool.query('BEGIN');
+
+        try {
+            // First check if class exists
+            const checkQuery = 'SELECT * FROM classes WHERE id = $1';
+            const { rows: classRows } = await pool.query(checkQuery, [classId]);
+            
+            if (classRows.length === 0) {
+                throw new Error('Class not found.');
+            }
+
+            // Remove all associations in classes_in_course first
+            const removeAssociationsQuery = `
+                DELETE FROM classes_in_course 
+                WHERE class_id = $1
+                RETURNING *
+            `;
+            const { rows: removedAssociations } = await pool.query(removeAssociationsQuery, [classId]);
+
+            // Delete the class itself
+            const deleteQuery = `
+                DELETE FROM classes 
+                WHERE id = $1
+                RETURNING *
+            `;
+            const { rows: deletedClass } = await pool.query(deleteQuery, [classId]);
+
+            await pool.query('COMMIT');
+
+            res.json({
+                message: 'Class successfully deleted',
+                data: {
+                    deletedClass: deletedClass[0],
+                    removedAssociations: removedAssociations
+                }
+            });
+
+        } catch (err) {
+            await pool.query('ROLLBACK');
+            throw err;
+        }
+
+    } catch (error) {
+        console.error('❌ Error deleting class:', error);
+        res.status(400).json({ error: error.message || 'Internal Server Error' });
+    }
+});
+
+// Make sure this is at the end of your file
 module.exports = router;

@@ -9,6 +9,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const sectionTypeSelect = document.getElementById('section-type');
     const electiveOptions = document.getElementById('elective-options');
     const deleteCourseButton = document.getElementById('delete-course-button');
+    let searchTimeout;
     
     if (deleteCourseButton) {
         deleteCourseButton.addEventListener('click', async () => {
@@ -103,7 +104,43 @@ window.addEventListener('DOMContentLoaded', async () => {
         courseInfoDiv.innerHTML = `<p>Error: ${error.message}</p>`;
     }
 
-    // Display course and its sections
+    // First, inject the search modal HTML
+    const searchModalHTML = `
+        <div id="search-modal" class="modal">
+            <div class="modal-content search-modal-content">
+                <h2>Search Classes</h2>
+                <input type="text" class="class-search-input" placeholder="Search by Class Number">
+                <ul class="search-results"></ul>
+                <div class="modal-buttons">
+                    <button id="close-search-modal">Cancel</button>
+                </div>
+            </div>
+        </div>`;
+    document.body.insertAdjacentHTML('beforeend', searchModalHTML);
+
+    // Now that the modal exists in the DOM, set up the search functionality
+    const searchModal = document.getElementById('search-modal');
+    const searchInput = searchModal.querySelector('.class-search-input');
+    const searchResults = searchModal.querySelector('.search-results');
+
+    // Add input event listener to search input
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const sectionId = searchModal.dataset.sectionId;
+        searchTimeout = setTimeout(() => performSearch(sectionId), 500);
+    });
+
+    // Add modal close handlers
+    document.getElementById('close-search-modal').onclick = () => {
+        searchModal.style.display = 'none';
+    };
+
+    window.onclick = (event) => {
+        if (event.target === searchModal) {
+            searchModal.style.display = 'none';
+        }
+    };
+
     function displayCourse(data) {
         // Display the course name and type
         courseInfoDiv.innerHTML = `
@@ -114,10 +151,9 @@ window.addEventListener('DOMContentLoaded', async () => {
         // Clear the sections div
         courseSectionsDiv.innerHTML = '';
         
-        // Only proceed if sections exist and there's at least one
         if (data.sections && Array.isArray(data.sections) && data.sections.length > 0) {
             data.sections.forEach(section => {
-                if (section && section.id) {  // Additional check to ensure section is valid
+                if (section && section.id) {
                     const sectionDiv = document.createElement('div');
                     sectionDiv.className = 'course-section';
                     sectionDiv.innerHTML = `
@@ -131,16 +167,16 @@ window.addEventListener('DOMContentLoaded', async () => {
                             <button class="delete-section-button" data-section="${section.id}">Delete Section</button>
                         </div>
                         <ul class="classes-list" id="section-${section.id}-classes"></ul>
-                        <div class="section-controls">
-                            <button class="add-existing-class-button" data-section="${section.id}">
-                                Add Existing Class
-                            </button>
-                            <button class="add-new-class-button" data-section="${section.id}">
-                                Add New Class
-                            </button>
-                            <div class="search-container" id="search-container-${section.id}" style="display: none;">
-                                <input type="text" class="class-search-input" placeholder="Search by Class Number">
-                                <ul class="search-results"></ul>
+                        <div class="section-footer">
+                            <div class="section-controls">
+                                <div class="custom-button add-existing-class-button" data-section="${section.id}">
+                                    <img src="./assets/addexistingclassbutton.png" alt="Add existing">
+                                    <span>Add Existing Class</span>
+                                </div>
+                                <div class="custom-button add-new-class-button" data-section="${section.id}">
+                                    <img src="./assets/addnewclassbutton.png" alt="Add new">
+                                    <span>Add New Class</span>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -187,7 +223,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         // Add existing class buttons
         document.querySelectorAll('.add-existing-class-button').forEach(button => {
             button.addEventListener('click', (e) => {
-                const sectionId = e.target.dataset.section;
+                // Get the section ID from the button element itself, not the target
+                const sectionId = button.dataset.section;
                 showSearchContainer(sectionId);
             });
         });
@@ -210,26 +247,27 @@ window.addEventListener('DOMContentLoaded', async () => {
         });
 
         // Delete class buttons
-        document.querySelectorAll('.delete-class-button').forEach(button => {
+                document.querySelectorAll('.delete-class-button').forEach(button => {
             button.addEventListener('click', async (e) => {
                 const classId = e.target.dataset.classId;
                 const sectionId = e.target.dataset.sectionId;
                 
                 if (confirm('Are you sure you want to remove this class from the section?')) {
                     try {
+                        // Update the URL to match the API endpoint
                         const response = await fetch(
                             `/api/courses/${courseId}/sections/${sectionId}/classes/${classId}`,
                             { method: 'DELETE' }
                         );
-
+        
                         if (!response.ok) {
                             const errorData = await response.json();
-                            throw new Error(errorData.error || 'Failed to delete class');
+                            throw new Error(errorData.error || 'Failed to remove class from section');
                         }
-
+        
                         location.reload();
                     } catch (error) {
-                        console.error('Error deleting class:', error);
+                        console.error('Error removing class from section:', error);
                         alert(error.message);
                     }
                 }
@@ -274,27 +312,30 @@ window.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    let searchTimeout;
-
     function showSearchContainer(sectionId) {
-        // Hide all search containers first
-        document.querySelectorAll('.search-container').forEach(container => {
-            container.style.display = 'none';
-        });
+        const searchModal = document.getElementById('search-modal');
+        const searchInput = searchModal.querySelector('.class-search-input');
+        const searchResults = searchModal.querySelector('.search-results');
         
-        const searchContainer = document.getElementById(`search-container-${sectionId}`);
-        const searchInput = searchContainer.querySelector('.class-search-input');
-        searchContainer.style.display = 'block';
+        // Store the section ID as a data attribute
+        searchModal.dataset.sectionId = sectionId;
+        
+        // Clear previous results
         searchInput.value = '';
-        searchContainer.querySelector('.search-results').innerHTML = '';
+        searchResults.innerHTML = '';
+        
+        // Show the modal
+        searchModal.style.display = 'block';
         searchInput.focus();
     }
 
     async function performSearch(sectionId) {
-        const searchContainer = document.getElementById(`search-container-${sectionId}`);
-        const searchInput = searchContainer.querySelector('.class-search-input');
-        const searchResults = searchContainer.querySelector('.search-results');
+        const searchModal = document.getElementById('search-modal');
+        const searchInput = searchModal.querySelector('.class-search-input');
+        const searchResults = searchModal.querySelector('.search-results');
         const query = searchInput.value.trim();
+        
+        console.log('Performing search with query:', query); // Debug log
         
         if (!query) {
             searchResults.innerHTML = '';
@@ -303,9 +344,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 
         try {
             const response = await fetch(`/api/classes/search?query=${encodeURIComponent(query)}`);
+            console.log('Search response:', response); // Debug log
+            
             if (!response.ok) throw new Error('Search failed');
 
             const data = await response.json();
+            console.log('Search results:', data); // Debug log
+            
             displaySearchResults(data.classes, sectionId, searchResults);
         } catch (error) {
             console.error('Search error:', error);
@@ -314,6 +359,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     function displaySearchResults(classes, sectionId, searchResults) {
+        console.log('Adding class with:', {
+            courseId: courseId,
+            sectionId: sectionId,
+            classes: classes
+        });
+
         searchResults.innerHTML = '';
         if (!classes.length) {
             searchResults.innerHTML = '<li>No classes found</li>';
@@ -331,11 +382,17 @@ window.addEventListener('DOMContentLoaded', async () => {
             searchResults.appendChild(li);
         });
 
-        // Add event listeners to add buttons
+        // Update the event listeners for add buttons
         searchResults.querySelectorAll('.add-class-button').forEach(button => {
             button.addEventListener('click', async (e) => {
-                const classId = e.target.dataset.classId;
-                const sectionId = e.target.dataset.sectionId;
+                const classId = button.dataset.classId;
+                const sectionId = button.dataset.sectionId;
+                
+                console.log('Adding class:', {
+                    courseId: courseId,
+                    sectionId: sectionId,
+                    classId: classId
+                });
 
                 try {
                     const response = await fetch(
