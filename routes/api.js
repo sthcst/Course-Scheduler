@@ -210,6 +210,32 @@ router.delete('/courses/:course_id/sections/:section_id/classes/:class_id', asyn
         const sectionId = parseInt(req.params.section_id, 10);
         const classId = parseInt(req.params.class_id, 10);
 
+        // Add course validation
+        const courseCheck = await pool.query('SELECT id FROM courses WHERE id = $1', [courseId]);
+        if (courseCheck.rows.length === 0) {
+            return res.status(404).json({ error: 'Course not found' });
+        }
+
+        // Add section validation
+        const sectionCheck = await pool.query(
+            'SELECT id FROM course_sections WHERE id = $1 AND course_id = $2',
+            [sectionId, courseId]
+        );
+        if (sectionCheck.rows.length === 0) {
+            return res.status(404).json({ error: 'Section not found in this course' });
+        }
+
+        // Existing validation
+        const checkQuery = `
+            SELECT * FROM classes_in_course
+            WHERE course_id = $1 AND section_id = $2 AND class_id = $3
+        `;
+        const { rows: assocRows } = await pool.query(checkQuery, [courseId, sectionId, classId]);
+
+        if (assocRows.length === 0) {
+            return res.status(404).json({ error: 'Class not found in this section' });
+        }
+
         if (isNaN(courseId) || isNaN(sectionId) || isNaN(classId)) {
             return res.status(400).json({ 
                 error: 'course_id, section_id, and class_id must be valid integers.' 

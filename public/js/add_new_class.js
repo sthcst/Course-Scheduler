@@ -231,9 +231,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Form submission
-    // ...existing code...
     addClassForm.addEventListener('submit', async (event) => {
         event.preventDefault();
+
+        // Parse IDs immediately and verify they exist in the URL
+        const courseIdNum = courseId ? parseInt(courseId, 10) : null;
+        const sectionIdNum = sectionId ? parseInt(sectionId, 10) : null;
+
+        // Validate IDs only when they should exist
+        if (courseId && sectionId) {
+            // Both IDs should be valid when adding to a section
+            if (isNaN(courseIdNum) || isNaN(sectionIdNum)) {
+                formMessage.textContent = 'Invalid course or section ID';
+                formMessage.style.color = 'red';
+                return;
+            }
+        } else if (courseId) {
+            // Only course ID should be valid when adding to a course
+            if (isNaN(courseIdNum)) {
+                formMessage.textContent = 'Invalid course ID';
+                formMessage.style.color = 'red';
+                return;
+            }
+        }
 
         const classNumberInput = document.getElementById('class-number').value.trim();
         const className = document.getElementById('class-name').value.trim();
@@ -271,14 +291,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 corequisites: selectedCorequisites.map(c => c.id),
                 days_offered: daysOffered,
                 times_offered: times_offered,
-                is_senior_class: is_senior_class  // Now properly included
+                is_senior_class: is_senior_class
             };
 
             let response, resultMessage;
 
-            if (courseId && sectionId) {
+            if (courseIdNum && sectionIdNum) {
+                // Adding to specific section
                 response = await fetch(
-                    `/api/courses/${courseId}/sections/${sectionId}/classes`, 
+                    `/api/courses/${courseIdNum}/sections/${sectionIdNum}/classes`, 
                     {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -286,9 +307,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 );
                 resultMessage = 'Class added successfully to the section!';
-            } else if (courseId) {
+            } else if (courseIdNum) {
+                // Adding to course only
                 response = await fetch(
-                    `/api/courses/${courseId}/classes`,
+                    `/api/courses/${courseIdNum}/classes`,
                     {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -297,6 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 );
                 resultMessage = 'Class added successfully to the course!';
             } else {
+                // Creating standalone class
                 response = await fetch(
                     '/api/classes',
                     {
@@ -335,5 +358,4 @@ document.addEventListener('DOMContentLoaded', async () => {
             formMessage.style.color = 'red';
         }
     });
-// ...existing code...
 });

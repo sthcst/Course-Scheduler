@@ -232,7 +232,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         // Add new class buttons
         document.querySelectorAll('.add-new-class-button').forEach(button => {
             button.addEventListener('click', (e) => {
-                const sectionId = e.target.dataset.section;
+                // Get sectionId from the button's data attribute, not from e.target
+                const sectionId = button.dataset.section;
                 window.location.href = `add_new_class.html?course_id=${courseId}&section_id=${sectionId}`;
             });
         });
