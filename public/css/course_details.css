@@ -1,53 +1,111 @@
+/* Update the body background */
 body {
     font-family: 'Inter', sans-serif;
-    width: 90%;
-    max-width: 1200px;
-    align-items: center;
+    width: 100%;
+    margin: 0;
+    min-height: 100vh;
+    background: #ffffff;
+    /* background: -webkit-linear-gradient(left, #A5CC82, #00467F);
+    background: -moz-linear-gradient(left, #A5CC82, #00467F);
+    background: -o-linear-gradient(left, #A5CC82, #00467F);
+    background: linear-gradient(to right, #A5CC82, #00467F); */
     padding: 20px;
-    margin: 0 auto;  /* Add this to center horizontally */
-    margin-top: 50px; /* Add this to add some space from the top */
-
+    box-sizing: border-box;
 }
 
 
 
+/* Update back-link alignment */
 .back-link {
-    display: block;  /* Make it a block element */
-    width: inherit;  /* Explicitly inherit width */
-    max-width: inherit;  /* Explicitly inherit max-width */
-    margin: 0 auto 20px;  /* Center horizontally and add bottom margin */
+    display: block;
+    width: 90%; /* Match body-card width */
+    max-width: 1200px; /* Match body-card max-width */
+    margin: 0 auto 20px;
     text-decoration: none;
     color: inherit;
-    padding-right: 40px;  /* Match the body-card's padding */
+    padding-right: 40px;
 }
 
+/* Update course info styling to be solid */
 #course-info {
     position: relative;
-    padding-top: 0px;
-    padding: 10px;
+    padding: 15px 20px;
+    margin: -20px -20px 20px -20px; /* Negative margins to stretch to edges */
+    background-color: #ba0c2f; /* Updated from previous color */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+#course-info h2 {
+    padding-left: 25px;
+    margin-top: 10px;
+    color: white;
+    font-size: 1.8em;
+    margin-bottom: 0;
+}
+
+#course-info p {
+    padding-left: 25px;
+    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0;
+    font-size: 1em;
+}
+
+/* Keep the rest of body-card transparent */
+.body-card {
+    position: relative;
+    background-color: rgba(216, 216, 216, 0.305); /* Increased from 0.08 */ /* Increased from 0.08 */
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto; /* Keep this to maintain centering */
+    color: black; /* Changed from white */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.editanddelete {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 15px;  /* Space between course info and buttons */
+    margin-left: 30px;
+}
+
+#edit-course-button,
+#delete-course-button {
+    width: 20px;      /* Reduced from 40px for better proportion */
+    height: 20px;     /* Added to maintain square aspect ratio */
+    cursor: pointer;
+    padding: 0;       /* Remove padding */
+    border: none;
     border-radius: 4px;
 }
 
-
-.body-card {
-    
-    background-color: #e9e9e9;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    padding: 20px;
-    width: 90%;
-    max-width: 1200px;
-    align-items: center;
-    margin: 0 auto;  /* Add this to center horizontally */
-    position: relative;
-    
+/* Remove absolute positioning */
+#edit-course-button {
+    position: static;
 }
 
+#delete-course-button {
+    position: static;
+}
 
+/* Optional hover effect */
+#edit-course-button:hover,
+#delete-course-button:hover {
+    opacity: 0.8;
+}
+
+/* Update back-button styles if needed */
 .back-button {
     display: flex;
     align-items: center;
-    gap: 8px;  /* Space between image and text */
+    gap: 8px;
+    width: fit-content; /* Ensure button only takes necessary width */
 }
 
 .back-button img {
@@ -66,7 +124,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background-color: #3498db;
+    background-color: #c69214; /* Updated from rgba(52, 152, 219, 0.8) */
     color: white;
     padding: 6px 12px;  /* Reduced from 8px 16px */
     border-radius: 4px;
@@ -87,7 +145,7 @@ body {
 }
 
 .custom-button:hover {
-    background-color: #2980b9;
+    background-color: #b38212; /* Slightly darker shade for hover */
 }
 
 /* Update the section controls spacing */
@@ -105,33 +163,23 @@ body {
 }
 
 /* Existing delete button styles also apply */
-#delete-course-button {
-    position: absolute;
-    top: 40px;          /* Adjust these values as needed */
-    right: 20px;        /* Adjust these values as needed */
-    width: 40px;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
-#delete-course-button:hover {
-    background-color: #d6d6d6;
-}
 
 
 
-/* Course Sections */
+
+/* Update course sections for glass effect */
 .course-section {
     position: relative;
-    background-color: #fafafa;
-    width: 95%;  /* Make it 95% of the body's width */
-    max-width: 1100px;  /* Slightly less than body's max-width of 1200px */
+    background-color: rgb(255, 255, 255); /* Increased from 0.1 */ /* Increased from 0.1 */
+    width: 95%;
+    max-width: 1100px;
     border-radius: 5px;
     margin: 10px auto;
     padding: 15px;
-    padding-bottom: 60px; /* Add space for buttons */
+    padding-bottom: 60px;
+    color: black; /* Changed from white */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .section-header {
@@ -140,18 +188,20 @@ body {
     align-items: center;
     margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #afafaf;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Update text colors for better visibility */
 .section-title {
     font-size: 1.4em;
-    color: #000000;
+    color: black; /* Changed from white */
     margin: 0;
 }
 
+/* Update text colors for better visibility */
 .section-info {
     font-size: 0.9em;
-    color: #000000;
+    color: rgba(0, 0, 0, 0.8); /* Changed from rgba(255, 255, 255, 0.8) */
 }
 
 .class-actions {
@@ -178,21 +228,41 @@ body {
 }
 
 #add-section-button {
-    display: block;
+    display: flex;
+    align-items: center; /* Keep this */
+    justify-content: center;
     margin: 20px auto;
     padding: 10px 20px;
-    background-color: #3498db;
-    color: white;
+    background-color: transparent !important;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: fit-content;
+    gap: 10px;
+}
+
+#add-section-button img {
+    width: 200px;
+    height: auto;
+    padding: 0;
+    margin: 0;
+}
+
+#add-section-button span {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: black;
+    display: flex;
+    align-items: center;
 }
 
 #add-section-button:hover {
-    background-color: #2980b9;
+    background-color: transparent !important;
+    opacity: 0.8; /* Keep a hover effect using opacity instead */
 }
 
 /* Section Modal */
+/* Update the modal background to be transparent */
 .modal {
     display: none;
     position: fixed;
@@ -200,7 +270,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5); /* Add semi-transparent black overlay */
+    z-index: 1000;
 }
 
 .modal-content {
@@ -210,8 +281,10 @@ body {
     border-radius: 5px;
     width: 80%;
     max-width: 500px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1001;
 }
-
 .modal-form {
     display: flex;
     flex-direction: column;
@@ -238,6 +311,24 @@ body {
     margin-top: 20px;
 }
 
+#save-edit-course{
+    background-color: #61c614; /* Updated from #28a745 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+#cancel-edit-course{
+    background-color: #6c757d; /* Updated from #dc3545 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -256,12 +347,17 @@ body {
     position: absolute;
     top: 10px;  /* adjust as needed */
     right: 10px; /* adjust as needed */
-    background-color: #dc3545;
+    background-color: #ba0c2f; /* Updated from #dc3545 */
     color: white;
     border: none;
     border-radius: 4px;
     padding: 5px 10px;
+    margin-top: 10px;
     cursor: pointer;
+}
+
+.delete-section-button:hover {
+    background-color: #b38212;
 }
 
 /* Add to your existing CSS */
@@ -314,7 +410,7 @@ body {
 }
 
 .add-class-button {
-    background-color: #28a745;
+    background-color: #c69214; /* Updated from #28a745 */
     color: white;
     border: none;
     border-radius: 4px;
@@ -323,7 +419,7 @@ body {
 }
 
 .add-class-button:hover {
-    background-color: #218838;
+    background-color: #b38212; /* Updated from #218838 */
 }
 
 .search-modal-content {
@@ -337,10 +433,6 @@ body {
 
 .search-modal-content .class-search-input {
     width: 100%;
-    margin-bottom: 15px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
 }
 
 .search-modal-content .search-results {
@@ -367,4 +459,39 @@ body {
     justify-content: space-between;
     align-items: center;  /* This centers items vertically */
     padding: 8px 0;      /* Add some vertical padding */
+    color: black; /* Changed from white */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Updated border color */
+}
+
+/* Update the modal buttons to have consistent styling */
+.modal-buttons button[type="submit"],
+#save-edit-course {
+    background-color: #61c614;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.modal-buttons button[type="button"],
+#cancel-edit-course,
+#cancel-section {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.modal-buttons button:hover {
+    opacity: 0.9;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }

@@ -18,46 +18,70 @@
             <span>Back</span>
         </div>
     </a>
+    
     <div class='body-card'>
-        
         <div id="course-info">
             <h2>Course Name</h2>
         </div>
-    
-        <img id="delete-course-button" src="./assets/deletebutton.png" alt="">
-            
-       <!-- JS populates this section -->
         <div id="course-sections"></div>
-
-        <button id="add-section-button">Add New Section</button>
-        <!-- Add Section Modal -->
-        <div id="add-section-modal" class="modal">
-            <div class="modal-content">
-                <h2>Add New Section</h2>
-                <form id="add-section-form" class="modal-form">
-                    <div>
-                        <label for="section-name">Section Name:</label>
-                        <input type="text" id="section-name" required>
-                    </div>
-                    <div>
-                        <label for="section-type">Section Type:</label>
-                        <select id="section-type" required>
-                            <option value="required">Required</option>
-                            <option value="elective">Elective</option>
-                        </select>
-                    </div>
-                    <div id="elective-options" style="display: none;">
-                        <label for="classes-to-choose">Number of Classes to Choose:</label>
-                        <input type="number" id="classes-to-choose" min="1">
-                    </div>
-                    <div class="modal-buttons">
-                        <button type="button" id="cancel-section">Cancel</button>
-                        <button type="submit">Add Section</button>
-                    </div>
-                </form>
-            </div>
+        <div id="add-section-button">
+            <img src="./assets/newsection.png" alt="Add section">
         </div>
+    </div>
 
+    <!-- Move modals outside of body-card -->
+    <!-- Add Section Modal -->
+    <div id="add-section-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Section</h2>
+            <form id="add-section-form" class="modal-form">
+                <div>
+                    <label for="section-name">Section Name:</label>
+                    <input type="text" id="section-name" required>
+                </div>
+                <div>
+                    <label for="section-type">Section Type:</label>
+                    <select id="section-type" required>
+                        <option value="required">Required</option>
+                        <option value="elective">Elective</option>
+                    </select>
+                </div>
+                <div id="elective-options" style="display: none;">
+                    <label for="classes-to-choose">Number of Classes to Choose:</label>
+                    <input type="number" id="classes-to-choose" min="1">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-section">Cancel</button>
+                    <button type="submit" id="save-section">Add Section</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div id="edit-course-modal" class="modal">
+        <div class="modal-content">
+            <h2>Edit Course</h2>
+            <form id="edit-course-form" class="modal-form">
+                <div>
+                    <label for="edit-course-name">Course Name:</label>
+                    <input type="text" id="edit-course-name" required>
+                </div>
+                <div>
+                    <label for="edit-course-type">Course Type:</label>
+                    <select id="edit-course-type" required>
+                        <option value="major">Major</option>
+                        <option value="minor">Minor</option>
+                        <option value="religion">Religion</option>
+                        <option value="eil/holokai">EIL/Holokai</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-edit-course">Cancel</button>
+                    <button type="submit" id="save-edit-course">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
     
     <div id="search-modal" class="modal">

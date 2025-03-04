@@ -9,6 +9,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     const sectionTypeSelect = document.getElementById('section-type');
     const electiveOptions = document.getElementById('elective-options');
     const deleteCourseButton = document.getElementById('delete-course-button');
+    const editCourseModal = document.getElementById('edit-course-modal');
+    const editCourseForm = document.getElementById('edit-course-form');
+    const editCourseButton = document.getElementById('edit-course-button');
     let searchTimeout;
     
     if (deleteCourseButton) {
@@ -30,6 +33,68 @@ window.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+
+    if (editCourseButton) {
+        editCourseButton.addEventListener('click', async () => {
+            // Fetch current course data
+            try {
+                const response = await fetch(`/api/courses/${courseId}`);
+                if (!response.ok) throw new Error('Failed to fetch course details');
+                const courseData = await response.json();
+                
+                // Populate the form with current values
+                document.getElementById('edit-course-name').value = courseData.course_name;
+                document.getElementById('edit-course-type').value = courseData.course_type;
+                
+                // Show the modal
+                editCourseModal.style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching course details:', error);
+                alert('Error loading course details');
+            }
+        });
+    }
+
+    editCourseForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const updatedData = {
+            course_name: document.getElementById('edit-course-name').value,
+            course_type: document.getElementById('edit-course-type').value
+        };
+    
+        try {
+            const response = await fetch(`/api/courses/${courseId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to update course');
+            }
+            
+            // Hide modal and refresh page to show updated data
+            editCourseModal.style.display = 'none';
+            location.reload();
+        } catch (error) {
+            console.error('Error updating course:', error);
+            alert(error.message);
+        }
+    });
+    
+    document.getElementById('cancel-edit-course').addEventListener('click', () => {
+        editCourseModal.style.display = 'none';
+        editCourseForm.reset();
+    });
+    
+    window.addEventListener('click', (event) => {
+        if (event.target === editCourseModal) {
+            editCourseModal.style.display = 'none';
+            editCourseForm.reset();
+        }
+    });
 
     if (!courseId) {
         courseInfoDiv.innerHTML = '<p>No valid course found.</p>';
@@ -142,12 +207,63 @@ window.addEventListener('DOMContentLoaded', async () => {
     };
 
     function displayCourse(data) {
-        // Display the course name and type
         courseInfoDiv.innerHTML = `
-            <h2>${data.course_name} (ID: ${data.id})</h2>
+            <h2>${data.course_name}</h2>
             <p>Type: ${data.course_type || 'N/A'}</p>
+            <div class="editanddelete">
+                <img id="edit-course-button" src="./assets/whiteedit.png" alt="Edit course">
+                <img id="delete-course-button" src="./assets/whitedelete.png" alt="Delete course">
+            </div>
         `;
-    
+
+        // Add this right after setting courseInfoDiv.innerHTML
+        const editButton = document.getElementById('edit-course-button');
+        if (editButton) {
+            editButton.addEventListener('click', async () => {
+                try {
+                    const response = await fetch(`/api/courses/${courseId}`);
+                    if (!response.ok) throw new Error('Failed to fetch course details');
+                    const courseData = await response.json();
+                    
+                    // Populate the form with current values
+                    document.getElementById('edit-course-name').value = courseData.course_name;
+                    document.getElementById('edit-course-type').value = courseData.course_type;
+                    
+                    // Show the modal
+                    const editCourseModal = document.getElementById('edit-course-modal');
+                    editCourseModal.style.display = 'block';
+                } catch (error) {
+                    console.error('Error fetching course details:', error);
+                    alert('Error loading course details');
+                }
+            });
+        }
+
+        // Add this right after creating the editButton event listener
+        const deleteButton = document.getElementById('delete-course-button');
+        if (deleteButton) {
+            deleteButton.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
+                    try {
+                        const response = await fetch(`/api/courses/${courseId}`, {
+                            method: 'DELETE'
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Failed to delete course');
+                        }
+
+                        // Redirect to search page after successful deletion
+                        window.location.href = 'search.html';
+                    } catch (error) {
+                        console.error('Error deleting course:', error);
+                        alert('Error deleting course: ' + error.message);
+                    }
+                }
+            });
+        }
+
         // Clear the sections div
         courseSectionsDiv.innerHTML = '';
         

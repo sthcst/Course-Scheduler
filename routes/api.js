@@ -1613,5 +1613,32 @@ router.delete('/classes/:class_id', async (req, res) => {
     }
 });
 
+router.put('/courses/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { course_name, course_type } = req.body;
+
+        const query = `
+            UPDATE courses 
+            SET course_name = $1, 
+                course_type = $2,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = $3
+            RETURNING *
+        `;
+
+        const result = await pool.query(query, [course_name, course_type, id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Course not found' });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error updating course:', error);
+        res.status(500).json({ error: 'Failed to update course' });
+    }
+});
+
 // Make sure this is at the end of your file
 module.exports = router;
