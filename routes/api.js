@@ -1640,5 +1640,160 @@ router.put('/courses/:id', async (req, res) => {
     }
 });
 
+/**
+ * @route   PUT /courses/:course_id/sections/:section_id
+ * @desc    Update a section's details
+ * @access  Public
+ */
+router.put('/courses/:course_id/sections/:section_id', async (req, res) => {
+    try {
+        const courseId = parseInt(req.params.course_id, 10);
+        const sectionId = parseInt(req.params.section_id, 10);
+        
+        if (isNaN(courseId) || isNaN(sectionId)) {
+            return res.status(400).json({ 
+                error: 'course_id and section_id must be valid integers.' 
+            });
+        }
+
+        const {
+            section_name,
+            credits_required = 0,
+            is_required = true,
+            classes_to_choose = null
+        } = req.body;
+
+        // Begin transaction
+        await pool.query('BEGIN');
+
+        try {
+            // Verify the section belongs to the course
+            const checkQuery = `
+                SELECT id FROM course_sections 
+                WHERE id = $1 AND course_id = $2
+            `;
+            const { rows: sectionRows } = await pool.query(checkQuery, [sectionId, courseId]);
+            
+            if (sectionRows.length === 0) {
+                throw new Error('Section not found in this course.');
+            }
+
+            // Update the section
+            const updateQuery = `
+                UPDATE course_sections
+                SET 
+                    section_name = $1,
+                    credits_required = $2,
+                    is_required = $3,
+                    classes_to_choose = $4,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = $5 AND course_id = $6
+                RETURNING *
+            `;
+            
+            const { rows: updatedSection } = await pool.query(updateQuery, [
+                section_name,
+                credits_required,
+                is_required,
+                classes_to_choose,
+                sectionId,
+                courseId
+            ]);
+
+            if (updatedSection.length === 0) {
+                throw new Error('Failed to update section.');
+            }
+
+            await pool.query('COMMIT');
+
+            res.json({
+                message: 'Section updated successfully',
+                data: updatedSection[0]
+            });
+
+        } catch (err) {
+            await pool.query('ROLLBACK');
+            throw err;
+        }
+
+    } catch (error) {
+        console.error('❌ Error updating section:', error);
+        res.status(400).json({ error: error.message || 'Internal Server Error' });
+    }
+});
+
+/**
+ * @route   GET /courses/:course_id/sections/:section_id
+ * @desc    Get details for a specific section
+ * @access  Public
+ */
+router.get('/courses/:course_id/sections/:section_id', async (req, res) => {
+    try {
+        const courseId = parseInt(req.params.course_id, 10);
+        const sectionId = parseInt(req.params.section_id, 10);
+        
+        if (isNaN(courseId) || isNaN(sectionId)) {
+            return res.status(400).json({ 
+                error: 'course_id and section_id must be valid integers.' 
+            });
+        }
+
+        // Query the database to get section details
+        const query = `
+            SELECT * FROM course_sections 
+            WHERE id = $1 AND course_id = $2
+        `;
+        
+        const result = await pool.query(query, [sectionId, courseId]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Section not found' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error fetching section details:', error);
+        res.status(500).json({ error: 'Failed to fetch section details' });
+    }
+});
+
+/**
+ * @route   PUT /api/courses/:course_id/sections/reorder
+ * @desc    Reorder sections in a course
+ * @access  Public
+ */
+router.put('/courses/:course_id/sections/reorder', async (req, res) => {
+    try {
+        const courseId = parseInt(req.params.course_id, 10);
+        const { sections } = req.body;
+        
+        if (!Array.isArray(sections) || sections.length === 0) {
+            return res.status(400).json({ error: 'Invalid sections data provided' });
+        }
+        
+        // Begin transaction
+        await pool.query('BEGIN');
+        
+        try {
+            // Update each section's display order
+            for (const section of sections) {
+                await pool.query(
+                    'UPDATE course_sections SET display_order = $1 WHERE id = $2 AND course_id = $3',
+                    [section.display_order, section.section_id, courseId]
+                );
+            }
+            
+            await pool.query('COMMIT');
+            res.json({ message: 'Section order updated successfully' });
+        } catch (error) {
+            await pool.query('ROLLBACK');
+            throw error;
+        }
+    } catch (error) {
+        console.error('Error reordering sections:', error);
+        res.status(500).json({ error: 'Failed to update section order' });
+    }
+});
+
 // Make sure this is at the end of your file
 module.exports = router;

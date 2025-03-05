@@ -12,6 +12,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     const editCourseModal = document.getElementById('edit-course-modal');
     const editCourseForm = document.getElementById('edit-course-form');
     const editCourseButton = document.getElementById('edit-course-button');
+    const editSectionModal = document.getElementById('edit-section-modal');
+    const editSectionForm = document.getElementById('edit-section-form');
+    const editSectionTypeSelect = document.getElementById('edit-section-type');
+    const editElectiveOptions = document.getElementById('edit-elective-options');
     let searchTimeout;
     
     if (deleteCourseButton) {
@@ -207,11 +211,27 @@ window.addEventListener('DOMContentLoaded', async () => {
     };
 
     function displayCourse(data) {
+        // Calculate total credits in the course
+        let totalCredits = 0;
+        
+        if (data.sections && Array.isArray(data.sections)) {
+            data.sections.forEach(section => {
+                if (section.classes && Array.isArray(section.classes)) {
+                    section.classes.forEach(cls => {
+                        // Add credits from each class, with fallback to 0 if not available
+                        totalCredits += Number(cls.credits || 0);
+                    });
+                }
+            });
+        }
+        
+        // Update the HTML to include credits
         courseInfoDiv.innerHTML = `
             <h2>${data.course_name}</h2>
-            <p>Type: ${data.course_type || 'N/A'}</p>
+            <h3>${data.course_type || 'N/A'} <span class="course-credits">•   ${totalCredits} Credits</span></h3>
             <div class="editanddelete">
                 <img id="edit-course-button" src="./assets/whiteedit.png" alt="Edit course">
+                <img id="download-course-button" src="./assets/downloadcourse.png" alt="Download course">
                 <img id="delete-course-button" src="./assets/whitedelete.png" alt="Delete course">
             </div>
         `;
@@ -236,6 +256,15 @@ window.addEventListener('DOMContentLoaded', async () => {
                     console.error('Error fetching course details:', error);
                     alert('Error loading course details');
                 }
+            });
+        }
+
+    
+        if (editButton) {
+            editButton.addEventListener('click', function() {
+                const editAndDelete = this.closest('.editanddelete');
+                editAndDelete.classList.toggle('active');
+                this.classList.toggle('active');
             });
         }
 
@@ -268,20 +297,34 @@ window.addEventListener('DOMContentLoaded', async () => {
         courseSectionsDiv.innerHTML = '';
         
         if (data.sections && Array.isArray(data.sections) && data.sections.length > 0) {
-            data.sections.forEach(section => {
+            data.sections.forEach((section, index) => {
                 if (section && section.id) {
                     const sectionDiv = document.createElement('div');
                     sectionDiv.className = 'course-section';
+                    sectionDiv.draggable = true; // Make draggable
+                    sectionDiv.dataset.sectionId = section.id;
+                    sectionDiv.dataset.index = index;
+                    
+                    // Add the drag handle
                     sectionDiv.innerHTML = `
+                        <div class="drag-handle"></div>
                         <div class="section-header">
+                            <!-- Your existing header content -->
                             <div class="section-info-container">
-                                <h3 class="section-title">${section.section_name}</h3>
+                                <h3 class="section-title">
+                                    ${section.section_name}
+                                    <img class="section-icon" src="./assets/editclassbutton.png" alt="Edit section" data-section="${section.id}">
+                                </h3>
                                 <div class="section-info">
                                     ${section.is_required ? 'Required' : `Choose ${section.classes_to_choose} classes`}
                                 </div>
                             </div>
-                            <button class="delete-section-button" data-section="${section.id}">Delete Section</button>
+                            <div class="section-header-actions">
+                                <button class="delete-section-button" data-section="${section.id}">Delete This Section</button>
+                                <img class="toggle-actions-button" src="./assets/editclassbutton.png" alt="Toggle actions" data-section="${section.id}">
+                            </div>
                         </div>
+                        <!-- Rest of your section content -->
                         <ul class="classes-list" id="section-${section.id}-classes"></ul>
                         <div class="section-footer">
                             <div class="section-controls">
@@ -296,9 +339,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                             </div>
                         </div>
                     `;
+                    
                     courseSectionsDiv.appendChild(sectionDiv);
-    
-                    // Display classes for this section
+                    
+                    // Display classes for this section...
+                    // Your existing code for displaying classes
                     const sectionClassesList = document.getElementById(`section-${section.id}-classes`);
                     if (section.classes && section.classes.length > 0) {
                         section.classes.forEach(cls => {
@@ -328,6 +373,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     
             // Add event listeners for the section-specific buttons
             attachSectionEventListeners();
+            
+            // Add drag and drop functionality
+            initDragAndDrop();
         }
     
         // Show add section button (always visible)
@@ -427,7 +475,118 @@ window.addEventListener('DOMContentLoaded', async () => {
                 searchTimeout = setTimeout(() => performSearch(sectionId), 500);
             });
         });
+
+        // Add this to your attachSectionEventListeners function
+        document.querySelectorAll('.section-icon').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const sectionId = e.target.dataset.section;
+                
+                try {
+                    // Fetch current section data
+                    const response = await fetch(`/api/courses/${courseId}/sections/${sectionId}`);
+                    if (!response.ok) throw new Error('Failed to fetch section details');
+                    const sectionData = await response.json();
+                    
+                    // Populate the form with current values
+                    document.getElementById('edit-section-name').value = sectionData.section_name;
+                    document.getElementById('edit-section-type').value = sectionData.is_required ? 'required' : 'elective';
+                    
+                    if (!sectionData.is_required) {
+                        document.getElementById('edit-classes-to-choose').value = sectionData.classes_to_choose;
+                        editElectiveOptions.style.display = 'block';
+                    } else {
+                        editElectiveOptions.style.display = 'none';
+                    }
+                    
+                    // Set the section ID in the hidden field
+                    document.getElementById('edit-section-id').value = sectionId;
+                    
+                    // Show the modal
+                    editSectionModal.style.display = 'block';
+                } catch (error) {
+                    console.error('Error fetching section details:', error);
+                    alert('Error loading section details');
+                }
+            });
+        });
+
+        // Add this to your attachSectionEventListeners function
+        document.querySelectorAll('.toggle-actions-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const sectionId = e.target.dataset.section;
+                const classList = document.getElementById(`section-${sectionId}-classes`);
+                const sectionElement = e.target.closest('.course-section');
+                
+                // Toggle the show-actions class on the section's classes list
+                classList.classList.toggle('show-actions');
+                
+                // Toggle active class on the section element to show/hide admin actions
+                sectionElement.classList.toggle('active');
+                
+                // Toggle the active class on the button itself
+                e.target.classList.toggle('active');
+                
+                // Rotate the image when toggled
+                e.target.style.transform = classList.classList.contains('show-actions') ? 
+                    'rotate(180deg)' : 'rotate(0deg)';
+            });
+        });
     }
+
+    // Show/hide elective options based on section type selection
+    editSectionTypeSelect.addEventListener('change', () => {
+        editElectiveOptions.style.display = 
+            editSectionTypeSelect.value === 'elective' ? 'block' : 'none';
+    });
+
+    // Handle modal close
+    document.getElementById('cancel-edit-section').addEventListener('click', () => {
+        editSectionModal.style.display = 'none';
+        editSectionForm.reset();
+    });
+
+    // Close modal on outside click
+    window.addEventListener('click', (event) => {
+        if (event.target === editSectionModal) {
+            editSectionModal.style.display = 'none';
+            editSectionForm.reset();
+        }
+    });
+
+    // Handle form submission
+    editSectionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const sectionId = document.getElementById('edit-section-id').value;
+        const isElective = editSectionTypeSelect.value === 'elective';
+        
+        const updatedData = {
+            section_name: document.getElementById('edit-section-name').value,
+            is_required: !isElective,
+            classes_to_choose: isElective ? 
+                parseInt(document.getElementById('edit-classes-to-choose').value) : null
+        };
+
+        try {
+            const response = await fetch(`/api/courses/${courseId}/sections/${sectionId}`, {
+                method: 'PUT', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to update section');
+            }
+            
+            // Hide modal and refresh page to show updated data
+            editSectionModal.style.display = 'none';
+            location.reload();
+        } catch (error) {
+            console.error('Error updating section:', error);
+            alert(error.message);
+        }
+    });
 
     function showSearchContainer(sectionId) {
         const searchModal = document.getElementById('search-modal');
@@ -535,3 +694,108 @@ window.addEventListener('DOMContentLoaded', async () => {
         });
     }
 });
+
+// Function to initialize drag and drop
+function initDragAndDrop() {
+    const sections = document.querySelectorAll('.course-section');
+    let draggedSection = null;
+    
+    sections.forEach(section => {
+        // Drag start event
+        section.addEventListener('dragstart', (e) => {
+            draggedSection = section;
+            setTimeout(() => {
+                section.classList.add('dragging');
+            }, 0);
+            
+            // Set data transfer for drag operation
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', section.dataset.sectionId);
+        });
+        
+        // Drag end event
+        section.addEventListener('dragend', () => {
+            section.classList.remove('dragging');
+            draggedSection = null;
+            
+            // Save the new order to the database
+            saveNewSectionOrder();
+        });
+        
+        // Drag over event - needed to allow dropping
+        section.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (draggedSection === section) return;
+            
+            const box = section.getBoundingClientRect();
+            const offsetY = e.clientY - box.top - (box.height / 2);
+            
+            // Determine if we're before or after this section
+            if (offsetY < 0) {
+                section.classList.add('drag-over-top');
+                section.classList.remove('drag-over-bottom');
+            } else {
+                section.classList.add('drag-over-bottom');
+                section.classList.remove('drag-over-top');
+            }
+        });
+        
+        // Drag enter event
+        section.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            if (draggedSection === section) return;
+        });
+        
+        // Drag leave event
+        section.addEventListener('dragleave', () => {
+            section.classList.remove('drag-over-top', 'drag-over-bottom');
+        });
+        
+        // Drop event
+        section.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (draggedSection === section) return;
+            
+            section.classList.remove('drag-over-top', 'drag-over-bottom');
+            
+            const box = section.getBoundingClientRect();
+            const offsetY = e.clientY - box.top - (box.height / 2);
+            
+            if (offsetY < 0) {
+                // Drop before this section
+                courseSectionsDiv.insertBefore(draggedSection, section);
+            } else {
+                // Drop after this section
+                courseSectionsDiv.insertBefore(draggedSection, section.nextSibling);
+            }
+        });
+    });
+}
+
+// Function to save the new section order
+async function saveNewSectionOrder() {
+    const sections = document.querySelectorAll('.course-section');
+    const newOrder = Array.from(sections).map((section, index) => ({
+        section_id: section.dataset.sectionId,
+        display_order: index + 1
+    }));
+    
+    try {
+        const response = await fetch(`/api/courses/${courseId}/sections/reorder`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sections: newOrder })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to update section order');
+        }
+        
+        // Optional: Show success message or update UI
+        console.log('Section order updated successfully');
+    } catch (error) {
+        console.error('Error updating section order:', error);
+        alert('Error saving section order: ' + error.message);
+    }
+}

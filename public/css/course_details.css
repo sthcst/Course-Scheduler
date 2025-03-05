@@ -45,12 +45,12 @@ body {
     margin-bottom: 0;
 }
 
-#course-info p {
+#course-info h3 {
     padding-left: 25px;
     margin-top: 5px;
     color: rgba(255, 255, 255, 0.9);
     margin-bottom: 0;
-    font-size: 1em;
+    font-size: 1.5em;
 }
 
 /* Keep the rest of body-card transparent */
@@ -65,18 +65,20 @@ body {
     color: black; /* Changed from white */
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Added subtle shadow */
 }
 
 .editanddelete {
     display: flex;
     gap: 10px;
     align-items: center;
-    margin-top: 15px;  /* Space between course info and buttons */
+    margin-top: 20px;  /* Space between course info and buttons */
     margin-left: 30px;
 }
 
 #edit-course-button,
-#delete-course-button {
+#delete-course-button,
+#download-course-button {
     width: 20px;      /* Reduced from 40px for better proportion */
     height: 20px;     /* Added to maintain square aspect ratio */
     cursor: pointer;
@@ -180,6 +182,50 @@ body {
     color: black; /* Changed from white */
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Added subtle shadow */
+    cursor: grab;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+    margin-bottom: 15px;
+}
+
+/* Style for the drag handle */
+.drag-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 15px;
+    cursor: grab;
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+    background-size: 4px 4px;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.course-section:hover .drag-handle {
+    opacity: 0.8;
+}
+
+/* Style while dragging */
+.course-section.dragging {
+    opacity: 0.6;
+    transform: scale(0.98);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    cursor: grabbing;
+}
+
+/* Drop zone indicators */
+.course-section.drag-over-top {
+    border-top: 3px solid #61c614;
+}
+
+.course-section.drag-over-bottom {
+    border-bottom: 3px solid #61c614;
+}
+
+/* When being dragged */
+.course-section .drag-handle:active {
+    cursor: grabbing;
 }
 
 .section-header {
@@ -188,14 +234,69 @@ body {
     align-items: center;
     margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid #e9ecef;
 }
 
-/* Update text colors for better visibility */
 .section-title {
     font-size: 1.4em;
-    color: black; /* Changed from white */
+    color: black;
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;  /* Reduce the gap between delete button and toggle button */
+}
+
+/* Initially hide delete section button */
+.delete-section-button {
+    display: block; /* Change from display: none to allow animation */
+    opacity: 0; /* Start with zero opacity */
+    visibility: hidden; /* Hide but keep in the layout */
+    background-color: #ba0c2f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 8px;  /* Slightly less horizontal padding */
+    cursor: pointer;
+    font-size: 12px;   /* Smaller text */
+    height: 30px;
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* Add transition */
+}
+
+/* Show delete button when section is active with animation */
+.course-section.active .delete-section-button {
+    opacity: 1; /* Fade in */
+    visibility: visible;
+}
+
+.section-icon {
+    display: none; /* Hide by default */
+    width: 20px;      /* Reduced from 30px for better proportion */
+    height: 20px;     /* Reduced from 30px to match width */
+    cursor: pointer;
+    padding: 0;
+    margin-left: 5px; /* Reduced from 10px to be closer to text */
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* Add transition */
+}
+
+/* Show section edit icon only when the section is active */
+.course-section.active .section-title .section-icon {
+    display: inline-block; /* Show when section is active */
+    opacity: 1;
+    visibility: visible;
+}
+
+#edit-section-button{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
 }
 
 /* Update text colors for better visibility */
@@ -205,20 +306,55 @@ body {
 }
 
 .class-actions {
-    display: inline-flex;
-    align-items: center;  /* This centers the buttons vertically */
+    display: flex; /* Change from display: none to allow animation */
+    opacity: 0;
+    visibility: hidden;
+    align-items: center;
     gap: 8px;
     margin-left: 10px;
+    transition: opacity 0.3s ease, visibility 0.3s ease; /* Add transition */
+}
+
+/* Show class actions with animation */
+.show-actions .class-actions {
+    display: inline-flex; /* Show when parent has show-actions class */
+    opacity: 1;
+    visibility: visible;
+}
+
+.section-icon{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.toggle-actions-button {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    padding: 5px; /* Restore normal padding */
+    border-radius: 4px;
+    transition: background-color 0.2s ease, transform 0.3s ease; /* Add transform transition */
+}
+
+.toggle-actions-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.toggle-actions-button.active {
+    background-color: #c69214;
 }
 
 .update-class-button,
 .delete-class-button {
-    width: 15px;
-    height: 15px;     /* Set explicit height to match width */
+    width: 20px;      /* Restore original size */
+    height: 20px;     /* Restore original size */
     cursor: pointer;
-    display: block;   /* Ensure consistent display */
-    padding: 0;       /* Remove any padding that might affect alignment */
-    object-fit: contain; /* Ensure image scales properly */
+    display: block;
+    padding: 0;
 }
 
 /* Optional hover effect */
@@ -311,7 +447,8 @@ body {
     margin-top: 20px;
 }
 
-#save-edit-course{
+#save-edit-course,
+#save-edit-section{
     background-color: #61c614; /* Updated from #28a745 */
     color: white;
     border: none;
@@ -320,7 +457,8 @@ body {
     cursor: pointer;
 }
 
-#cancel-edit-course{
+#cancel-edit-course,
+#cancel-edit-section {
     background-color: #6c757d; /* Updated from #dc3545 */
     color: white;
     border: none;
@@ -344,15 +482,13 @@ body {
 
 /* Position the delete button in the upper right corner of the section */
 .delete-section-button {
-    position: absolute;
-    top: 10px;  /* adjust as needed */
-    right: 10px; /* adjust as needed */
-    background-color: #ba0c2f; /* Updated from #dc3545 */
+    position: static; /* Change from absolute */
+    background-color: #ba0c2f;
     color: white;
     border: none;
     border-radius: 4px;
     padding: 5px 10px;
-    margin-top: 10px;
+    margin: 0; /* Remove margin-top */
     cursor: pointer;
 }
 
@@ -494,4 +630,87 @@ body {
     justify-content: flex-end;
     gap: 10px;
     margin-top: 20px;
+}
+
+/* Add this to your CSS file */
+.section-admin-actions {
+    display: flex; /* Change from display: none */
+    opacity: 0;
+    visibility: hidden;
+    margin-top: 10px;
+    padding: 0 10px;
+    gap: 10px;
+    align-items: center;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Show when parent section has active class */
+.course-section.active .section-admin-actions {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+}
+
+.section-icon {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.delete-section-button {
+    background-color: #ba0c2f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.delete-section-button:hover {
+    background-color: #a00b29;
+}
+
+/* Create a container for the action buttons in the header */
+.section-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;  /* Reduce the gap between delete button and toggle button */
+}
+
+/* Hide delete course button by default */
+#delete-course-button {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+}
+
+
+
+/* Add active state styling for edit button */
+#edit-course-button{
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+
+
+/* Hide section edit icon by default and show only when the section is active */
+.section-icon {
+    width: 20px;      
+    height: 20px;     
+    cursor: pointer;
+    padding: 0;
+    margin-left: 5px;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.course-credits {
+    color: white;
+    margin-left: 10px;
+    font-size: 0.9em;
 }

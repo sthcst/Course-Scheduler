@@ -84,6 +84,35 @@
         </div>
     </div>
     
+    <!-- Edit Section Modal -->
+    <div id="edit-section-modal" class="modal">
+        <div class="modal-content">
+            <h2>Edit Section</h2>
+            <form id="edit-section-form" class="modal-form">
+                <div>
+                    <label for="edit-section-name">Section Name:</label>
+                    <input type="text" id="edit-section-name" required>
+                </div>
+                <div>
+                    <label for="edit-section-type">Section Type:</label>
+                    <select id="edit-section-type" required>
+                        <option value="required">Required</option>
+                        <option value="elective">Elective</option>
+                    </select>
+                </div>
+                <div id="edit-elective-options" style="display: none;">
+                    <label for="edit-classes-to-choose">Classes to Choose:</label>
+                    <input type="number" id="edit-classes-to-choose" min="1">
+                </div>
+                <input type="hidden" id="edit-section-id">
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-edit-section">Cancel</button>
+                    <button type="submit" id="save-edit-section">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="search-modal" class="modal">
         <div class="modal-content search-modal-content">
             <h2>Search Classes</h2>
