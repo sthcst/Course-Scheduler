@@ -21,6 +21,54 @@ pool.connect((err, client, release) => {
     });
 });
 
+// Move this route BEFORE any route with pattern /courses/:course_id/sections/:section_id
+router.put('/courses/:course_id/sections/reorder', async (req, res) => {
+    try {
+        // Manually parse course_id as an integer
+        const courseId = parseInt(req.params.course_id, 10);
+        
+        if (isNaN(courseId) || courseId <= 0) {
+            return res.status(400).json({ error: 'Invalid course_id provided' });
+        }
+        
+        // Validate sections data
+        const { sections } = req.body;
+        
+        if (!Array.isArray(sections) || sections.length === 0) {
+            return res.status(400).json({ error: 'Invalid sections data provided' });
+        }
+        
+        // Begin transaction
+        await pool.query('BEGIN');
+        
+        try {
+            // Update each section's display order
+            for (const section of sections) {
+                const sectionId = parseInt(section.section_id, 10);
+                const displayOrder = parseInt(section.display_order, 10);
+                
+                if (isNaN(sectionId) || isNaN(displayOrder)) {
+                    throw new Error('Invalid section_id or display_order value');
+                }
+                
+                await pool.query(
+                    'UPDATE course_sections SET display_order = $1 WHERE id = $2 AND course_id = $3',
+                    [displayOrder, sectionId, courseId]
+                );
+            }
+            
+            await pool.query('COMMIT');
+            res.json({ message: 'Section order updated successfully' });
+        } catch (error) {
+            await pool.query('ROLLBACK');
+            throw error;
+        }
+    } catch (error) {
+        console.error('Error reordering sections:', error);
+        res.status(500).json({ error: error.message || 'Failed to update section order' });
+    }
+});
+
 router.get('/courses', async (req, res) => {
     try {
         const { course_name, course_id } = req.query;
@@ -123,6 +171,8 @@ router.get('/courses', async (req, res) => {
     }
 });
 
+// Update the query in the GET /courses/:course_id route:
+
 router.get('/courses/:course_id', async (req, res) => {
     try {
         const { course_id } = req.params;
@@ -131,62 +181,59 @@ router.get('/courses/:course_id', async (req, res) => {
                 c.id,
                 c.course_name,
                 c.course_type,
-                json_agg(DISTINCT jsonb_build_object(
-                    'id', cs.id,
-                    'section_name', cs.section_name,
-                    'credits_required', cs.credits_required,
-                    'is_required', cs.is_required,
-                    'classes_to_choose', cs.classes_to_choose,
-                    'classes', (
-                        SELECT json_agg(json_build_object(
-                            'id', cl.id,
-                            'class_name', cl.class_name,
-                            'class_number', cl.class_number,
-                            'semesters_offered', cl.semesters_offered,
-                            'prerequisites', cl.prerequisites,
-                            'corequisites', cl.corequisites,
-                            'days_offered', cl.days_offered,
-                            'times_offered', cl.times_offered,
-                            'is_senior_class', cl.is_senior_class,
-                            'credits', cl.credits,
-                            'is_elective', cic2.is_elective,
-                            'elective_group', CASE 
-                                WHEN cic2.elective_group_id IS NOT NULL THEN json_build_object(
-                                    'id', eg.id,
-                                    'name', eg.group_name,
-                                    'required_count', eg.required_count
-                                )
-                                ELSE NULL
-                            END
-                        ))
-                        FROM classes_in_course cic2
-                        JOIN classes cl ON cl.id = cic2.class_id
-                        LEFT JOIN elective_groups eg ON eg.id = cic2.elective_group_id
-                        WHERE cic2.course_id = c.id AND cic2.section_id = cs.id
-                    )
-                )) as sections
+                (SELECT json_agg(section_data)
+                 FROM (
+                     SELECT
+                         cs.id,
+                         cs.section_name,
+                         cs.credits_required,
+                         cs.is_required,
+                         cs.classes_to_choose,
+                         cs.display_order,
+                         (SELECT json_agg(json_build_object(
+                             'id', cl.id,
+                             'class_name', cl.class_name,
+                             'class_number', cl.class_number,
+                             'semesters_offered', cl.semesters_offered,
+                             'prerequisites', cl.prerequisites,
+                             'corequisites', cl.corequisites,
+                             'days_offered', cl.days_offered,
+                             'times_offered', cl.times_offered,
+                             'is_senior_class', cl.is_senior_class,
+                             'credits', cl.credits,
+                             'is_elective', cic2.is_elective,
+                             'elective_group', CASE 
+                                 WHEN cic2.elective_group_id IS NOT NULL THEN json_build_object(
+                                     'id', eg.id,
+                                     'name', eg.group_name,
+                                     'required_count', eg.required_count
+                                 )
+                                 ELSE NULL
+                             END
+                         ))
+                         FROM classes_in_course cic2
+                         JOIN classes cl ON cl.id = cic2.class_id
+                         LEFT JOIN elective_groups eg ON eg.id = cic2.elective_group_id
+                         WHERE cic2.course_id = c.id AND cic2.section_id = cs.id
+                         ) as classes
+                     FROM course_sections cs
+                     WHERE cs.course_id = c.id
+                     ORDER BY COALESCE(cs.display_order, 999999), cs.id
+                 ) as section_data
+                ) as sections
             FROM courses c
-            LEFT JOIN course_sections cs ON cs.course_id = c.id
-            LEFT JOIN classes_in_course cic ON cic.course_id = c.id
             WHERE c.id = $1
-            GROUP BY c.id;
         `;
 
         const { rows } = await pool.query(query, [course_id]);
 
         if (rows.length > 0) {
+            // Format the response
             const course = {
-                ...rows[0],
-                sections: rows[0].sections
-                    .filter(section => section !== null)
-                    .map(section => ({
-                        id: section.id,
-                        section_name: section.section_name,
-                        credits_required: section.credits_required,
-                        is_required: section.is_required,
-                        classes_to_choose: section.classes_to_choose,
-                        classes: section.classes || []
-                    }))
+                id: rows[0].id,
+                course_name: rows[0].course_name,
+                course_type: rows[0].course_type,
+                sections: rows[0].sections || []
             };
             res.json(course);
         } else {
@@ -1026,22 +1073,23 @@ router.post('/courses/:course_id/sections', async (req, res) => {
         await pool.query('BEGIN');
 
         try {
-            // Validate course exists
-            const courseCheckQuery = `SELECT id FROM courses WHERE id = $1`;
-            const { rows: courseRows } = await pool.query(courseCheckQuery, [courseId]);
-            
-            if (courseRows.length === 0) {
-                throw new Error('Course not found.');
-            }
+            // Find the highest existing display_order
+            const orderQuery = `
+                SELECT COALESCE(MAX(display_order), 0) as max_order 
+                FROM course_sections 
+                WHERE course_id = $1
+            `;
+            const { rows: orderRows } = await pool.query(orderQuery, [courseId]);
+            const newDisplayOrder = parseInt(orderRows[0].max_order, 10) + 1;
 
-            // Create section
+            // Create section with display_order
             const insertSectionQuery = `
                 INSERT INTO course_sections 
-                (course_id, section_name, credits_required, is_required, classes_to_choose)
-                VALUES ($1, $2, $3, $4, $5)
+                (course_id, section_name, credits_required, is_required, classes_to_choose, display_order)
+                VALUES ($1, $2, $3, $4, $5, $6)
                 RETURNING *
             `;
-            const sectionValues = [courseId, section_name, credits_required, is_required, classes_to_choose];
+            const sectionValues = [courseId, section_name, credits_required, is_required, classes_to_choose, newDisplayOrder];
             const { rows: newSection } = await pool.query(insertSectionQuery, sectionValues);
 
             // If elective group is provided, create it
@@ -1757,43 +1805,8 @@ router.get('/courses/:course_id/sections/:section_id', async (req, res) => {
     }
 });
 
-/**
- * @route   PUT /api/courses/:course_id/sections/reorder
- * @desc    Reorder sections in a course
- * @access  Public
- */
-router.put('/courses/:course_id/sections/reorder', async (req, res) => {
-    try {
-        const courseId = parseInt(req.params.course_id, 10);
-        const { sections } = req.body;
-        
-        if (!Array.isArray(sections) || sections.length === 0) {
-            return res.status(400).json({ error: 'Invalid sections data provided' });
-        }
-        
-        // Begin transaction
-        await pool.query('BEGIN');
-        
-        try {
-            // Update each section's display order
-            for (const section of sections) {
-                await pool.query(
-                    'UPDATE course_sections SET display_order = $1 WHERE id = $2 AND course_id = $3',
-                    [section.display_order, section.section_id, courseId]
-                );
-            }
-            
-            await pool.query('COMMIT');
-            res.json({ message: 'Section order updated successfully' });
-        } catch (error) {
-            await pool.query('ROLLBACK');
-            throw error;
-        }
-    } catch (error) {
-        console.error('Error reordering sections:', error);
-        res.status(500).json({ error: 'Failed to update section order' });
-    }
-});
+// Replace your current '/courses/:course_id/sections/reorder' PUT endpoint with this one:
+
 
 // Make sure this is at the end of your file
 module.exports = router;

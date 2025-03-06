@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS course_sections (
     credits_required INTEGER DEFAULT 0,
     is_required BOOLEAN DEFAULT true,
     classes_to_choose INTEGER,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );

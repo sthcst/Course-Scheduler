@@ -693,109 +693,197 @@ window.addEventListener('DOMContentLoaded', async () => {
             });
         });
     }
-});
 
-// Function to initialize drag and drop
-function initDragAndDrop() {
-    const sections = document.querySelectorAll('.course-section');
-    let draggedSection = null;
-    
-    sections.forEach(section => {
-        // Drag start event
-        section.addEventListener('dragstart', (e) => {
-            draggedSection = section;
-            setTimeout(() => {
-                section.classList.add('dragging');
-            }, 0);
-            
-            // Set data transfer for drag operation
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', section.dataset.sectionId);
-        });
+    // Function to initialize drag and drop
+    function initDragAndDrop() {
+        const sections = document.querySelectorAll('.course-section');
+        let draggedSection = null;
         
-        // Drag end event
-        section.addEventListener('dragend', () => {
-            section.classList.remove('dragging');
-            draggedSection = null;
+        sections.forEach(section => {
+            // Drag start event
+            section.addEventListener('dragstart', (e) => {
+                draggedSection = section;
+                setTimeout(() => {
+                    section.classList.add('dragging');
+                }, 0);
+                
+                // Set data transfer for drag operation
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', section.dataset.sectionId);
+            });
             
-            // Save the new order to the database
-            saveNewSectionOrder();
-        });
-        
-        // Drag over event - needed to allow dropping
-        section.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            if (draggedSection === section) return;
+            // Drag end event
+            section.addEventListener('dragend', () => {
+                section.classList.remove('dragging');
+                draggedSection = null;
+                
+                // Save the new order to the database
+                saveNewSectionOrder();
+            });
             
-            const box = section.getBoundingClientRect();
-            const offsetY = e.clientY - box.top - (box.height / 2);
+            // Drag over event - needed to allow dropping
+            section.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (draggedSection === section) return;
+                
+                const box = section.getBoundingClientRect();
+                const offsetY = e.clientY - box.top - (box.height / 2);
+                
+                // Determine if we're before or after this section
+                if (offsetY < 0) {
+                    section.classList.add('drag-over-top');
+                    section.classList.remove('drag-over-bottom');
+                } else {
+                    section.classList.add('drag-over-bottom');
+                    section.classList.remove('drag-over-top');
+                }
+            });
             
-            // Determine if we're before or after this section
-            if (offsetY < 0) {
-                section.classList.add('drag-over-top');
-                section.classList.remove('drag-over-bottom');
-            } else {
-                section.classList.add('drag-over-bottom');
-                section.classList.remove('drag-over-top');
-            }
-        });
-        
-        // Drag enter event
-        section.addEventListener('dragenter', (e) => {
-            e.preventDefault();
-            if (draggedSection === section) return;
-        });
-        
-        // Drag leave event
-        section.addEventListener('dragleave', () => {
-            section.classList.remove('drag-over-top', 'drag-over-bottom');
-        });
-        
-        // Drop event
-        section.addEventListener('drop', (e) => {
-            e.preventDefault();
-            if (draggedSection === section) return;
+            // Drag enter event
+            section.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                if (draggedSection === section) return;
+            });
             
-            section.classList.remove('drag-over-top', 'drag-over-bottom');
+            // Drag leave event
+            section.addEventListener('dragleave', () => {
+                section.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
             
-            const box = section.getBoundingClientRect();
-            const offsetY = e.clientY - box.top - (box.height / 2);
-            
-            if (offsetY < 0) {
-                // Drop before this section
-                courseSectionsDiv.insertBefore(draggedSection, section);
-            } else {
-                // Drop after this section
-                courseSectionsDiv.insertBefore(draggedSection, section.nextSibling);
-            }
+            // Drop event
+            section.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (draggedSection === section) return;
+                
+                section.classList.remove('drag-over-top', 'drag-over-bottom');
+                
+                const box = section.getBoundingClientRect();
+                const offsetY = e.clientY - box.top - (box.height / 2);
+                
+                if (offsetY < 0) {
+                    // Drop before this section
+                    courseSectionsDiv.insertBefore(draggedSection, section);
+                } else {
+                    // Drop after this section
+                    courseSectionsDiv.insertBefore(draggedSection, section.nextSibling);
+                }
+            });
         });
-    });
-}
-
-// Function to save the new section order
-async function saveNewSectionOrder() {
-    const sections = document.querySelectorAll('.course-section');
-    const newOrder = Array.from(sections).map((section, index) => ({
-        section_id: section.dataset.sectionId,
-        display_order: index + 1
-    }));
-    
-    try {
-        const response = await fetch(`/api/courses/${courseId}/sections/reorder`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sections: newOrder })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to update section order');
-        }
-        
-        // Optional: Show success message or update UI
-        console.log('Section order updated successfully');
-    } catch (error) {
-        console.error('Error updating section order:', error);
-        alert('Error saving section order: ' + error.message);
     }
-}
+
+    // Function to save the new section order - DIRECT URL APPROACH
+    async function saveNewSectionOrder() {
+        try {
+            // Get all sections in their current DOM order
+            const sections = document.querySelectorAll('.course-section');
+            
+            if (!sections || sections.length === 0) {
+                console.log('No sections found to reorder');
+                return;
+            }
+            
+            // Ensure course ID is a pure number, not a string
+            const courseIdInt = parseInt(courseId, 10);
+            
+            if (isNaN(courseIdInt) || courseIdInt <= 0) {
+                throw new Error('Invalid course ID');
+            }
+            
+            // Build section data manually with explicit integers
+            const sectionDataArray = [];
+            
+            // Use explicit loop to process each section
+            for (let i = 0; i < sections.length; i++) {
+                const sectionIdRaw = sections[i].dataset.sectionId;
+                const sectionIdInt = parseInt(sectionIdRaw, 10);
+                
+                if (isNaN(sectionIdInt) || sectionIdInt <= 0) {
+                    console.warn(`Skipping invalid section ID: ${sectionIdRaw}`);
+                    continue;
+                }
+                
+                sectionDataArray.push({
+                    section_id: sectionIdInt,
+                    display_order: i + 1
+                });
+            }
+            
+            // For debugging - print the exact request we're about to send
+            const requestBody = JSON.stringify({
+                sections: sectionDataArray
+            });
+            
+            console.log(`Sending request to /api/courses/${courseIdInt}/sections/reorder`);
+            console.log(`Request body: ${requestBody}`);
+            
+            // Make the request without any transformations after this point
+            const response = await fetch(`/api/courses/${courseIdInt}/sections/reorder`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: requestBody
+            });
+            
+            // Get and log the raw response
+            const responseText = await response.text();
+            console.log('Raw API Response:', responseText);
+            
+            if (response.ok) {
+                console.log('Section order updated successfully');
+                return true;
+            } else {
+                let errorMessage = 'Failed to update section order';
+                try {
+                    const errorData = JSON.parse(responseText);
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = responseText || errorMessage;
+                }
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error saving section order:', error);
+            alert('Error: ' + error.message);
+            return false;
+        }
+    }
+
+    // Only use this if the above doesn't work
+    async function saveNewSectionOrderAlternative() {
+        try {
+            // Get all sections and their order
+            const sections = document.querySelectorAll('.course-section');
+            
+            if (!sections || sections.length === 0) {
+                return;
+            }
+            
+            // Save each section order individually instead of in batch
+            for (let i = 0; i < sections.length; i++) {
+                const sectionId = parseInt(sections[i].dataset.sectionId, 10);
+                const displayOrder = i + 1;
+                
+                // Skip invalid IDs
+                if (isNaN(sectionId)) continue;
+                
+                // Make individual update request for each section
+                await fetch(`/api/courses/${parseInt(courseId, 10)}/sections/${sectionId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        display_order: displayOrder
+                    })
+                });
+            }
+            
+            console.log('All sections updated individually');
+            return true;
+        } catch (error) {
+            console.error('Error in individual updates:', error);
+            return false;
+        }
+    }
+});
