@@ -3,8 +3,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formMessage = document.getElementById('form-message');
     const backLink = document.getElementById('back-link');
     const formTitle = document.getElementById('form-title');
-    const mainHeading = document.getElementById('main-heading');
     const submitButton = document.getElementById('submit-button');
+    
+    // Update the form header title based on context
+    const formHeaderTitle = document.querySelector('.form-header h2');
 
     // Extract both course_id and section_id from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -15,18 +17,56 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (courseId && sectionId) {
         backLink.href = `course_details.html?course_id=${encodeURIComponent(courseId)}`;
         formTitle.textContent = 'Add New Class to Section';
-        mainHeading.textContent = 'Add a New Class to This Section';
+        if (formHeaderTitle) formHeaderTitle.textContent = 'Add a New Class to This Section';
         submitButton.textContent = 'Add Class to Section';
     } else if (courseId) {
         backLink.href = `course_details.html?course_id=${encodeURIComponent(courseId)}`;
         formTitle.textContent = 'Add New Class to Course';
-        mainHeading.textContent = 'Add a New Class to This Course';
+        if (formHeaderTitle) formHeaderTitle.textContent = 'Add a New Class to This Course';
         submitButton.textContent = 'Add Class to Course';
     } else {
         backLink.href = 'search.html';
         formTitle.textContent = 'Add New Class';
-        mainHeading.textContent = 'Add a New Class';
+        if (formHeaderTitle) formHeaderTitle.textContent = 'Add a New Class';
         submitButton.textContent = 'Add Class';
+    }
+
+    // Add restrictions mutual exclusivity logic
+    const restrictionsSelect = document.getElementById('class-restrictions');
+    const isSeniorCheckbox = document.getElementById('is-senior-class');
+
+    if (restrictionsSelect && isSeniorCheckbox) {
+        // Function to handle restrictions selection changes
+        function handleRestrictionChange() {
+            if (restrictionsSelect.value) {
+                // If dropdown has a value, disable senior checkbox
+                isSeniorCheckbox.checked = false;
+                isSeniorCheckbox.disabled = true;
+            } else {
+                // If dropdown is empty, enable senior checkbox
+                isSeniorCheckbox.disabled = false;
+            }
+        }
+
+        // Function to handle senior checkbox changes
+        function handleSeniorCheckboxChange() {
+            if (isSeniorCheckbox.checked) {
+                // If senior checkbox is checked, disable and reset restrictions dropdown
+                restrictionsSelect.value = '';
+                restrictionsSelect.disabled = true;
+            } else {
+                // If senior checkbox is unchecked, enable restrictions dropdown
+                restrictionsSelect.disabled = false;
+            }
+        }
+
+        // Add event listeners
+        restrictionsSelect.addEventListener('change', handleRestrictionChange);
+        isSeniorCheckbox.addEventListener('change', handleSeniorCheckboxChange);
+
+        // Initial setup - trigger both handlers to ensure proper initial state
+        handleRestrictionChange();
+        handleSeniorCheckboxChange();
     }
 
     // Prerequisites and Corequisites elements
@@ -291,7 +331,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 corequisites: selectedCorequisites.map(c => c.id),
                 days_offered: daysOffered,
                 times_offered: times_offered,
-                is_senior_class: is_senior_class
+                is_senior_class: is_senior_class,
+                restrictions: document.getElementById('class-restrictions').value,
+                description: document.getElementById('class-description').value
             };
 
             let response, resultMessage;

@@ -21,6 +21,44 @@ window.addEventListener('DOMContentLoaded', async () => {
     deleteButton.textContent = 'Delete Class';
     headerContainer.appendChild(deleteButton);
 
+    // Add restrictions mutual exclusivity logic
+    const restrictionsSelect = document.getElementById('class-restrictions');
+    const isSeniorCheckbox = document.getElementById('is-senior-class');
+
+    if (restrictionsSelect && isSeniorCheckbox) {
+        // Function to handle restrictions selection changes
+        function handleRestrictionChange() {
+            if (restrictionsSelect.value) {
+                // If dropdown has a value, disable senior checkbox
+                isSeniorCheckbox.checked = false;
+                isSeniorCheckbox.disabled = true;
+            } else {
+                // If dropdown is empty, enable senior checkbox
+                isSeniorCheckbox.disabled = false;
+            }
+        }
+
+        // Function to handle senior checkbox changes
+        function handleSeniorCheckboxChange() {
+            if (isSeniorCheckbox.checked) {
+                // If senior checkbox is checked, disable and reset restrictions dropdown
+                restrictionsSelect.value = '';
+                restrictionsSelect.disabled = true;
+            } else {
+                // If senior checkbox is unchecked, enable restrictions dropdown
+                restrictionsSelect.disabled = false;
+            }
+        }
+
+        // Add event listeners
+        restrictionsSelect.addEventListener('change', handleRestrictionChange);
+        isSeniorCheckbox.addEventListener('change', handleSeniorCheckboxChange);
+
+        // Important: Make sure both handlers are called to establish initial state
+        handleSeniorCheckboxChange();  // Check this first in case senior is checked
+        handleRestrictionChange();     // Then check restrictions
+    }
+
     // Create modal for delete confirmation
     const modal = document.createElement('div');
     modal.className = 'modal';
@@ -116,12 +154,20 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('class-number').value = classData.class_number || '';
         document.getElementById('class-name').value = classData.class_name || '';
         document.getElementById('credits').value = classData.credits != null ? classData.credits : '';
+        
+        // Populate new fields - description and restrictions
+        document.getElementById('class-description').value = classData.description || '';
+        document.getElementById('class-restrictions').value = classData.restrictions || '';
 
         // Populate is-senior-class checkbox if present
         const isSeniorCheckbox = document.getElementById('is-senior-class');
         if (isSeniorCheckbox) {
             isSeniorCheckbox.checked = Boolean(classData.is_senior_class);
         }
+
+        // Apply mutual exclusivity rules on page load
+        handleRestrictionChange();
+        handleSeniorCheckboxChange();
 
         // Handle checkboxes
         populateCheckboxes('semesters_offered', classData.semesters_offered || []);
@@ -171,6 +217,9 @@ window.addEventListener('DOMContentLoaded', async () => {
         const credits = parseInt(document.getElementById('credits').value, 10);
         const daysOffered = getSelectedValues('days_offered');
         const timesOffered = document.getElementById('times-offered').value.trim();
+        const description = document.getElementById('class-description').value.trim();
+        const restrictions = document.getElementById('class-restrictions').value;
+        const isSeniorClass = document.getElementById('is-senior-class').checked;
 
         if (!classNumber || !className || isNaN(credits)) {
             messageDiv.innerHTML = '<p style="color: red;">Please fill in all required fields.</p>';
@@ -186,9 +235,9 @@ window.addEventListener('DOMContentLoaded', async () => {
             corequisites: selectedCorequisites.map(c => c.id),
             days_offered: daysOffered,
             times_offered: timesOffered ? timesOffered.split(',').map(t => t.trim()) : [],
-            is_senior_class: document.getElementById('is-senior-class')
-                ? document.getElementById('is-senior-class').checked
-                : false
+            is_senior_class: isSeniorClass,
+            restrictions: restrictions,
+            description: description
         };
 
         try {

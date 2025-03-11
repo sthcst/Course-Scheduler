@@ -4,91 +4,136 @@
     <meta charset="UTF-8">
     <title id="form-title">Edit Class</title>
     <link rel="stylesheet" href="/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="/js/edit_class.js" defer></script>
 </head>
 <body>
-  
-<div class="header-container">
-    <a href="#" id="back-to-course">Back to Course Details</a>
-</div>
-<h1 id="main-heading">Edit Class</h1>
-   
-<form id="edit-class-form">
-    <label for="class-number">Class Number:</label>
-    <input type="text" id="class-number" name="class_number" required>
-
-    <label for="class-name">Class Name:</label>
-    <input type="text" id="class-name" name="class_name" required>
-
-    <label for="credits">Credits:</label>
-    <input type="number" id="credits" name="credits" min="1" required>
-
-    <!-- Added checkbox for senior class -->
-    <div class="input-group">
-        <label class="checkbox-label">
-            <input type="checkbox" id="is-senior-class" name="is_senior_class">
-            This is a Senior Class
-        </label>
+    <div class="header-container">
+        <a href="#" id="back-to-course">← Back to Course Details</a>
     </div>
+    
+    <form id="edit-class-form">
+        <!-- Add the red header section -->
+        <div class="form-header">
+            <h2>Edit Class</h2>
+        </div>
+        
+        <!-- First row: Class Number and Class Name -->
+        <div class="input-row">
+            <div class="input-column">
+                <label for="class-number">Class Number:</label>
+                <input type="text" id="class-number" name="class_number" required>
+            </div>
+            <div class="input-column">
+                <label for="class-name">Class Name:</label>
+                <input type="text" id="class-name" name="class_name" required>
+            </div>
+        </div>
+        
+        <!-- Second row: Credits and Times Offered -->
+        <div class="input-row">
+            <div class="input-column">
+                <label for="credits">Credits:</label>
+                <input type="number" id="credits" name="credits" min="1" required>
+            </div>
+            <div class="input-column">
+                <label for="times-offered">Times Offered:</label>
+                <input type="text" id="times-offered" name="times_offered" placeholder="e.g., 09:00-10:30, 14:00-15:30">
+            </div>
+        </div>
+        
+        <!-- Description field (full width) -->
+        <div class="full-width">
+            <label for="class-description">Description:</label>
+            <textarea id="class-description" name="description" rows="4" placeholder="Enter class description"></textarea>
+        </div>
 
-    <fieldset>
-        <legend>Semesters Offered:</legend>
-        <label>
-            <input type="checkbox" name="semesters_offered" value="Fall"> Fall
-        </label>
-        <label>
-            <input type="checkbox" name="semesters_offered" value="Winter"> Winter
-        </label>
-        <label>
-            <input type="checkbox" name="semesters_offered" value="Spring"> Spring
-        </label>
-        <label>
-            <input type="checkbox" name="semesters_offered" value="Summer"> Summer
-        </label>
-    </fieldset>
+        <!-- Restrictions fieldset -->
+        <fieldset>
+            <legend>Restrictions:</legend>
+            <div class="restriction-controls">
+                <div class="select-container">
+                    <label for="class-restrictions">Level Restriction:</label>
+                    <select id="class-restrictions" name="restrictions">
+                        <option value="">No restriction</option>
+                        <option value="Freshman and above">Freshman and above</option>
+                        <option value="Sophomore and above">Sophomore and above</option>
+                        <option value="Junior and above">Junior and above</option>
+                    </select>
+                </div>
+                
+                <div class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="is-senior-class" name="is_senior_class">
+                        Senior Only Class
+                    </label>
+                </div>
+            </div>
+        </fieldset>
 
-    <div class="input-container">
-        <label for="prerequisites">Prerequisites:</label>
-        <input type="text" id="prerequisites" name="prerequisites" placeholder="Search and select prerequisites">
-        <div id="prerequisites-suggestions" class="suggestions"></div>
-    </div>
+        <!-- Two column layout for prerequisites and corequisites -->
+        <div class="input-row">
+            <div class="input-column">
+                <div class="input-container">
+                    <label for="prerequisites">Prerequisites:</label>
+                    <input type="text" id="prerequisites" name="prerequisites" placeholder="Search and select prerequisites">
+                    <div id="prerequisites-suggestions" class="suggestions"></div>
+                </div>
+            </div>
+            <div class="input-column">
+                <div class="input-container">
+                    <label for="corequisites">Corequisites:</label>
+                    <input type="text" id="corequisites" name="corequisites" placeholder="Search and select corequisites">
+                    <div id="corequisites-suggestions" class="suggestions"></div>
+                </div>
+            </div>
+        </div>
 
-    <div class="input-container">
-        <label for="corequisites">Corequisites:</label>
-        <input type="text" id="corequisites" name="corequisites" placeholder="Search and select corequisites">
-        <div id="corequisites-suggestions" class="suggestions"></div>
-    </div>
+        <!-- Semesters Offered fieldset -->
+        <fieldset>
+            <legend>Semesters Offered:</legend>
+            <label>
+                <input type="checkbox" name="semesters_offered" value="Fall"> Fall
+            </label>
+            <label>
+                <input type="checkbox" name="semesters_offered" value="Winter"> Winter
+            </label>
+            <label>
+                <input type="checkbox" name="semesters_offered" value="Spring"> Spring
+            </label>
+            <label>
+                <input type="checkbox" name="semesters_offered" value="Summer"> Summer
+            </label>
+        </fieldset>
 
-    <fieldset>
-        <legend>Days Offered:</legend>
-        <label>
-            <input type="checkbox" name="days_offered" value="Monday"> Monday
-        </label>
-        <label>
-            <input type="checkbox" name="days_offered" value="Tuesday"> Tuesday
-        </label>
-        <label>
-            <input type="checkbox" name="days_offered" value="Wednesday"> Wednesday
-        </label>
-        <label>
-            <input type="checkbox" name="days_offered" value="Thursday"> Thursday
-        </label>
-        <label>
-            <input type="checkbox" name="days_offered" value="Friday"> Friday
-        </label>
-        <label>
-            <input type="checkbox" name="days_offered" value="Saturday"> Saturday
-        </label>
-        <label>
-            <input type="checkbox" name="days_offered" value="Sunday"> Sunday
-        </label>
-    </fieldset>
+        <!-- Days Offered fieldset -->
+        <fieldset>
+            <legend>Days Offered:</legend>
+            <label>
+                <input type="checkbox" name="days_offered" value="Monday"> Monday
+            </label>
+            <label>
+                <input type="checkbox" name="days_offered" value="Tuesday"> Tuesday
+            </label>
+            <label>
+                <input type="checkbox" name="days_offered" value="Wednesday"> Wednesday
+            </label>
+            <label>
+                <input type="checkbox" name="days_offered" value="Thursday"> Thursday
+            </label>
+            <label>
+                <input type="checkbox" name="days_offered" value="Friday"> Friday
+            </label>
+            <label>
+                <input type="checkbox" name="days_offered" value="Saturday"> Saturday
+            </label>
+            <label>
+                <input type="checkbox" name="days_offered" value="Sunday"> Sunday
+            </label>
+        </fieldset>
 
-    <label for="times-offered">Times Offered:</label>
-    <input type="text" id="times-offered" name="times_offered" placeholder="e.g., 09:00-10:30, 14:00-15:30">
-
-    <button type="submit" id="submit-button">Update Class</button>
-</form>
-<div id="form-message"></div>
+        <button type="submit" id="submit-button">Update Class</button>
+    </form>
+    <div id="form-message"></div>
 </body>
 </html>
