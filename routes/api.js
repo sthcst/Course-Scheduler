@@ -871,6 +871,21 @@ router.post('/courses/:course_id/classes', async (req, res) => {
         res.status(400).json({ error: error.message || 'Internal Server Error' });
     }
 });
+
+// *****************
+// NEW ENDPOINT: GET ALL CLASSES
+// This endpoint returns all classes regardless of course.
+router.get('/classes', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM classes');
+        res.json(rows);
+    } catch (error) {
+        console.error('Error fetching all classes:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 router.post('/courses', async (req, res) => {
     const { course_name, course_type, sections } = req.body;
 
