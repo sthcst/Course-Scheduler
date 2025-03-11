@@ -65,7 +65,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     englishLevelSelect.innerHTML = "";
     englishCourses.forEach(course => {
       const option = document.createElement("option");
-      option.value = course.course_name; // e.g., "Academic English I" or "Academic English II"
+      // For English, we use the course name directly (e.g., "EIL Level 1")
+      option.value = course.course_name;
       option.textContent = course.course_name;
       englishLevelSelect.appendChild(option);
     });
@@ -153,7 +154,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     return allowedElectives;
   }
 
-  // computeDepthMap: builds a dependency map for prerequisite chains.
   function computeDepthMap(classes) {
     let classMap = {};
     classes.forEach(cls => {
@@ -175,15 +175,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   let depthFunction; // will be computed later
+
+  // --- Updated Priority Function ---
+  // Priority order:
+  // 1. EIL/Holokai (english)
+  // 2. Major
+  // 3. Religion
+  // 4. Minor
+  // Senior classes get a very high base value so they’re normally scheduled last.
   function computePriority(cls) {
     let basePriority;
     if (cls.is_senior_class) {
-      basePriority = 10;
+      basePriority = 100; // Senior classes forced to the end
     } else if (cls.category === "english") {
       basePriority = 1;
-    } else if (isReligionClass(cls)) {
-      basePriority = cls.is_elective ? 3 : 2;
     } else if (cls.category === "major") {
+      basePriority = 2;
+    } else if (isReligionClass(cls)) {
       basePriority = 3;
     } else if (cls.category === "minor") {
       basePriority = 4;
@@ -294,6 +302,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const minor1Details = await minor1Res.json();
         const minor2Details = await minor2Res.json();
 
+        // Use the selected English course directly.
         const selectedEnglishCourse = allCourses.find(course =>
           course.course_name === englishLevel
         );
@@ -305,26 +314,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           throw new Error("Error fetching English Level course details.");
         }
         const englishDetails = await englishRes.json();
-
-        let englishClasses = [];
-        if (englishLevel === "Academic English I") {
-          const englishIClasses = extractClasses(englishDetails, false, "english");
-          const englishII = allCourses.find(course =>
-            course.course_name === "Academic English II"
-          );
-          if (!englishII) {
-            throw new Error("Academic English II not found in allCourses.");
-          }
-          const englishIIRes = await fetch(`/api/courses/${englishII.id}`);
-          if (!englishIIRes.ok) {
-            throw new Error("Error fetching Academic English II details.");
-          }
-          const englishIIDetails = await englishIIRes.json();
-          const englishIIClasses = extractClasses(englishIIDetails, false, "english");
-          englishClasses = [...englishIClasses, ...englishIIClasses];
-        } else {
-          englishClasses = extractClasses(englishDetails, false, "english");
-        }
+        // Extract classes from the chosen English course.
+        const englishClasses = extractClasses(englishDetails, false, "english");
 
         const religionCoursesArray = allCourses.filter(course =>
           course.course_type && course.course_type.toLowerCase() === "religion"
@@ -349,6 +340,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const minor1Classes = extractClasses(minor1Details, false, "minor");
         const minor2Classes = extractClasses(minor2Details, false, "minor");
 
+        // Build required classes from english, religion, major, and minor.
         let requiredClasses = [
           ...englishClasses,
           ...religionClasses,
@@ -415,12 +407,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         function computePriority(cls) {
           let basePriority;
           if (cls.is_senior_class) {
-            basePriority = 10;
+            basePriority = 100; // Senior classes get lowest priority.
           } else if (cls.category === "english") {
             basePriority = 1;
-          } else if (isReligionClass(cls)) {
-            basePriority = cls.is_elective ? 3 : 2;
           } else if (cls.category === "major") {
+            basePriority = 2;
+          } else if (isReligionClass(cls)) {
             basePriority = 3;
           } else if (cls.category === "minor") {
             basePriority = 4;
@@ -435,7 +427,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           return basePriority - availabilityBonus - depth;
         }
 
-        // --- Schedule Non-Senior Classes ---
+        // --- Schedule Non-Senior Classes (and only schedule senior classes when cumulative credits >= 90) ---
         const maxCreditsPerSemester = {
           Fall: fallWinterCredits,
           Winter: fallWinterCredits,
@@ -456,6 +448,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const maxCycleCount = 50;
 
         while (unscheduledClasses.length > 0 && fullCycleCount < maxCycleCount) {
+          console.log(`Cycle ${fullCycleCount}: Semester ${currentSemesterType} ${currentYear}, unscheduledClasses: ${unscheduledClasses.length}`);
           const maxCreditsAllowed = maxCreditsPerSemester[currentSemesterType];
           const semesterObj = {
             semester: currentSemesterType,
@@ -466,6 +459,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             religionCount: 0
           };
 
+          // Calculate cumulative scheduled credits so far.
+          const cumulativeScheduledCredits = semesterSchedule.reduce((sum, sem) => sum + sem.totalCredits, 0);
           const prevScheduledIDs = new Set();
           semesterSchedule.forEach(sem => {
             sem.classes.forEach(cls => prevScheduledIDs.add(cls.id));
@@ -486,11 +481,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             for (let index of availableIndexes) {
               let cls = unscheduledClasses[index];
+              // Check if prerequisites are met.
               if (cls.prerequisites && cls.prerequisites.length > 0) {
                 const prerequisitesMet = cls.prerequisites.every(reqId => prevScheduledIDs.has(reqId));
                 if (!prerequisitesMet) continue;
               }
-              if (englishLevel === "Academic English I" && cls.class_number === "EIL 320" && semesterCounter !== 1) {
+              // If English Level is EIL Level 1 or EIL Level 2 and the class is EIL 320, skip it if no credits have been scheduled yet.
+              if ((englishLevel === "EIL Level 1" || englishLevel === "EIL Level 2") && cls.class_number === "EIL 320" && cumulativeScheduledCredits < 1) {
+                continue;
+              }
+              // New logic: If English Level is EIL Level 1 or EIL Level 2 and the class is ENGL 101, ensure EIL 320 is scheduled.
+              if ((englishLevel === "EIL Level 1" || englishLevel === "EIL Level 2") && cls.class_number === "ENGL 101") {
+                let hasEIL320 = false;
+                semesterSchedule.forEach(sem => {
+                  sem.classes.forEach(scls => {
+                    if (scls.class_number === "EIL 320") {
+                      hasEIL320 = true;
+                    }
+                  });
+                });
+                if (!hasEIL320) continue;
+              }
+              // If this is a senior class and cumulative credits are less than 90, skip it.
+              if (cls.is_senior_class && cumulativeScheduledCredits < 90) {
                 continue;
               }
               if (isReligionClass(cls)) {
@@ -523,8 +536,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     group.push(coreqClass);
                   }
                 }
+                // If any class in the group is senior and cumulative credits are less than 90, skip the group.
+                if (group.some(item => item.is_senior_class) && cumulativeScheduledCredits < 90) {
+                  continue;
+                }
                 if (group.some(item => isReligionClass(item)) && semesterObj.religionCount >= 1) continue;
-                if (englishLevel === "Academic English I" && group.some(item => item.class_number === "EIL 320") && semesterCounter !== 1) continue;
                 if (!canGroup) continue;
                 let groupTotalCredits = group.reduce((sum, item) => sum + item.credits, 0);
                 let groupMajorCount = group.filter(item => item.isMajor).length;
@@ -558,7 +574,48 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
           } while (addedSomething);
 
-          // If no progress was made, move to next semester to avoid infinite loop.
+          // --- Fill Remaining Capacity (Greedy Fill) ---
+          let remainingCapacity = maxCreditsAllowed - semesterObj.totalCredits;
+          let fillFound;
+          do {
+            fillFound = false;
+            for (let i = 0; i < unscheduledClasses.length; i++) {
+              let cls = unscheduledClasses[i];
+              if (cls.semesters_offered && cls.semesters_offered.includes(currentSemesterType) && cls.credits <= remainingCapacity) {
+                // Check prerequisites for this class.
+                if (cls.prerequisites && cls.prerequisites.length > 0) {
+                  const prerequisitesMet = cls.prerequisites.every(reqId => prevScheduledIDs.has(reqId));
+                  if (!prerequisitesMet) continue;
+                }
+                if (cls.is_senior_class && cumulativeScheduledCredits < 90) continue;
+                if ((englishLevel === "EIL Level 1" || englishLevel === "EIL Level 2") && cls.class_number === "ENGL 101") {
+                  let hasEIL320 = false;
+                  semesterSchedule.forEach(sem => {
+                    sem.classes.forEach(scls => {
+                      if (scls.class_number === "EIL 320") {
+                        hasEIL320 = true;
+                      }
+                    });
+                  });
+                  if (!hasEIL320) continue;
+                }
+                if (isReligionClass(cls)) {
+                  if (semesterObj.religionCount >= 1) continue;
+                }
+                semesterObj.classes.push(cls);
+                semesterObj.totalCredits += cls.credits;
+                if (cls.isMajor) semesterObj.majorCount++;
+                if (isReligionClass(cls)) semesterObj.religionCount++;
+                scheduledClassIDs.push(cls.id);
+                unscheduledClasses.splice(i, 1);
+                fillFound = true;
+                break;
+              }
+            }
+            remainingCapacity = maxCreditsAllowed - semesterObj.totalCredits;
+          } while (fillFound && remainingCapacity > 0);
+
+          // If no progress was made in this semester, log a warning and move to the next semester.
           if (unscheduledClasses.length === beforeLength) {
             console.warn("No classes scheduled for semester", currentSemesterType, currentYear, "– moving to next semester.");
             semesterSchedule.push(semesterObj);
@@ -574,6 +631,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             continue;
           }
 
+          // Sort classes within this semester.
           semesterObj.classes.sort((a, b) => {
             const numA = parseInt(a.class_number.match(/\d+/)?.[0] || "0", 10);
             const numB = parseInt(b.class_number.match(/\d+/)?.[0] || "0", 10);
@@ -592,60 +650,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           fullCycleCount++;
         }
         if (fullCycleCount >= maxCycleCount) {
-          console.error("Scheduling halted after reaching maximum cycle count. Some classes could not be scheduled.");
-        }
-
-        // --- Schedule Senior Classes ---
-        let seniorClasses = combinedClasses.filter(cls => cls.is_senior_class);
-        let unscheduledSenior = seniorClasses.map(cls => ({ ...cls, scheduled: false }));
-        console.log("Starting senior scheduling with", unscheduledSenior.length, "unscheduled senior classes.");
-        while (unscheduledSenior.length > 0) {
-          let lastSem = semesterSchedule[semesterSchedule.length - 1];
-          let insertedCount = 0;
-          for (let i = 0; i < unscheduledSenior.length; i++) {
-            let senior = unscheduledSenior[i];
-            if (lastSem.totalCredits + senior.credits <= maxCreditsPerSemester[lastSem.semester]) {
-              if (isReligionClass(senior) && lastSem.religionCount >= 1) continue;
-              lastSem.classes.push(senior);
-              lastSem.totalCredits += senior.credits;
-              if (senior.isMajor) lastSem.majorCount++;
-              if (isReligionClass(senior)) lastSem.religionCount++;
-              unscheduledSenior.splice(i, 1);
-              insertedCount++;
-              i--;
-            }
-          }
-          if (insertedCount === 0) {
-            const newSem = {
-              semester: currentSemesterType,
-              year: currentYear,
-              classes: [],
-              totalCredits: 0,
-              majorCount: 0,
-              religionCount: 0
-            };
-            for (let i = 0; i < unscheduledSenior.length; i++) {
-              let senior = unscheduledSenior[i];
-              if (newSem.totalCredits + senior.credits <= maxCreditsPerSemester[newSem.semester]) {
-                if (isReligionClass(senior) && newSem.religionCount >= 1) continue;
-                newSem.classes.push(senior);
-                newSem.totalCredits += senior.credits;
-                if (senior.isMajor) newSem.majorCount++;
-                if (isReligionClass(senior)) newSem.religionCount++;
-                unscheduledSenior.splice(i, 1);
-                i--;
-              }
-            }
-            semesterSchedule.push(newSem);
-            const currentIndex = semesterOrder.indexOf(currentSemesterType);
-            if (currentIndex === semesterOrder.length - 1) {
-              currentSemesterType = semesterOrder[0];
-              currentYear++;
-            } else {
-              currentSemesterType = semesterOrder[currentIndex + 1];
-            }
-            semesterCounter++;
-          }
+          console.error("Infinite loop detected: Scheduling halted after reaching maximum cycle count. Some classes could not be scheduled.");
         }
 
         console.log("Semester Grouped Schedule:", semesterSchedule);
