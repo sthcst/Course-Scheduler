@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS course_sections (
     section_name VARCHAR(255) NOT NULL,
     credits_required INTEGER DEFAULT 0,
     is_required BOOLEAN DEFAULT true,
-    classes_to_choose INTEGER,
+    credits_needed_to_take INTEGER,
     display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS classes (
     days_offered VARCHAR(50)[] DEFAULT '{}',
     times_offered VARCHAR(50)[] DEFAULT '{}',
     is_senior_class BOOLEAN DEFAULT false,
+    description TEXT,
+    restrictions TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );

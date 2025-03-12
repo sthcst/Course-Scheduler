@@ -128,7 +128,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const sectionData = {
             section_name: document.getElementById('section-name').value,
             is_required: sectionTypeSelect.value === 'required',
-            classes_to_choose: sectionTypeSelect.value === 'elective' ? 
+            credits_needed_to_take: sectionTypeSelect.value === 'elective' ? 
                 parseInt(document.getElementById('classes-to-choose').value) : null
         };
 
@@ -316,7 +316,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                                     <img class="section-icon" src="./assets/editclassbutton.png" alt="Edit section" data-section="${section.id}">
                                 </h3>
                                 <div class="section-info">
-                                    ${section.is_required ? 'Required' : `Choose ${section.classes_to_choose} classes`}
+                                    ${section.is_required ? 'Required' : `Take a total of ${section.credits_needed_to_take} credits`}
                                 </div>
                             </div>
                             <div class="section-header-actions">
@@ -492,7 +492,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('edit-section-type').value = sectionData.is_required ? 'required' : 'elective';
                     
                     if (!sectionData.is_required) {
-                        document.getElementById('edit-classes-to-choose').value = sectionData.classes_to_choose;
+                        document.getElementById('edit-classes-to-choose').value = sectionData.credits_needed_to_take || 1;
                         editElectiveOptions.style.display = 'block';
                     } else {
                         editElectiveOptions.style.display = 'none';
@@ -563,7 +563,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const updatedData = {
             section_name: document.getElementById('edit-section-name').value,
             is_required: !isElective,
-            classes_to_choose: isElective ? 
+            credits_needed_to_take: isElective ? 
                 parseInt(document.getElementById('edit-classes-to-choose').value) : null
         };
 
