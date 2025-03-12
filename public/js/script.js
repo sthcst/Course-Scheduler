@@ -117,7 +117,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     return 10;
   }
 
-  // getAllowedElectives: returns an array of allowed elective classes from courses in selectedCourseIds.
+  // --- Updated Allowed Electives Function ---
+  // Now uses "credits_needed_to_take" instead of "classes_to_choose" and sums candidate credits.
   function getAllowedElectives(allCourses, selectedCourseIds) {
     let allowedElectives = [];
     allCourses.forEach(course => {
@@ -137,11 +138,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const numB = parseInt(b.class_number.match(/\d+/)?.[0] || "0", 10);
                 return numA - numB;
               });
-              let allowedCount = section.classes_to_choose || 0;
+              // Use the new field: credits_needed_to_take
+              let allowedCredits = section.credits_needed_to_take || 0;
+              let accumulatedCredits = 0;
               for (let i = 0; i < candidates.length; i++) {
-                if (i < allowedCount) {
+                // Only add a candidate if adding its credits does not exceed allowedCredits
+                if (accumulatedCredits + candidates[i].credits <= allowedCredits) {
                   candidates[i].allowed = true;
                   allowedElectives.push(candidates[i]);
+                  accumulatedCredits += candidates[i].credits;
                 } else {
                   candidates[i].allowed = false;
                 }
@@ -185,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Senior classes get a very high base value so they’re normally scheduled last.
   function computePriority(cls) {
     let basePriority;
-    if (cls.is_senior_class) {
+    if (cls.is_senior_class === true) {
       basePriority = 100; // Senior classes forced to the end
     } else if (cls.category === "english") {
       basePriority = 1;
@@ -406,7 +411,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         function computePriority(cls) {
           let basePriority;
-          if (cls.is_senior_class) {
+          if (cls.is_senior_class === true) {
             basePriority = 100; // Senior classes get lowest priority.
           } else if (cls.category === "english") {
             basePriority = 1;
@@ -443,9 +448,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         let unscheduledClasses = combinedClasses.map(cls => ({ ...cls, scheduled: false }));
         console.log("Starting scheduling loop with", unscheduledClasses.length, "unscheduled classes.");
 
-        // Safeguard counter to prevent infinite loops (max 50 full cycles)
+        // Safeguard counter to prevent infinite loops (max 15 full cycles)
         let fullCycleCount = 0;
-        const maxCycleCount = 50;
+        const maxCycleCount = 15;
 
         while (unscheduledClasses.length > 0 && fullCycleCount < maxCycleCount) {
           console.log(`Cycle ${fullCycleCount}: Semester ${currentSemesterType} ${currentYear}, unscheduledClasses: ${unscheduledClasses.length}`);
@@ -486,11 +491,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const prerequisitesMet = cls.prerequisites.every(reqId => prevScheduledIDs.has(reqId));
                 if (!prerequisitesMet) continue;
               }
-              // If English Level is EIL Level 1 or EIL Level 2 and the class is EIL 320, skip it if no credits have been scheduled yet.
-              if ((englishLevel === "EIL Level 1" || englishLevel === "EIL Level 2") && cls.class_number === "EIL 320" && cumulativeScheduledCredits < 1) {
+              // If English Level is EIL Level 1 or EIL Level 2 and the class is EIL 320, skip it in the first semester.
+              if ((englishLevel === "EIL Level 1" || englishLevel === "EIL Level 2") && cls.class_number === "EIL 320" && semesterCounter === 0) {
                 continue;
               }
-              // New logic: If English Level is EIL Level 1 or EIL Level 2 and the class is ENGL 101, ensure EIL 320 is scheduled.
+              // New logic: For ENGL 101, ensure that EIL 320 has been scheduled.
               if ((englishLevel === "EIL Level 1" || englishLevel === "EIL Level 2") && cls.class_number === "ENGL 101") {
                 let hasEIL320 = false;
                 semesterSchedule.forEach(sem => {
@@ -503,7 +508,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (!hasEIL320) continue;
               }
               // If this is a senior class and cumulative credits are less than 90, skip it.
-              if (cls.is_senior_class && cumulativeScheduledCredits < 90) {
+              if (cls.is_senior_class === true && cumulativeScheduledCredits < 90) {
                 continue;
               }
               if (isReligionClass(cls)) {
@@ -537,7 +542,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   }
                 }
                 // If any class in the group is senior and cumulative credits are less than 90, skip the group.
-                if (group.some(item => item.is_senior_class) && cumulativeScheduledCredits < 90) {
+                if (group.some(item => item.is_senior_class === true) && cumulativeScheduledCredits < 90) {
                   continue;
                 }
                 if (group.some(item => isReligionClass(item)) && semesterObj.religionCount >= 1) continue;
@@ -582,12 +587,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             for (let i = 0; i < unscheduledClasses.length; i++) {
               let cls = unscheduledClasses[i];
               if (cls.semesters_offered && cls.semesters_offered.includes(currentSemesterType) && cls.credits <= remainingCapacity) {
-                // Check prerequisites for this class.
                 if (cls.prerequisites && cls.prerequisites.length > 0) {
                   const prerequisitesMet = cls.prerequisites.every(reqId => prevScheduledIDs.has(reqId));
                   if (!prerequisitesMet) continue;
                 }
-                if (cls.is_senior_class && cumulativeScheduledCredits < 90) continue;
+                if (cls.is_senior_class === true && cumulativeScheduledCredits < 90) continue;
                 if ((englishLevel === "EIL Level 1" || englishLevel === "EIL Level 2") && cls.class_number === "ENGL 101") {
                   let hasEIL320 = false;
                   semesterSchedule.forEach(sem => {
@@ -615,7 +619,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             remainingCapacity = maxCreditsAllowed - semesterObj.totalCredits;
           } while (fillFound && remainingCapacity > 0);
 
-          // If no progress was made in this semester, log a warning and move to the next semester.
           if (unscheduledClasses.length === beforeLength) {
             console.warn("No classes scheduled for semester", currentSemesterType, currentYear, "– moving to next semester.");
             semesterSchedule.push(semesterObj);
@@ -631,7 +634,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             continue;
           }
 
-          // Sort classes within this semester.
           semesterObj.classes.sort((a, b) => {
             const numA = parseInt(a.class_number.match(/\d+/)?.[0] || "0", 10);
             const numB = parseInt(b.class_number.match(/\d+/)?.[0] || "0", 10);
@@ -650,7 +652,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           fullCycleCount++;
         }
         if (fullCycleCount >= maxCycleCount) {
-          console.error("Infinite loop detected: Scheduling halted after reaching maximum cycle count. Some classes could not be scheduled.");
+          console.error("Scheduling halted after reaching maximum cycle count. Some classes could not be scheduled.");
         }
 
         console.log("Semester Grouped Schedule:", semesterSchedule);
