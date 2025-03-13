@@ -62,14 +62,16 @@
         <!-- Row 2, Left Box: Search Majors and Minors -->
         <div class="box" id="search-courses-box">
           <h2>Programs</h2>
-          <div class="course-actions">
-            <select id="courseDropdown">
-              <option value="">Select a Course</option>
-            </select>
-            <button id="viewCourseButton">View Course</button>
+          <div id="course-search-container">
+            <input
+              type="text"
+              id="courseSearchInput"
+              placeholder="Search for programs..."
+              autocomplete="off"
+            />
+            <ul id="courseSearchResults"></ul>
             <button id="addCourseButton">Add Course</button>
           </div>
-          <div id="results"></div>
         </div>
 
         <!-- Row 2, Right Box: Search Classes -->

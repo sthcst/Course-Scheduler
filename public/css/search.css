@@ -338,6 +338,57 @@ header h1 {
     background-color: #2980b9;
 }
 
+/* Add to search.css to style the new course search */
+#course-search-container {
+  width: 100%;
+}
+
+#courseSearchInput {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+#courseSearchResults {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#courseSearchResults li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#courseSearchResults li:hover {
+  background-color: #f8f8f8;
+}
+
+#courseSearchResults li .course-type {
+  font-weight: 500;
+  color: #ba0c2f;
+}
+
+#addCourseButton {
+    padding: 10px 15px;
+    font-size: 1em;
+    border: 1px solid #ccc; /* Optional, if you want a border */
+    border-radius: 4px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px; /* Adjust margin as needed */
+}
+
 /* Responsive Adjustments */
 @media (max-width: 600px) {
     .grid-container {

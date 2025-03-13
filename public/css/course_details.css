@@ -233,6 +233,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    margin-left: 20px;
     padding-bottom: 10px;
     border-bottom: 2px solid #e9ecef;
 }
@@ -582,7 +583,7 @@ body {
 .section-footer {
     position: absolute;
     bottom: 15px;    /* Change from -20px to 15px */
-    left: 15px;      /* Add left padding */
+    left: 30px;      /* Add left padding */
     width: auto;     /* Change from 100% */
     display: flex;
     gap: 10px;

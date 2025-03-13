@@ -5,11 +5,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const profilebutton = document.getElementById('profilebutton');
     const menubutton = document.getElementById('menubutton');
 
-    // Elements for Search Courses box
-    const courseDropdown = document.getElementById('courseDropdown');
-    const viewCourseButton = document.getElementById('viewCourseButton');
+    // Elements for Search Courses box (updated)
+    const courseSearchInput = document.getElementById('courseSearchInput');
+    const courseSearchResults = document.getElementById('courseSearchResults');
     const addCourseButton = document.getElementById('addCourseButton');
-    const resultsDiv = document.getElementById('results');
 
     // Elements for Search Classes box
     const classSearchInput = document.getElementById('classSearchInput');
@@ -61,32 +60,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         classesCount.textContent = 'Error';
     }
 
-    // Fetch courses for dropdown
-    try {
-        const response = await fetch('/api/courses');
-        if (!response.ok) {
-            throw new Error(`Error fetching courses: ${response.statusText}`);
-        }
-        const courses = await response.json();
-        courses.forEach(course => {
-            const option = document.createElement('option');
-            option.value = course.id;
-            option.textContent = `${course.course_type}: ${course.course_name}`;
-            courseDropdown.appendChild(option);
-        });
-    } catch (error) {
-        console.error("Error fetching courses:", error);
-        resultsDiv.innerHTML = `<p style="color: red;">An error occurred while loading courses: ${error.message}</p>`;
-    }
-
-    viewCourseButton.addEventListener('click', () => {
-        const selectedCourseId = courseDropdown.value;
-        if (!selectedCourseId) {
-            resultsDiv.innerHTML = '<p style="color: red;">Please select a course to view.</p>';
-            return;
-        }
-        window.location.href = `/course_details.html?course_id=${encodeURIComponent(selectedCourseId)}`;
+    // New Course Search Functionality
+    let courseDebounceTimeout;
+    courseSearchInput.addEventListener('input', () => {
+        clearTimeout(courseDebounceTimeout);
+        courseDebounceTimeout = setTimeout(() => {
+            performCourseSearch();
+        }, 300);
     });
+
+    async function performCourseSearch() {
+        const query = courseSearchInput.value.trim().toLowerCase();
+        courseSearchResults.innerHTML = '';
+
+        if (query === '') return;
+
+        try {
+            const response = await fetch(`/api/courses/search?query=${encodeURIComponent(query)}&limit=5`);
+            if (!response.ok) {
+                let errorMessage = response.statusText;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (parseError) { }
+                throw new Error(`Error searching courses: ${errorMessage}`);
+            }
+            const data = await response.json();
+            const courses = data.courses || [];
+
+            if (courses.length === 0) {
+                courseSearchResults.innerHTML = '<li>No matching programs found.</li>';
+                return;
+            }
+
+            courses.forEach(course => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="course-type">${course.course_type || 'N/A'}</span>: ${course.course_name}
+                `;
+                li.addEventListener('click', () => {
+                    window.location.href = `/course_details.html?course_id=${encodeURIComponent(course.id)}`;
+                });
+                courseSearchResults.appendChild(li);
+            });
+
+        } catch (error) {
+            console.error('Error during course search:', error);
+            courseSearchResults.innerHTML = `<li style="color: red;">${error.message}</li>`;
+        }
+    }
 
     addCourseButton.addEventListener('click', () => {
         window.location.href = '/add_course.html';

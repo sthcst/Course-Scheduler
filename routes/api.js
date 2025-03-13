@@ -21,6 +21,45 @@ pool.connect((err, client, release) => {
     });
 });
 
+/**
+ * @route   GET /courses/search
+ * @desc    Search for courses by name or type
+ * @access  Public
+ */
+router.get('/courses/search', async (req, res) => {
+    try {
+        const { query, limit = 5 } = req.query;
+        
+        if (!query) {
+            return res.status(400).json({ error: 'Query parameter is required.' });
+        }
+
+        const searchQuery = `
+            SELECT 
+                c.id,
+                c.course_name,
+                c.course_type
+            FROM courses c
+            WHERE 
+                c.course_name ILIKE $1 OR
+                c.course_type ILIKE $1
+            ORDER BY c.course_name
+            LIMIT $2
+        `;
+        
+        const searchValue = [`%${query}%`, parseInt(limit, 10) || 5];
+        const { rows } = await pool.query(searchQuery, searchValue);
+
+        res.json({ 
+            count: rows.length,
+            courses: rows 
+        });
+    } catch (error) {
+        console.error('❌ Error searching courses:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // Move this route BEFORE any route with pattern /courses/:course_id/sections/:section_id
 router.put('/courses/:course_id/sections/reorder', async (req, res) => {
     try {
