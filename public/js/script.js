@@ -94,7 +94,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       let allClassesArr = [];
       programDetails.sections.forEach(section => {
         if (Array.isArray(section.classes)) {
-          const classesWithSection = section.classes.map(cls => ({ ...cls, sectionId: section.id }));
+          // Attach sectionId and, for electives, the credit limit (from credits_needed_to_take)
+          const classesWithSection = section.classes.map(cls => {
+            let newCls = { ...cls, sectionId: section.id };
+            if (section.is_required === false && section.credits_needed_to_take) {
+              newCls.electiveCreditLimit = section.credits_needed_to_take;
+            }
+            return newCls;
+          });
           allClassesArr = allClassesArr.concat(classesWithSection);
         }
       });
@@ -138,11 +145,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const numB = parseInt(b.class_number.match(/\d+/)?.[0] || "0", 10);
                 return numA - numB;
               });
-              // Use the new field: credits_needed_to_take
               let allowedCredits = section.credits_needed_to_take || 0;
               let accumulatedCredits = 0;
               for (let i = 0; i < candidates.length; i++) {
-                // Only add a candidate if adding its credits does not exceed allowedCredits
                 if (accumulatedCredits + candidates[i].credits <= allowedCredits) {
                   candidates[i].allowed = true;
                   allowedElectives.push(candidates[i]);
@@ -390,6 +395,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           cls.isPrereq = prereqSet.has(cls.id);
         });
 
+        // Deduplicate combined classes.
         const uniqueClassesMap = new Map();
         combinedClasses.forEach(cls => {
           uniqueClassesMap.set(cls.id, cls);
@@ -445,6 +451,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         let semesterCounter = 0;
         const semesterSchedule = [];
         const scheduledClassIDs = [];
+        // Initialize a map to track elective credits scheduled per section.
+        let electiveCreditsScheduled = {};
         let unscheduledClasses = combinedClasses.map(cls => ({ ...cls, scheduled: false }));
         console.log("Starting scheduling loop with", unscheduledClasses.length, "unscheduled classes.");
 
@@ -495,7 +503,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               if ((englishLevel === "EIL Level 1" || englishLevel === "EIL Level 2") && cls.class_number === "EIL 320" && semesterCounter === 0) {
                 continue;
               }
-              // New logic: For ENGL 101, ensure that EIL 320 has been scheduled.
+              // For ENGL 101, ensure that EIL 320 has been scheduled.
               if ((englishLevel === "EIL Level 1" || englishLevel === "EIL Level 2") && cls.class_number === "ENGL 101") {
                 let hasEIL320 = false;
                 semesterSchedule.forEach(sem => {
@@ -515,25 +523,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (semesterObj.religionCount >= 1) continue;
               }
               if (semesterObj.totalCredits + cls.credits > maxCreditsAllowed) continue;
-
+              
+              // --- Updated Corequisite Logic ---
               if (cls.corequisites && cls.corequisites.length > 0) {
                 let group = [cls];
-                let canGroup = true;
-                for (let coreqId of cls.corequisites) {
-                  let coreqIndex = unscheduledClasses.findIndex(x =>
-                    x.id === coreqId &&
-                    x.semesters_offered &&
-                    x.semesters_offered.includes(currentSemesterType)
+                // Extract corequisite IDs (handle objects or numbers)
+                let coreqIds = cls.corequisites.map(coreq =>
+                  (typeof coreq === 'object' && coreq !== null) ? (coreq.id || coreq.class_id) : coreq
+                );
+                let missing = false;
+                for (let coreqId of coreqIds) {
+                  if (coreqId === cls.id) continue;
+                  let coreqClass = unscheduledClasses.find(x =>
+                    x.id === coreqId && x.semesters_offered && x.semesters_offered.includes(currentSemesterType)
                   );
-                  if (coreqIndex === -1) {
-                    canGroup = false;
+                  if (!coreqClass) {
+                    missing = true;
                     break;
                   }
-                  let coreqClass = unscheduledClasses[coreqIndex];
                   if (coreqClass.prerequisites && coreqClass.prerequisites.length > 0) {
-                    const coreqPrereqMet = coreqClass.prerequisites.every(reqId => prevScheduledIDs.has(reqId));
+                    let coreqPrereqMet = coreqClass.prerequisites.every(reqId => prevScheduledIDs.has(reqId));
                     if (!coreqPrereqMet) {
-                      canGroup = false;
+                      missing = true;
                       break;
                     }
                   }
@@ -541,12 +552,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     group.push(coreqClass);
                   }
                 }
+                if (missing) continue;
                 // If any class in the group is senior and cumulative credits are less than 90, skip the group.
                 if (group.some(item => item.is_senior_class === true) && cumulativeScheduledCredits < 90) {
                   continue;
                 }
-                if (group.some(item => isReligionClass(item)) && semesterObj.religionCount >= 1) continue;
-                if (!canGroup) continue;
+                if (group.some(item => isReligionClass(item)) && semesterObj.religionCount >= 1) {
+                  continue;
+                }
                 let groupTotalCredits = group.reduce((sum, item) => sum + item.credits, 0);
                 let groupMajorCount = group.filter(item => item.isMajor).length;
                 if (semesterObj.totalCredits + groupTotalCredits <= maxCreditsAllowed &&
