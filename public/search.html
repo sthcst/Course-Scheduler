@@ -8,57 +8,58 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="/css/components.css">
     <link rel="stylesheet" href="/css/search.css" />
+    <!-- Add partials.js before other scripts -->
+    <script src="/js/partials.js"></script>
   </head>
   <body>
-    <div class="container">
-      <div id="menubar">
-        <img
-          class="icon left"
-          id="morebutton"
-          src="./assets/morebutton.png"
-          alt="more"
-        />
+    <div id="menu-container">
+      <!-- Menu bar will be loaded here -->
+    </div>
+    
+    <div class="menu-spacer"></div>
+    
+    <div id="red-background">
+      <img src="./assets/turtle.png" alt="">
+      <img src="./assets/hawaiiandesign.png" alt="">
+      
 
-        <div id="profile-container">
-          <img
-            class="icon right"
-            id="profilebutton"
-            src="./assets/profilebutton.png"
-            alt="more"
-          />
-          <div class="profile-dropdown">
-            <a id="editbutton" href="">
-              <img class="icon" src="./assets/editbutton.png" alt="edit" />
-            </a>
-            <a id="logoutbutton" href="">
-              <img class="icon" src="./assets/logoutbutton.png" alt="edit" />
-            </a>
-          </div>
-        </div>
-      </div>
+    </div>
+    
+    <div class="container">
+      
       <header>
         <h1>Welcome, Isaac</h1>
-        <a class="back-link" href="/single.html">Back to Scheduler</a>
       </header>
+      
+      <div class="stats-row">
+        <div class="box stat-box" id="majors-box">
+          <img src="/assets/addnewclassbutton.png" class="add-button" alt="Add">
+          <h2 id="majors-count">0</h2>
+          <p>Majors</p>
+        </div>
+        
+        <div class="box stat-box" id="minors-box">
+          <img src="/assets/addnewclassbutton.png" class="add-button" alt="Add">
+          <h2 id="minors-count">0</h2>
+          <p>Minors</p>
+        </div>
+        
+        <div class="box stat-box" id="classes-box">
+          <img src="/assets/addnewclassbutton.png" class="add-button" alt="Add">
+          <h2 id="classes-count">0</h2>
+          <p>Classes</p>
+        </div>
+        
+        <div class="box stat-box" id="users-box">
+          <img src="/assets/addnewclassbutton.png" class="add-button" alt="Add">
+          <h2 id="users-count">1</h2>
+          <p>Users</p>
+        </div>
+      </div>
 
       <div class="grid-container">
-        <!-- Row 1, Full Width Statistics Box -->
-        <div class="box full-box" id="stats-box">
-          <div class="stat" id="majors-stat">
-            <h2 id="majors-count">0</h2>
-            <p>Majors</p>
-          </div>
-          <div class="stat" id="minors-stat">
-            <h2 id="minors-count">0</h2>
-            <p>Minors</p>
-          </div>
-          <div class="stat" id="classes-stat">
-            <h2 id="classes-count">0</h2>
-            <p>Classes</p>
-          </div>
-        </div>
-
         <!-- Row 2, Left Box: Search Majors and Minors -->
         <div class="box" id="search-courses-box">
           <h2>Programs</h2>
@@ -69,6 +70,7 @@
               placeholder="Search for programs..."
               autocomplete="off"
             />
+            <span class="search-clear-btn" id="courseSearchClear">✕</span>
             <ul id="courseSearchResults"></ul>
             <button id="addCourseButton">Add Course</button>
           </div>
@@ -84,28 +86,30 @@
               placeholder="Search for classes..."
               autocomplete="off"
             />
+            <span class="search-clear-btn" id="classSearchClear">✕</span>
             <ul id="classSearchResults"></ul>
             <button id="addNewClassButton">Add Class</button>
-          </div>
-        </div>
-
-        <!-- Row 3, Full Width: Reserved Content -->
-        <div class="box" id="search-classes-box">
-          <h2>Users</h2>
-          <div id="class-search-container">
-            <input
-              type="text"
-              id="classSearchInput"
-              placeholder="Search for classes..."
-              autocomplete="off"
-            />
-            <ul id="classSearchResults"></ul>
-            <button id="addNewClassButton">Add User</button>
           </div>
         </div>
       </div>
     </div>
 
+    <script>
+      // Load the menu bar partial when the page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        loadPartial('/partials/menu-bar.html', 'menu-container');
+        
+        // Fix animation by adding class after a delay
+        setTimeout(function() {
+          const boxes = document.querySelectorAll('.box:not(.stat-box)');
+          boxes.forEach((box, index) => {
+            setTimeout(() => {
+              box.classList.add('animated');
+            }, index * 200); // Stagger the animations
+          });
+        }, 100);
+      });
+    </script>
     <script src="/js/search.js"></script>
   </body>
 </html>

@@ -1,0 +1,151 @@
+/* Menu Bar Styles */
+#menubar {
+    position: fixed; /* Required for full width */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    pointer-events: none;
+    z-index: 1000;
+    background-image: linear-gradient(to bottom, #ffffff, #f9f9f9);
+    box-shadow: 
+        0 2px 4px -1px rgba(0, 0, 0, 0.2),
+        0 4px 5px 0 rgba(0, 0, 0, 0.14),
+        0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 0;
+}
+/* Style the icons */
+#menubar .icon {
+    position: fixed;
+    transform: translateX(-50%); 
+    width: 100px;
+    height: auto;
+    pointer-events: auto;
+}
+  
+/* Left icon positioning fix */
+#menubar .icon.left {
+    position: fixed;
+    left: 50%; /* Position at 50% of screen width */
+    transform: translateX(-50%); /* Offset by half the icon width */
+    top: 2px; /* Keep your current top positioning */
+    bottom: auto;
+    width: 100px;
+    height: auto;
+    pointer-events: auto;
+}
+  
+
+/* Profile container and dropdown - perfect vertical centering */
+#profile-container {
+    position: fixed;
+    
+    
+    overflow: visible;
+   
+  
+}
+  
+#profilebutton {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    pointer-events: auto; /* Make clickable despite menubar's pointer-events: none */
+}
+
+/* Make profile button image smaller */
+#profile-container #profilebutton.icon {
+    right: -3px;
+    top: 15px;
+    width: 80px !important;  /* Reduced from 30px */
+    height: 80px !important; /* Reduced from 30px */
+}
+  
+/* More button dropdown */
+.more-dropdown {
+    position: fixed;
+    top: 40px;  /* Increased from 20px */
+    left: -300px;
+    width: 300px;
+    height: 80px;
+    background-color: #a9a9a9;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    transition: left 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+  
+#more-container:hover .more-dropdown {
+    left: 0;
+    opacity: 1;
+    pointer-events: all;
+}
+  
+.more-dropdown a img {
+    position: absolute;
+    top: 40px;
+    left: 190px;
+    transform: translate(50%, 55%);
+    width: 50px !important;
+}
+
+/* Remove this from components.css */
+body {
+  margin: 0;
+}
+
+/* Create a spacer element */
+.menu-spacer {
+  height: 100px; /* Same as menu height */
+  width: 100%;
+  display: block;
+}
+
+/* Keep your container styling */
+.container {
+  position: relative;
+  z-index: 1;
+  padding: 0 20px;
+}
+
+/* And red background styling */
+#red-background {
+  position: relative;
+  z-index: 2;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+}
+
+/* Make sure header doesn't add too much extra space */
+header {
+  margin-top: 0;
+}
+
+/* Back to Scheduler link styling */
+.back-link {
+    position: fixed;
+    left: 20px;
+    top: 40px; /* Center vertically in the 100px tall menu bar */
+    text-decoration: none; /* Remove underline */
+    color: #333; /* Dark gray text color */
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    pointer-events: auto; /* Make clickable */
+    z-index: 1001; /* Ensure it's above the menubar */
+}
+
+.back-link:hover {
+    color: #ba0c2f; /* Red color on hover matching your theme */
+}
+
+.back-link::before {
+    content: "←"; /* Add left arrow before text */
+    margin-right: 6px;
+}

@@ -35,6 +35,28 @@ body {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
     border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden; /* Important: Add this to clip the image */
+}
+
+/* Style for the polynesian design background image */
+#course-info .background-design {
+    position: absolute;
+    width: 70%; /* Adjust size relative to container */
+    left: 20%; /* Position from left edge */
+    top: -50px; /* Position higher than container top */
+    opacity: 0.7; /* Make it semi-transparent */
+    transform: translate(-50%, 0); /* Center on left position */
+    transform-origin: center;
+    max-width: 1200px; /* Prevent oversize on large screens */
+    z-index: 1; /* Place behind text */
+}
+
+/* Ensure text stays above the image */
+#course-info h2, 
+#course-info h3,
+#course-info .editanddelete {
+    position: relative;
+    z-index: 2;
 }
 
 #course-info h2 {

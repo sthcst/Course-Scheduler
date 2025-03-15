@@ -95,9 +95,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             courses.forEach(course => {
                 const li = document.createElement('li');
-                li.innerHTML = `
-                    <span class="course-type">${course.course_type || 'N/A'}</span>: ${course.course_name}
-                `;
+                // Changed to display just the course name without the type
+                li.innerHTML = `${course.course_name}`;
                 li.addEventListener('click', () => {
                     window.location.href = `/course_details.html?course_id=${encodeURIComponent(course.id)}`;
                 });
@@ -123,6 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 300);
     });
 
+    // Fix class search results click functionality
     async function performClassSearch() {
         const query = classSearchInput.value.trim().toLowerCase();
         classSearchResults.innerHTML = '';
@@ -153,23 +153,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             classes.forEach(cls => {
                 const li = document.createElement('li');
-                li.innerHTML = `
-                    ${cls.class_number}: ${cls.class_name}
-                    <button class="view-class-button" data-class-id="${cls.id}">View Class</button>
-                `;
-                classSearchResults.appendChild(li);
-            });
-
-            const viewButtons = document.querySelectorAll('.view-class-button');
-            viewButtons.forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const classId = event.target.getAttribute('data-class-id');
-                    if (!classId) {
-                        alert('Invalid Class ID.');
-                        return;
-                    }
-                    window.location.href = `/edit_class.html?class_id=${encodeURIComponent(classId)}`;
+                // Simplify to just show class number and name
+                li.textContent = `${cls.class_number}: ${cls.class_name}`;
+                
+                // Add click handler to the entire list item
+                li.addEventListener('click', () => {
+                    window.location.href = `/edit_class.html?class_id=${encodeURIComponent(cls.id)}`;
                 });
+                
+                classSearchResults.appendChild(li);
             });
 
         } catch (error) {
@@ -180,5 +172,107 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     addNewClassButton.addEventListener('click', () => {
         window.location.href = '/add_new_class.html';
+    });
+
+    // Handle search results display and clear functionality
+    setupSearch('courseSearchInput', 'courseSearchResults', 'courseSearchClear');
+    setupSearch('classSearchInput', 'classSearchResults', 'classSearchClear');
+  
+    // Close results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#course-search-container') && 
+            !e.target.closest('#class-search-container')) {
+            hideAllResults();
+        }
+    });
+});
+
+function setupSearch(inputId, resultsId, clearBtnId) {
+    const input = document.getElementById(inputId);
+    const results = document.getElementById(resultsId);
+    const clearBtn = document.getElementById(clearBtnId);
+  
+    // Show clear button and results when input has content
+    input.addEventListener('input', function() {
+        if (this.value) {
+            clearBtn.classList.add('visible');
+            results.style.display = 'block';
+        } else {
+            clearBtn.classList.remove('visible');
+            results.style.display = 'none';
+        }
+    });
+  
+    // Clear button functionality
+    clearBtn.addEventListener('click', function() {
+        input.value = '';
+        results.style.display = 'none';
+        clearBtn.classList.remove('visible');
+        input.focus();
+    });
+}
+
+function hideAllResults() {
+    // Hide all search results and clear buttons
+    const results = document.querySelectorAll('#courseSearchResults, #classSearchResults');
+    const clearBtns = document.querySelectorAll('.search-clear-btn');
+  
+    results.forEach(el => el.style.display = 'none');
+    clearBtns.forEach(btn => btn.classList.remove('visible'));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const courseInput = document.getElementById('courseSearchInput');
+    const classInput = document.getElementById('classSearchInput');
+    const courseResults = document.getElementById('courseSearchResults');
+    const classResults = document.getElementById('classSearchResults');
+    const courseClear = document.getElementById('courseSearchClear');
+    const classClear = document.getElementById('classSearchClear');
+    
+    // Show/hide search results based on input
+    courseInput.addEventListener('input', function() {
+        if (this.value) {
+            courseResults.style.display = 'block';
+            courseClear.classList.add('visible');
+        } else {
+            courseResults.style.display = 'none';
+            courseClear.classList.remove('visible');
+        }
+    });
+    
+    classInput.addEventListener('input', function() {
+        if (this.value) {
+            classResults.style.display = 'block';
+            classClear.classList.add('visible');
+        } else {
+            classResults.style.display = 'none';
+            classClear.classList.remove('visible');
+        }
+    });
+    
+    // Clear buttons functionality
+    courseClear.addEventListener('click', () => {
+        courseInput.value = '';
+        courseResults.style.display = 'none';
+        courseClear.classList.remove('visible');
+    });
+    
+    classClear.addEventListener('click', () => {
+        classInput.value = '';
+        classResults.style.display = 'none';
+        classClear.classList.remove('visible');
+    });
+    
+    // Close results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#course-search-container')) {
+            courseResults.style.display = 'none';
+            courseClear.classList.remove('visible');
+        }
+        
+        if (!e.target.closest('#class-search-container')) {
+            classResults.style.display = 'none';
+            classClear.classList.remove('visible');
+        }
     });
 });

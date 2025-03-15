@@ -5,6 +5,8 @@
     <title>Add a New Course</title>
     <script src="/js/add_course.js" defer></script>
     <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <script src="/js/partials.js"></script>
 </head>
 <header>
     <h1>Add a New Course</h1>
@@ -12,6 +14,7 @@
 </header>
 <body>
     <a href="search.html">Back to search</a>
+    <div id="menu-container"></div>
     <div id="course-input">
         <label for="courseName">Course Name:</label>
         <input type="text" id="courseName">
@@ -29,5 +32,10 @@
     
     <ul id="classes-list"></ul>
     <!-- The Add Class section will be injected here by course_details.js -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        loadPartial('/partials/menu-bar.html', 'menu-container');
+      });
+    </script>
 </body>
 </html>
