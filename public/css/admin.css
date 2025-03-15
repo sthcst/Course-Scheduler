@@ -2,8 +2,8 @@
 body {
     font-family: 'Inter', sans-serif;
     margin: 0;
-    padding: 20px;
-    background-color: #ffffff;
+    padding: 0;
+    background-color: #f9f9f9;
     color: #333;
     box-sizing: border-box;
     width: 100%;
@@ -578,4 +578,142 @@ select:disabled {
 
 .course-container button:hover {
     background-color: #b38212;
+}
+
+/* Add Course page specific styles */
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+/* Fix the menu spacing */
+.menu-spacer {
+    height: 100px;
+    width: 100%;
+    display: block;
+}
+
+/* Back button styling */
+.back-link {
+    position: fixed;
+    left: 20px;
+    top: 40px;
+    text-decoration: none;
+    color: #333;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    pointer-events: auto;
+    z-index: 1001;
+}
+
+.back-link:hover {
+    color: #ba0c2f;
+}
+
+.back-link::before {
+    content: "←";
+    margin-right: 6px;
+}
+
+/* Page header with red background */
+header {
+    position: relative;
+    background-color: #ba0c2f;
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+header h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    font-size: 2em;
+}
+
+/* Add the polynesian design to header */
+header::before {
+    content: "";
+    position: absolute;
+    background-image: url(../assets/polynesiandesign.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    width: 70%;
+    height: 200px;
+    top: -50px;
+    left: 20%;
+    opacity: 0.7;
+    transform: translate(-50%, 0);
+    z-index: 1;
+}
+
+/* Card container for form */
+#course-input {
+    background-color: white;
+    border-radius: 15px;
+    padding: 25px;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Input styling */
+#course-input label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+#course-input input,
+#course-input select {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+}
+
+/* Button styling */
+#addCourseButton {
+    background-color: #ba0c2f;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin-top: 20px;
+    width: 100%;
+}
+
+#addCourseButton:hover {
+    background-color: #a00b29;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(186, 12, 47, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.5em;
+    }
+    
+    #course-input {
+        width: 95%;
+        padding: 20px;
+    }
 }
