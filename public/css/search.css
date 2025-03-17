@@ -770,3 +770,24 @@ header h1 {
         width: 50%;
     }
 }
+
+/* Add this to your search.css file */
+#courseSearchResults li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#courseSearchResults .course-name {
+    font-weight: 500;
+    flex-grow: 1;
+}
+
+#courseSearchResults .course-type {
+    font-size: 0.85em;
+    color: #666;
+    background-color: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+}

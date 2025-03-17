@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 300);
     });
 
+    // Update performCourseSearch function to include course type
     async function performCourseSearch() {
         const query = courseSearchInput.value.trim().toLowerCase();
         courseSearchResults.innerHTML = '';
@@ -95,8 +96,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             courses.forEach(course => {
                 const li = document.createElement('li');
-                // Changed to display just the course name without the type
-                li.innerHTML = `${course.course_name}`;
+                
+                // Get formatted course type
+                const courseType = formatCourseType(course.course_type);
+                
+                // Display both name and type
+                li.innerHTML = `
+                    <div class="course-name">${course.course_name}</div>
+                    <div class="course-type">${courseType}</div>
+                `;
+                
                 li.addEventListener('click', () => {
                     window.location.href = `/course_details.html?course_id=${encodeURIComponent(course.id)}`;
                 });
@@ -106,6 +115,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('Error during course search:', error);
             courseSearchResults.innerHTML = `<li style="color: red;">${error.message}</li>`;
+        }
+    }
+
+    // Helper function to format course type
+    function formatCourseType(type) {
+        // Handle case where type might be undefined
+        if (!type) return '';
+        
+        // Format different types nicely
+        switch(type.toLowerCase()) {
+            case 'major':
+                return 'Major';
+            case 'minor':
+                return 'Minor';
+            case 'religion':
+                return 'Religion';
+            case 'eil/holokai':
+                return 'EIL/Holokai';
+            default:
+                return type.charAt(0).toUpperCase() + type.slice(1);
         }
     }
 
