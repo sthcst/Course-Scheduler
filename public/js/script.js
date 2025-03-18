@@ -77,7 +77,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const query = searchInput.value.trim().toLowerCase();
       if (!searchResults) return;
       searchResults.innerHTML = "";
-      if (query === "") return;
+      
+      // Hide results container if query is empty
+      if (query === "") {
+        searchResults.style.display = "none";
+        return;
+      }
+      
       try {
         // Append courseType if provided.
         let url = `/api/courses/search?query=${encodeURIComponent(query)}&limit=5`;
@@ -90,6 +96,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         const data = await res.json();
         const coursesFound = data.courses || [];
+        
+        // Show results container if we have results
+        if (coursesFound.length > 0) {
+          searchResults.style.display = "block";
+        } else {
+          searchResults.style.display = "none";
+        }
+        
         coursesFound.forEach(course => {
           const li = document.createElement("li");
           li.textContent = `${course.course_type}: ${course.course_name}`;
@@ -98,8 +112,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             hiddenInput.value = course.id;
             // Also update the search input to show the selected course
             searchInput.value = course.course_name;
-            // Clear results list
+            // Clear results list and hide container
             searchResults.innerHTML = "";
+            searchResults.style.display = "none";
           });
           searchResults.appendChild(li);
         });
@@ -702,3 +717,78 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log("Schedule rendered on the page.");
   }
 });
+
+// Close search results when clicking outside
+document.addEventListener('click', function(event) {
+    // Check if the click was outside the search groups
+    const isClickInsideMajorSearch = 
+        document.getElementById('major-search-group')?.contains(event.target) || false;
+    const isClickInsideMinor1Search = 
+        document.getElementById('minor1-search-group')?.contains(event.target) || false;
+    const isClickInsideMinor2Search = 
+        document.getElementById('minor2-search-group')?.contains(event.target) || false;
+    
+    // If click was outside all search areas
+    if (!isClickInsideMajorSearch && !isClickInsideMinor1Search && !isClickInsideMinor2Search) {
+        // Hide all search results
+        const majorResults = document.getElementById('majorSearchResults');
+        const minor1Results = document.getElementById('minor1SearchResults');
+        const minor2Results = document.getElementById('minor2SearchResults');
+        
+        if (majorResults) majorResults.style.display = 'none';
+        if (minor1Results) minor1Results.style.display = 'none';
+        if (minor2Results) minor2Results.style.display = 'none';
+    }
+});
+
+/* Add click-outside functionality with JavaScript */
+document.addEventListener('click', function(event) {
+  // Check if click was outside search groups
+  const searchGroups = [
+      'major-search-group', 
+      'minor1-search-group', 
+      'minor2-search-group'
+  ];
+  
+  // If click wasn't inside any search group
+  const isClickInsideSearchGroup = searchGroups.some(id => {
+      const element = document.getElementById(id);
+      return element && element.contains(event.target);
+  });
+  
+  if (!isClickInsideSearchGroup) {
+      // Hide all search results
+      for (const id of ['majorSearchResults', 'minor1SearchResults', 'minor2SearchResults']) {
+          const results = document.getElementById(id);
+          if (results) results.style.display = 'none';
+      }
+  }
+});
+
+// Modify your existing search functions to show results
+function setupSearchInputs() {
+    // For each search input (majorSearchInput, minor1SearchInput, etc.)
+    // When input changes, show search results
+    const searchInputs = [
+        { input: 'majorSearchInput', results: 'majorSearchResults' },
+        { input: 'minor1SearchInput', results: 'minor1SearchResults' },
+        { input: 'minor2SearchInput', results: 'minor2SearchResults' }
+    ];
+    
+    searchInputs.forEach(search => {
+        const input = document.getElementById(search.input);
+        const resultsList = document.getElementById(search.results);
+        
+        if (input && resultsList) {
+            input.addEventListener('input', function() {
+                // Show results below input when typing
+                if (this.value.trim() !== '') {
+                    resultsList.style.display = 'block';
+                    // Your existing search logic
+                } else {
+                    resultsList.style.display = 'none';
+                }
+            });
+        }
+    });
+}

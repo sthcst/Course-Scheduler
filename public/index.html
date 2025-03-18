@@ -4,34 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Holokai Planner</title>
+    <!-- Add Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Add shared component styles -->
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/styles.css" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/swiper/swiper-bundle.min.css"
     />
-    <link rel="stylesheet" href="css/styles.css" />
+    <!-- Add partials.js before other scripts -->
+    <script src="/js/partials.js"></script>
   </head>
 
   <body>
-    <!-- New Header Section -->
-    <header class="top-header">
-      <div class="top-header-content">
-        <h2 class="site-logo">My University Planner</h2>
-        <a href="search.html">Edit Courses</a>
-      </div>
-    </header>
-    <!-- End of New Header Section -->
+    <!-- Menu bar partial (same as search.html) -->
+    <div id="menu-container">
+      <!-- Menu bar will be loaded here -->
+    </div>
+    
+    <div class="menu-spacer"></div>
+    
+    <!-- Red background with images -->
+    <div id="red-background">
+      <img src="./assets/turtle.png" alt="">
+      <img src="./assets/hawaiiandesign.png" alt="">
+    </div>
 
     <div class="background-image">
-      <!-- Start of the image container -->
-      <div class="header-image-container">
-        <img
-          src="assets/Single.png"
-          alt="University Campus"
-          class="header-image"
-        />
-      </div>
-      <!-- End of the image container -->
-
+     
       <!-- Start of the container -->
       <div class="container">
         <header class="floating-bar">
@@ -41,7 +45,7 @@
             <input
               type="text"
               id="majorSearchInput"
-              placeholder="Search for major..."
+              placeholder="Select a Major"
               autocomplete="off"
             />
             <ul id="majorSearchResults"></ul>
@@ -54,7 +58,7 @@
             <input
               type="text"
               id="minor1SearchInput"
-              placeholder="Search for minor 1..."
+              placeholder="Select Your First Minor "
               autocomplete="off"
             />
             <ul id="minor1SearchResults"></ul>
@@ -67,7 +71,7 @@
             <input
               type="text"
               id="minor2SearchInput"
-              placeholder="Search for minor 2..."
+              placeholder="Select Your Second Minor"
               autocomplete="off"
             />
             <ul id="minor2SearchResults"></ul>
@@ -94,7 +98,7 @@
           </div>
 
           <div class="input-group">
-            <label for="major-class-limit">Max Major Classes:</label>
+            <label for="major-class-limit">Max Major Classes Per Sem:</label>
             <select id="major-class-limit">
               <option value="2">2</option>
               <option value="3">3</option>
@@ -103,7 +107,7 @@
           </div>
 
           <div class="input-group">
-            <label for="fall-winter-credits">Fall/Winter Credits:</label>
+            <label for="fall-winter-credits">Max Fall/Winter Credits:</label>
             <select id="fall-winter-credits">
               <option value="12">12</option>
               <option value="13">13</option>
@@ -116,7 +120,7 @@
           </div>
 
           <div class="input-group">
-            <label for="spring-credits">Spring Credits:</label>
+            <label for="spring-credits">Max Spring Credits:</label>
             <select id="spring-credits">
               <option value="8">8</option>
               <option value="9">9</option>
@@ -201,6 +205,12 @@
       <!-- End of the container -->
     </div>
 
+    <script>
+      // Load the menu bar partial when the page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        loadPartial('/partials/menu-bar.html', 'menu-container');
+      });
+    </script>
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script src="/js/script.js"></script>
   </body>
