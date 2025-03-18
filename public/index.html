@@ -16,16 +16,23 @@
       rel="stylesheet"
       href="https://unpkg.com/swiper/swiper-bundle.min.css"
     />
-    <!-- Add partials.js before other scripts -->
-    <script src="/js/partials.js"></script>
+    
   </head>
 
   <body>
-    <!-- Menu bar partial (same as search.html) -->
-    <div id="menu-container">
-      <!-- Menu bar will be loaded here -->
+    <!-- Updated menubar with styled Admin Login link -->
+    <div id="menubar">
+      <!-- BYUH logo on left -->
+      <img
+        class="icon left"
+        id="morebutton"
+        src="./assets/byuhawaii.png"
+        alt="BYUH Logo"
+      />
+      <!-- Admin login positioned right -->
+      <a href="./search.html" class="admin-link">Admin Login</a>
     </div>
-    
+
     <div class="menu-spacer"></div>
     
     <!-- Red background with images -->
@@ -205,12 +212,7 @@
       <!-- End of the container -->
     </div>
 
-    <script>
-      // Load the menu bar partial when the page loads
-      document.addEventListener('DOMContentLoaded', function() {
-        loadPartial('/partials/menu-bar.html', 'menu-container');
-      });
-    </script>
+   
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script src="/js/script.js"></script>
   </body>
