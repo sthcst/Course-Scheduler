@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { Pool } = require('pg');
 
-// PostgreSQL Connection Pool Setup
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://username:password@localhost:5432/isaaccandari',
-});
+// Import the configured pool from db.js instead of creating a new one
+const pool = require('../db');
 
 // Test database connection
 pool.connect((err, client, release) => {
