@@ -216,8 +216,33 @@ router.get('/courses', async (req, res) => {
     }
 });
 
-// Update the query in the GET /courses/:course_id route:
+// Add this route BEFORE your /courses/:course_id route
 
+/**
+ * @route   GET /api/courses/basic
+ * @desc    Get basic course information (for dropdowns)
+ * @access  Public
+ */
+router.get('/courses/basic', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                id,
+                course_name,
+                course_type
+            FROM courses
+            ORDER BY course_name ASC
+        `;
+        
+        const { rows } = await pool.query(query);
+        res.json(rows);
+    } catch (error) {
+        console.error('❌ Error fetching basic course info:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// AFTER this, put your existing /courses/:course_id route
 router.get('/courses/:course_id', async (req, res) => {
     try {
         const { course_id } = req.params;
@@ -1899,6 +1924,8 @@ router.get('/courses/:course_id/sections/:section_id', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch section details' });
     }
 });
+
+
 
 // Replace your current '/courses/:course_id/sections/reorder' PUT endpoint with this one:
 
