@@ -8,11 +8,18 @@ function computeDepthMap(classes) {
   
   // Calculate depth (how many prerequisites deep each class is)
   const depthMap = {};
+  const visited = new Set(); // Track classes we're currently processing to detect cycles
   
-  function calculateDepth(classId) {
+  function calculateDepth(classId, currentPath = new Set()) {
     // Return cached result if already calculated
     if (depthMap[classId] !== undefined) {
       return depthMap[classId];
+    }
+    
+    // Check for circular dependencies
+    if (currentPath.has(classId)) {
+      console.warn(`Circular prerequisite dependency detected for class ${classId}`);
+      return 0; // Break the cycle
     }
     
     const cls = classesById[classId];
@@ -26,15 +33,21 @@ function computeDepthMap(classes) {
       return 0;
     }
     
+    // Mark this class as being visited in current recursion path
+    currentPath.add(classId);
+    
     // Calculate maximum depth of prerequisites + 1
     let maxPrereqDepth = -1;
-    cls.prerequisites.forEach(prereq => {
-      const id = typeof prereq === 'object' ? (prereq.id || prereq.class_id) : prereq;
+    cls.prerequisites.forEach(prereqId => {
+      const id = typeof prereqId === 'object' ? (prereqId.id || prereqId.class_id) : prereqId;
       if (id) {
-        const depth = calculateDepth(id);
+        const depth = calculateDepth(id, currentPath);
         maxPrereqDepth = Math.max(maxPrereqDepth, depth);
       }
     });
+    
+    // Remove from current path as we're done processing this class
+    currentPath.delete(classId);
     
     depthMap[classId] = maxPrereqDepth + 1;
     return depthMap[classId];
@@ -50,19 +63,36 @@ function computeDepthMap(classes) {
   return depthMap;
 }
 
-// Function to sort classes based on prerequisites depth - keep outside DOMContentLoaded
+// Enhanced sort function with better handling of prerequisite chains
 function sortClassesByPrerequisites(classes) {
   // First compute the depth map (how many levels of prerequisites deep)
   const depthMap = computeDepthMap(classes);
   
-  // Sort classes by depth, then by level
+  // Create a map of classes by their prerequisites
+  const prerequisiteMap = {};
+  classes.forEach(cls => {
+    if (cls.prerequisites && Array.isArray(cls.prerequisites)) {
+      cls.prerequisites.forEach(prereq => {
+        const id = typeof prereq === 'object' ? (prereq.id || prereq.class_id) : prereq;
+        if (!prerequisiteMap[id]) prerequisiteMap[id] = [];
+        prerequisiteMap[id].push(cls.id);
+      });
+    }
+  });
+  
+  // Sort classes by depth, then by the number of classes that depend on them
   return [...classes].sort((a, b) => {
     // First priority: prerequisite depth
     const depthA = depthMap[a.id] || 0;
     const depthB = depthMap[b.id] || 0;
     if (depthA !== depthB) return depthA - depthB;
     
-    // Second priority: class level
+    // Second priority: how many classes depend on this class
+    const dependentsA = prerequisiteMap[a.id]?.length || 0;
+    const dependentsB = prerequisiteMap[b.id]?.length || 0;
+    if (dependentsA !== dependentsB) return dependentsB - dependentsA; // More dependents first
+    
+    // Third priority: class level
     const levelA = a.class_number ? parseInt(a.class_number.match(/\d+/)?.[0] || '0', 10) : 0;
     const levelB = b.class_number ? parseInt(b.class_number.match(/\d+/)?.[0] || '0', 10) : 0;
     return levelA - levelB;
@@ -344,6 +374,38 @@ document.addEventListener('DOMContentLoaded', async () => {
       })
     );
     
+    // Also fetch any missing prerequisite courses
+    const missingPrereqIds = new Set();
+
+    // Function to recursively collect prerequisite IDs
+    function collectPrerequisites(courseId, allCourses) {
+      const course = allCourses.find(c => c.id === courseId);
+      if (!course || !course.classes) return;
+      
+      course.classes.forEach(cls => {
+        if (cls.prerequisites && Array.isArray(cls.prerequisites)) {
+          cls.prerequisites.forEach(prereq => {
+            const prereqId = typeof prereq === 'object' ? prereq.id || prereq.class_id : prereq;
+            if (prereqId && !allSelectedIds.includes(prereqId)) {
+              missingPrereqIds.add(prereqId);
+              // Recursively get prerequisites of prerequisites
+              collectPrerequisites(prereqId, allCourses);
+            }
+          });
+        }
+      });
+    }
+
+    // Find prerequisites of selected courses
+    selectedCourseIds.forEach(id => collectPrerequisites(id, basicCourses));
+
+    // Add missing prerequisites to the fetch list
+    missingPrereqIds.forEach(id => {
+      if (!allSelectedIds.includes(id)) {
+        allSelectedIds.push(id);
+      }
+    });
+
     return await Promise.all(selectedCourseDetailsPromises);
   }
 
@@ -429,7 +491,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       requiredClasses.forEach(cls => {
         if (cls.prerequisites && cls.prerequisites.length > 0) {
           cls.prerequisites.forEach(prereqId => {
-            const id = typeof prereqId === 'object' ? (prereqId.id || prereq.class_id) : prereqId;
+            const id = typeof prereqId === 'object' ? (prereqId.id || prereqId.class_id) : prereqId;
             if (id) prerequisiteIds.add(id);
           });
         }
@@ -572,7 +634,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Calculate maximum depth of prerequisites + 1
       let maxPrereqDepth = -1;
       cls.prerequisites.forEach(prereqId => {
-        const id = typeof prereqId === 'object' ? (prereqId.id || prereq.class_id) : prereqId;
+        const id = typeof prereqId === 'object' ? (prereqId.id || prereqId.class_id) : prereqId;
         if (id) {
           const depth = calculateDepth(id);
           maxPrereqDepth = Math.max(maxPrereqDepth, depth);
@@ -606,7 +668,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   ) {
     const { requiredClasses, electiveSections, prerequisiteIds, corequisiteIdsToFetch } = processedData;
     
-    // Create map of required classes by ID for quick lookups when setting coreq properties
+    // Create map of required classes by ID for quick lookups
     const requiredClassesById = {};
     requiredClasses.forEach(cls => {
       if (cls && cls.id) requiredClassesById[cls.id] = cls;
@@ -625,38 +687,92 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
     
-    // Fetch corequisites for required classes
-    const requiredCorequisites = [];
-    if (corequisiteIdsToFetch && corequisiteIdsToFetch.length > 0) {
-      for (const coreqId of corequisiteIdsToFetch) {
-        try {
-          const response = await fetch(`/api/classes/${coreqId}`);
-          if (response.ok) {
-            const coreq = await response.json();
+    // Identify prerequisite classes that need to be fetched
+    const prerequisitesToFetch = new Set();
+    
+    // Build a map of classes that depend on each prerequisite for inheritance
+    const prereqDependentMap = {};
+    
+    requiredClasses.forEach(cls => {
+      if (cls.prerequisites && Array.isArray(cls.prerequisites)) {
+        cls.prerequisites.forEach(prereqId => {
+          const id = typeof prereqId === 'object' ? (prereqId.id || prereqId.class_id) : prereqId;
+          if (id && !requiredClassesById[id]) {
+            prerequisitesToFetch.add(id);
             
-            // Find the parent class that requires this corequisite
-            const parentClassId = coreqParentMap[coreqId];
-            const parentClass = requiredClassesById[parentClassId];
-            
-            // Inherit appropriate properties from parent class
-            if (parentClass) {
-              coreq.isMajor = parentClass.isMajor;
-              coreq.category = parentClass.category;
-              coreq.course_type = parentClass.course_type;
+            // Track which classes depend on this prerequisite
+            if (!prereqDependentMap[id]) {
+              prereqDependentMap[id] = [];
             }
-            
-            requiredCorequisites.push(coreq);
-          } else {
-            console.warn(`Required class corequisite ${coreqId} not found, scheduling may be incomplete`);
+            prereqDependentMap[id].push(cls.id);
           }
-        } catch (error) {
-          console.warn(`Error fetching required class corequisite ${coreqId}: ${error.message}`);
+        });
+      }
+    });
+    
+    console.log(`Found ${prerequisitesToFetch.size} missing prerequisites to fetch:`, 
+      Array.from(prerequisitesToFetch));
+    
+    // Fetch missing prerequisite classes
+    const requiredPrerequisites = [];
+    for (const prereqId of Array.from(prerequisitesToFetch)) {
+      try {
+        const response = await fetch(`/api/classes/${prereqId}`);
+        if (response.ok) {
+          const prereq = await response.json();
+          
+          // Get a dependent class to inherit properties from
+          const dependentClassId = prereqDependentMap[prereqId]?.[0];
+          const dependentClass = dependentClassId ? requiredClassesById[dependentClassId] : null;
+          
+          // Inherit appropriate properties, defaulting to reasonable values if no dependent
+          prereq.isMajor = dependentClass?.isMajor || false;
+          prereq.category = dependentClass?.category || 'prerequisite';
+          prereq.course_type = dependentClass?.course_type || 'prerequisite';
+          prereq.is_required = true; // Mark as required
+          
+          // Add to our prerequisites list
+          requiredPrerequisites.push(prereq);
+          console.log(`Fetched prerequisite: ${prereq.class_name} (ID: ${prereq.id})`);
+        } else {
+          console.warn(`Failed to fetch prerequisite class ${prereqId}: ${response.statusText}`);
         }
+      } catch (error) {
+        console.warn(`Error fetching prerequisite class ${prereqId}: ${error.message}`);
       }
     }
     
-    // Add the fetched corequisites to the required classes list
-    const allRequiredClasses = [...requiredClasses, ...requiredCorequisites];
+    // Fetch required corequisites
+    const requiredCorequisites = [];
+    for (const coreqId of corequisiteIdsToFetch) {
+      try {
+        const response = await fetch(`/api/classes/${coreqId}`);
+        if (response.ok) {
+          const coreq = await response.json();
+          
+          // Get the parent class that requires this corequisite
+          const parentClassId = coreqParentMap[coreqId];
+          const parentClass = parentClassId ? requiredClassesById[parentClassId] : null;
+          
+          // Inherit properties from the parent class
+          coreq.isMajor = parentClass?.isMajor || false;
+          coreq.category = parentClass?.category || 'corequisite';
+          coreq.course_type = parentClass?.course_type || 'corequisite';
+          coreq.is_required = true;
+          
+          // Add to our corequisites list
+          requiredCorequisites.push(coreq);
+          console.log(`Fetched corequisite: ${coreq.class_name} (ID: ${coreq.id})`);
+        } else {
+          console.warn(`Failed to fetch corequisite class ${coreqId}: ${response.statusText}`);
+        }
+      } catch (error) {
+        console.warn(`Error fetching corequisite class ${coreqId}: ${error.message}`);
+      }
+    }
+    
+    // Combine all required classes: original + prerequisites + corequisites
+    const allRequiredClasses = [...requiredClasses, ...requiredPrerequisites, ...requiredCorequisites];
     
     // Create a map to collect all selected elective classes (including their corequisites)
     const selectedElectiveClassesMap = new Map();
@@ -806,6 +922,51 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
     
+    // FIX: Remove reference to remainingClasses and check uniqueClasses instead
+    // Add second pass for missing prerequisites to handle complex chains
+    console.log("Checking for additional missing prerequisites in second pass...");
+    const additionalPrerequisitesToFetch = new Set();
+    const combinedClassesById = {};
+    
+    // Build a lookup for all classes we have so far
+    uniqueClasses.forEach(cls => {
+      if (cls && cls.id) {
+        combinedClassesById[cls.id] = cls;
+      }
+    });
+    
+    // Find any prerequisites we're still missing
+    uniqueClasses.forEach(cls => {
+      if (cls.prerequisites && Array.isArray(cls.prerequisites)) {
+        cls.prerequisites.forEach(prereqId => {
+          const id = typeof prereqId === 'object' ? (prereqId.id || prereqId.class_id) : prereqId;
+          if (id && !combinedClassesById[id]) {
+            additionalPrerequisitesToFetch.add(id);
+            console.log(`Found missing prerequisite in second pass: ${id}`);
+          }
+        });
+      }
+    });
+    
+    // Fetch any additional prerequisites we found
+    const additionalPrerequisites = [];
+    for (const prereqId of Array.from(additionalPrerequisitesToFetch)) {
+      try {
+        const response = await fetch(`/api/classes/${prereqId}`);
+        if (response.ok) {
+          const prereq = await response.json();
+          prereq.is_required = true;
+          additionalPrerequisites.push(prereq);
+          console.log(`Fetched additional prerequisite: ${prereq.class_name} (ID: ${prereq.id})`);
+        }
+      } catch (error) {
+        console.warn(`Error fetching additional prerequisite ${prereqId}: ${error.message}`);
+      }
+    }
+    
+    // Add these to our classes before sorting and scheduling
+    uniqueClasses.push(...additionalPrerequisites);
+    
     // Build corequisite map
     const corequisiteMap = buildCorequisiteMap(uniqueClasses);
     
@@ -825,7 +986,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return schedule;
   }
 
-  // *** CRITICAL CHANGE: MODIFY BUILD COREQUISITE MAP - ONE DIRECTION ONLY ***
+  // Build corequisite map
   function buildCorequisiteMap(classes) {
     const coreqMap = {};
     
@@ -851,7 +1012,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let remainingClasses = [...sortedClasses];
     
     // Set a reasonable limit to prevent infinite loops
-    const MAX_SEMESTERS = 20;
+    const MAX_SEMESTERS = 100;
     
     // Extract and prioritize EIL/English classes
     const eilClasses = remainingClasses.filter(cls => 
@@ -966,6 +1127,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         type: "Warning",
         classes: remainingClasses,
         isWarning: true
+      });
+      
+      // Group unscheduled classes by reason
+      const missingPrereqs = [];
+      
+      // Check each unscheduled class
+      remainingClasses.forEach(cls => {
+        if (cls.prerequisites && cls.prerequisites.length > 0) {
+          // Use semesters instead of completedSemesters which isn't defined
+          const allCompletedClasses = semesters.flatMap(sem => sem.classes);
+          const completedIds = new Set(allCompletedClasses.map(c => c.id));
+          
+          const missingPrereqIds = cls.prerequisites.filter(prereq => {
+            const prereqId = typeof prereq === 'object' ? prereq.id || prereq.class_id : prereq;
+            return !completedIds.has(prereqId);
+          });
+          
+          if (missingPrereqIds.length > 0) {
+            missingPrereqs.push({
+              id: cls.id,
+              name: cls.class_name,
+              missingPrereqs: missingPrereqIds
+            });
+          }
+        }
+      });
+      
+      // Log the missing prerequisites
+      if (missingPrereqs.length > 0) {
+        console.log("Classes with missing prerequisites:");
+        missingPrereqs.forEach(info => {
+          console.log(`${info.name} (${info.id}) is missing prerequisites: ${info.missingPrereqs.join(', ')}`);
+        });
+      }
+    }
+    
+    // Log the unscheduled classes with their prerequisites
+    if (remainingClasses.length > 0) {
+      console.log("Classes needing scheduling:");
+      remainingClasses.forEach(cls => {
+        if (cls.prerequisites && cls.prerequisites.length > 0) {
+          const prereqIds = cls.prerequisites.map(prereq => 
+            typeof prereq === 'object' ? (prereq.id || prereq.class_id) : prereq
+          );
+          console.log(`${cls.class_name} (${cls.id}) needs prerequisites: ${prereqIds.join(', ')}`);
+        }
       });
     }
     
