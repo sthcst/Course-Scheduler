@@ -78,6 +78,7 @@ function canAddClassWithCorequisites(
   currentCredits, 
   majorClassesCount, 
   eilClassesCount, 
+  religionClassesCount, // New parameter
   creditLimit, 
   majorClassLimit
 ) {
@@ -86,6 +87,7 @@ function canAddClassWithCorequisites(
   let requiredMajorCount = cls.isMajor ? 1 : 0;
   let requiredEILCount = (cls.category === 'english' || 
     (cls.course_type && cls.course_type.toLowerCase().includes('eil'))) ? 1 : 0;
+  let requiredReligionCount = cls.category === 'religion' ? 1 : 0; // New counter
   
   // Get corequisites and handle missing ones gracefully
   const coreqs = corequisiteMap[cls.id] || [];
@@ -100,6 +102,10 @@ function canAddClassWithCorequisites(
       if (coreq.category === 'english' || 
           (coreq.course_type && coreq.course_type.toLowerCase().includes('eil'))) {
         requiredEILCount++;
+      }
+      // Track religion corequisites
+      if (coreq.category === 'religion') {
+        requiredReligionCount++;
       }
     } else if (!coreq) {
       // Missing corequisite - log a warning but continue
@@ -132,12 +138,22 @@ function canAddClassWithCorequisites(
     };
   }
   
+  // New check: Only one religion class per semester
+  if (religionClassesCount + requiredReligionCount > 1) {
+    return {
+      canAdd: false,
+      reason: "Religion class limit exceeded (max 1 per semester)",
+      coreqClasses: []
+    };
+  }
+  
   return {
     canAdd: true,
     coreqClasses,
     addedCredits: requiredCredits,
     addedMajors: requiredMajorCount,
-    addedEIL: requiredEILCount
+    addedEIL: requiredEILCount,
+    addedReligion: requiredReligionCount // Return the count of added religion classes
   };
 }
 
@@ -590,7 +606,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   ) {
     const { requiredClasses, electiveSections, prerequisiteIds, corequisiteIdsToFetch } = processedData;
     
-    // Fetch corequisites for required classes (NEW CODE)
+    // Create map of required classes by ID for quick lookups when setting coreq properties
+    const requiredClassesById = {};
+    requiredClasses.forEach(cls => {
+      if (cls && cls.id) requiredClassesById[cls.id] = cls;
+    });
+    
+    // Track which parent class requires each corequisite
+    const coreqParentMap = {};
+    requiredClasses.forEach(cls => {
+      if (cls.corequisites && Array.isArray(cls.corequisites)) {
+        cls.corequisites.forEach(coreqId => {
+          const id = typeof coreqId === 'object' ? (coreqId.id || coreqId.class_id) : coreqId;
+          if (id) {
+            coreqParentMap[id] = cls.id; // Track which class requires this corequisite
+          }
+        });
+      }
+    });
+    
+    // Fetch corequisites for required classes
     const requiredCorequisites = [];
     if (corequisiteIdsToFetch && corequisiteIdsToFetch.length > 0) {
       for (const coreqId of corequisiteIdsToFetch) {
@@ -598,6 +633,18 @@ document.addEventListener('DOMContentLoaded', async () => {
           const response = await fetch(`/api/classes/${coreqId}`);
           if (response.ok) {
             const coreq = await response.json();
+            
+            // Find the parent class that requires this corequisite
+            const parentClassId = coreqParentMap[coreqId];
+            const parentClass = requiredClassesById[parentClassId];
+            
+            // Inherit appropriate properties from parent class
+            if (parentClass) {
+              coreq.isMajor = parentClass.isMajor;
+              coreq.category = parentClass.category;
+              coreq.course_type = parentClass.course_type;
+            }
+            
             requiredCorequisites.push(coreq);
           } else {
             console.warn(`Required class corequisite ${coreqId} not found, scheduling may be incomplete`);
@@ -682,6 +729,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                   // Skip this main class entirely if a required corequisite isn't schedulable
                   continue;
                 }
+                
+                // *** NEW CODE: Inherit properties from parent class ***
+                coreq.isMajor = mainClass.isMajor;
+                coreq.category = mainClass.category;
+                coreq.course_type = mainClass.course_type;
                 
                 fetchedCoreqs.push(coreq);
                 totalCredits += (coreq.credits || 3);
@@ -807,98 +859,75 @@ document.addEventListener('DOMContentLoaded', async () => {
       (cls.course_type && cls.course_type.toLowerCase().includes('eil'))
     );
     
+    // Extract and prioritize Religion classes (NEW)
+    const religionClasses = remainingClasses.filter(cls => cls.category === 'religion');
+    
     // EIL classes that must be scheduled in first 3 semesters
     const earlyEilClasses = [...eilClasses];
+    
+    // Religion classes to schedule early (NEW)
+    const earlyReligionClasses = [...religionClasses]; 
     
     // Continue until all classes are scheduled or we hit the maximum semester limit
     while (remainingClasses.length > 0 && semesters.length < MAX_SEMESTERS) {
       const semType = getSemesterType(currentSemester);
       const creditLimit = semType === 'Spring' ? springCredits : fallWinterCredits;
       
-      // Special handling for first 3 semesters - prioritize EIL classes
+      // Determine priority classes for this semester
+      let priorityClassesForSemester = [];
+      
+      // Add EIL classes for early semesters
       if (semesters.length < 3 && earlyEilClasses.length > 0) {
+        priorityClassesForSemester = [...earlyEilClasses];
+      }
+      
+      // Add ONE religion class if any are left (NEW)
+      if (earlyReligionClasses.length > 0) {
+        // Get the first religion class that can be scheduled
+        priorityClassesForSemester.push(earlyReligionClasses[0]);
+      }
+      
+      // If we have priority classes, use them for scheduling
+      if (priorityClassesForSemester.length > 0) {
         const classesForSemester = assignClassesToSemesterWithPriority(
           remainingClasses,
           semesters,
           creditLimit,
           majorClassLimit,
-          earlyEilClasses,
+          priorityClassesForSemester,
           corequisiteMap
         );
         
-        // Remove scheduled EIL classes from the priority list
+        // Remove scheduled priority classes from their tracking lists
         classesForSemester.forEach(cls => {
+          // Remove from EIL priority list if applicable
           const eilIndex = earlyEilClasses.findIndex(eilCls => eilCls.id === cls.id);
           if (eilIndex !== -1) {
             earlyEilClasses.splice(eilIndex, 1);
           }
-        });
-        
-        // Add semester to schedule
-        semesters.push({
-          name: currentSemester,
-          type: semType,
-          classes: classesForSemester
-        });
-        
-        // Remove scheduled classes from remaining
-        remainingClasses = remainingClasses.filter(
-          cls => !classesForSemester.includes(cls)
-        );
-      } 
-      // Force any remaining EIL classes in semester 3 if needed - BUT ONLY IF PREREQUISITES ARE MET
-      else if (semesters.length === 3 && earlyEilClasses.length > 0) {
-        // Get all previously completed classes for prerequisite checking
-        const completedClasses = semesters.flatMap(sem => sem.classes);
-        const completedClassIds = new Set(completedClasses.map(cls => cls.id));
-        
-        // Filter EIL classes whose prerequisites have been met
-        const eligibleEilClasses = earlyEilClasses.filter(cls => {
-          if (!cls.prerequisites || !Array.isArray(cls.prerequisites) || cls.prerequisites.length === 0) {
-            return true;
-          }
           
-          return cls.prerequisites.every(prereq => {
-            const prereqId = typeof prereq === 'object' ? (prereq.id || prereq.class_id) : prereq;
-            return completedClassIds.has(prereqId);
-          });
+          // Remove from Religion priority list if applicable (NEW)
+          const religionIndex = earlyReligionClasses.findIndex(relCls => relCls.id === cls.id);
+          if (religionIndex !== -1) {
+            earlyReligionClasses.splice(religionIndex, 1);
+          }
         });
-        
-        // Get classes we can take this semester (normally)
-        let classesForSemester = assignClassesToSemester(
-          remainingClasses.filter(cls => !eligibleEilClasses.includes(cls)),
-          semesters,
-          creditLimit - (eligibleEilClasses.reduce((sum, cls) => sum + (cls.credits || 3), 0)),
-          majorClassLimit,
-          corequisiteMap
-        );
-        
-        // Only force add eligible EIL classes
-        classesForSemester = [...classesForSemester, ...eligibleEilClasses];
         
         // Add semester to schedule
         semesters.push({
           name: currentSemester,
           type: semType,
           classes: classesForSemester,
-          hasForced: eligibleEilClasses.length > 0
+          hasReligion: classesForSemester.some(cls => cls.category === 'religion')
         });
         
         // Remove scheduled classes from remaining
         remainingClasses = remainingClasses.filter(
           cls => !classesForSemester.includes(cls)
         );
-        
-        // Remove scheduled EIL classes from the priority list
-        eligibleEilClasses.forEach(cls => {
-          const eilIndex = earlyEilClasses.findIndex(eilCls => eilCls.id === cls.id);
-          if (eilIndex !== -1) {
-            earlyEilClasses.splice(eilIndex, 1);
-          }
-        });
       }
-      // Normal scheduling for remaining semesters
       else {
+        // Normal scheduling for remaining semesters
         const classesForSemester = assignClassesToSemester(
           remainingClasses,
           semesters,
@@ -916,7 +945,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         semesters.push({
           name: currentSemester,
           type: semType,
-          classes: classesForSemester
+          classes: classesForSemester,
+          hasReligion: classesForSemester.some(cls => cls.category === 'religion')
         });
         
         remainingClasses = remainingClasses.filter(
@@ -928,11 +958,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentSemester = getNextSemester(currentSemester);
     }
     
-    // If we hit the semester limit and still have classes, show warning
+    // Handle any unscheduled classes
     if (remainingClasses.length > 0) {
-      console.warn(`Schedule generation stopped after ${MAX_SEMESTERS} semesters with ${remainingClasses.length} classes unscheduled`);
-      
-      // Add unscheduled classes to a final semester
+      console.warn(`Schedule generation stopped with ${remainingClasses.length} classes unscheduled`);
       semesters.push({
         name: "Unscheduled Classes",
         type: "Warning",
@@ -1226,6 +1254,7 @@ function assignClassesWithCorequisites(
   let currentCredits = 0;
   let majorClassesCount = 0;
   let eilClassesCount = 0;
+  let religionClassesCount = 0; // New counter for religion classes
   
   // Create a map to track all classes for corequisite lookup
   const classesById = {};
@@ -1233,13 +1262,18 @@ function assignClassesWithCorequisites(
     if (cls && cls.id) classesById[cls.id] = cls;
   });
   
+  // Find eligible religion classes to prioritize if none provided in priority classes
+  const shouldPrioritizeReligion = !priorityClasses.some(cls => cls.category === 'religion');
+  const eligibleReligionClasses = shouldPrioritizeReligion ? 
+    eligibleClasses.filter(cls => cls.category === 'religion') : [];
+  
   // Process priority classes first
   for (const cls of eligiblePriorityClasses) {
     if (selectedClasses.includes(cls)) continue;
     
     const result = canAddClassWithCorequisites(
       cls, selectedClasses, classesById, corequisiteMap, 
-      currentCredits, majorClassesCount, eilClassesCount, 
+      currentCredits, majorClassesCount, eilClassesCount, religionClassesCount,
       creditLimit, majorClassLimit
     );
     
@@ -1253,8 +1287,37 @@ function assignClassesWithCorequisites(
     currentCredits += result.addedCredits;
     majorClassesCount += result.addedMajors;
     eilClassesCount += result.addedEIL;
+    religionClassesCount += result.addedReligion;
     
     if (currentCredits >= creditLimit) break;
+  }
+  
+  // Add ONE religion class if none has been scheduled yet and we should prioritize them
+  if (religionClassesCount === 0 && eligibleReligionClasses.length > 0) {
+    for (const religionClass of eligibleReligionClasses) {
+      if (selectedClasses.includes(religionClass)) continue;
+      
+      const result = canAddClassWithCorequisites(
+        religionClass, selectedClasses, classesById, corequisiteMap,
+        currentCredits, majorClassesCount, eilClassesCount, religionClassesCount,
+        creditLimit, majorClassLimit
+      );
+      
+      if (!result.canAdd) continue;
+      
+      // Add the religion class and its corequisites
+      selectedClasses.push(religionClass);
+      selectedClasses.push(...result.coreqClasses);
+      
+      // Update counters
+      currentCredits += result.addedCredits;
+      majorClassesCount += result.addedMajors;
+      eilClassesCount += result.addedEIL;
+      religionClassesCount += result.addedReligion;
+      
+      console.log(`Prioritized religion class: ${religionClass.class_name}`);
+      break; // We've added one religion class, so stop here
+    }
   }
   
   // Process remaining eligible classes
@@ -1284,6 +1347,9 @@ function assignClassesWithCorequisites(
   for (const cls of remainingEligibleClasses) {
     if (selectedClasses.includes(cls)) continue;
     
+    // Skip religion classes if we've already scheduled one
+    if (cls.category === 'religion' && religionClassesCount > 0) continue;
+    
     const result = canAddClassWithCorequisites(
       cls, 
       selectedClasses, 
@@ -1291,7 +1357,8 @@ function assignClassesWithCorequisites(
       corequisiteMap, 
       currentCredits, 
       majorClassesCount, 
-      eilClassesCount, 
+      eilClassesCount,
+      religionClassesCount,
       creditLimit, 
       majorClassLimit
     );
@@ -1306,6 +1373,7 @@ function assignClassesWithCorequisites(
     currentCredits += result.addedCredits;
     majorClassesCount += result.addedMajors;
     eilClassesCount += result.addedEIL;
+    religionClassesCount += result.addedReligion;
     
     if (currentCredits >= creditLimit) break;
   }
@@ -1373,6 +1441,7 @@ function assignClassesWithCorequisites(
   let currentCredits = 0;
   let majorClassesCount = 0;
   let eilClassesCount = 0;
+  let religionClassesCount = 0; // New counter for religion classes
   
   // Create a map to track all classes for corequisite lookup
   const classesById = {};
@@ -1380,13 +1449,18 @@ function assignClassesWithCorequisites(
     if (cls && cls.id) classesById[cls.id] = cls;
   });
   
+  // Find eligible religion classes to prioritize if none provided in priority classes
+  const shouldPrioritizeReligion = !priorityClasses.some(cls => cls.category === 'religion');
+  const eligibleReligionClasses = shouldPrioritizeReligion ? 
+    eligibleClasses.filter(cls => cls.category === 'religion') : [];
+  
   // Process priority classes first
   for (const cls of eligiblePriorityClasses) {
     if (selectedClasses.includes(cls)) continue;
     
     const result = canAddClassWithCorequisites(
       cls, selectedClasses, classesById, corequisiteMap, 
-      currentCredits, majorClassesCount, eilClassesCount, 
+      currentCredits, majorClassesCount, eilClassesCount, religionClassesCount,
       creditLimit, majorClassLimit
     );
     
@@ -1400,8 +1474,37 @@ function assignClassesWithCorequisites(
     currentCredits += result.addedCredits;
     majorClassesCount += result.addedMajors;
     eilClassesCount += result.addedEIL;
+    religionClassesCount += result.addedReligion;
     
     if (currentCredits >= creditLimit) break;
+  }
+  
+  // Add ONE religion class if none has been scheduled yet and we should prioritize them
+  if (religionClassesCount === 0 && eligibleReligionClasses.length > 0) {
+    for (const religionClass of eligibleReligionClasses) {
+      if (selectedClasses.includes(religionClass)) continue;
+      
+      const result = canAddClassWithCorequisites(
+        religionClass, selectedClasses, classesById, corequisiteMap,
+        currentCredits, majorClassesCount, eilClassesCount, religionClassesCount,
+        creditLimit, majorClassLimit
+      );
+      
+      if (!result.canAdd) continue;
+      
+      // Add the religion class and its corequisites
+      selectedClasses.push(religionClass);
+      selectedClasses.push(...result.coreqClasses);
+      
+      // Update counters
+      currentCredits += result.addedCredits;
+      majorClassesCount += result.addedMajors;
+      eilClassesCount += result.addedEIL;
+      religionClassesCount += result.addedReligion;
+      
+      console.log(`Prioritized religion class: ${religionClass.class_name}`);
+      break; // We've added one religion class, so stop here
+    }
   }
   
   // Process remaining eligible classes
@@ -1431,6 +1534,9 @@ function assignClassesWithCorequisites(
   for (const cls of remainingEligibleClasses) {
     if (selectedClasses.includes(cls)) continue;
     
+    // Skip religion classes if we've already scheduled one
+    if (cls.category === 'religion' && religionClassesCount > 0) continue;
+    
     const result = canAddClassWithCorequisites(
       cls, 
       selectedClasses, 
@@ -1438,7 +1544,8 @@ function assignClassesWithCorequisites(
       corequisiteMap, 
       currentCredits, 
       majorClassesCount, 
-      eilClassesCount, 
+      eilClassesCount,
+      religionClassesCount,
       creditLimit, 
       majorClassLimit
     );
@@ -1453,6 +1560,7 @@ function assignClassesWithCorequisites(
     currentCredits += result.addedCredits;
     majorClassesCount += result.addedMajors;
     eilClassesCount += result.addedEIL;
+    religionClassesCount += result.addedReligion;
     
     if (currentCredits >= creditLimit) break;
   }
