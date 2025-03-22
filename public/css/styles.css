@@ -1221,10 +1221,11 @@ select:focus {
 }
 
 .class-item {
-  padding: 8px 0;
+  padding: 8px 0 8px 10px; /* Add left padding for the bar */
   border-bottom: 1px solid #f0f0f0;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Keep column direction as requested */
+  position: relative; /* For absolute positioning of the bar */
   gap: 4px;
 }
 
@@ -1232,47 +1233,65 @@ select:focus {
   border-bottom: none;
 }
 
+/* Convert class-tag to a vertical bar positioned on the left side */
 .class-tag {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  margin-right: 6px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px; /* Thin vertical bar */
+  border-radius: 2px;
+  flex-shrink: 0;
+  font-size: 0; /* Hide text content */
+  color: transparent;
 }
 
-.class-tag.major {
-  background-color: #aed5e9; /* soft blue */
-  color: #333;
+/* Create a flex container for the number and name */
+.class-top-row {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  width: 100%;
 }
 
-.class-tag.minor {
-  background-color: #e9aeb7; /* salmon */
-  color: #333;
-}
-
-.class-tag.english {
-  background-color: #aeb7e9; /* lilac */
-  color: #333;
-}
-
-.class-tag.religion {
-  background-color: #e9aed5; /* pink */
-  color: #333;
-}
-
+/* Make class number bold */
 .class-number {
-  font-weight: 500;
+  font-weight: 700; /* Bold text */
   margin-right: 6px;
+  white-space: nowrap;
 }
 
+/* Class name styling */
 .class-name {
   flex-grow: 1;
 }
 
+/* Credits styling */
 .class-credits {
   font-size: 14px;
   color: #666;
+  margin-top: 2px; /* Small space below the class name */
+}
+
+/* Updated colors for class tags and legend */
+.class-tag.major, .type-major {
+  background-color: #ffd700; /* gold */
+}
+
+.class-tag.minor, .type-minor {
+  background-color: #c0c0c0; /* silver */
+}
+
+.class-tag.english, .type-english, .class-tag.holokai, .class-tag.eil, .type-holokai, .type-eil {
+  background-color: #90ee90; /* light green */
+}
+
+.class-tag.religion, .class-tag.rel, .type-religion {
+  background-color: #00008b; /* deep blue */
+}
+
+.class-tag.core, .type-core {
+  background-color: #c2aee9; /* purple */
 }
 
 .semester-credits {
@@ -1321,6 +1340,43 @@ select:focus {
   .schedule-table {
     grid-template-columns: 1fr;
   }
+}
+
+/* Add a nested flex container for the first line items */
+.class-top-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+/* Update legend colors to match class tags */
+.type-major {
+  background-color: #ffd700; /* gold */
+}
+
+.type-minor {
+  background-color: #c0c0c0; /* silver */
+}
+
+
+
+.type-holokai, .type-eil {
+  background-color: #90ee90; /* lilac - keeping original */
+}
+
+.type-religion {
+  background-color: #00008b; /* deep blue */
+}
+
+/* Legend styling */
+.legend-color {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
 
