@@ -233,6 +233,9 @@ window.addEventListener('DOMContentLoaded', async () => {
                 <img id="edit-course-button" src="./assets/whiteedit.png" alt="Edit course">
                 <img id="download-course-button" src="./assets/downloadcourse.png" alt="Download course">
                 <img id="delete-course-button" src="./assets/whitedelete.png" alt="Delete course">
+                <img id="copy-course-button" src="./assets/copy-button.png" alt="Duplicate course">
+
+
             </div>
         `;
 
@@ -293,6 +296,44 @@ window.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
+        // Add this right after your deleteButton event listener setup in the displayCourse function
+
+        const copyButton = document.getElementById('copy-course-button');
+        if (copyButton) {
+            copyButton.addEventListener('click', async () => {
+                if (confirm('Do you want to create a copy of this course with all its sections and classes?')) {
+                    try {
+                        // Show loading state
+                        copyButton.style.opacity = '0.5';
+                        copyButton.style.cursor = 'wait';
+                        
+                        const response = await fetch(`/api/courses/${courseId}/duplicate`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Failed to copy course');
+                        }
+
+                        const newCourse = await response.json();
+                        
+                        // Success message and redirect to the new course
+                        alert(`Course copied successfully! The new course is named "${newCourse.course_name}".`);
+                        window.location.href = `course_details.html?course_id=${newCourse.id}`;
+                    } catch (error) {
+                        console.error('Error copying course:', error);
+                        alert('Error copying course: ' + error.message);
+                        
+                        // Reset button state
+                        copyButton.style.opacity = '1';
+                        copyButton.style.cursor = 'pointer';
+                    }
+                }
+            });
+        }
+
         // Clear the sections div
         courseSectionsDiv.innerHTML = '';
         
@@ -323,6 +364,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                                 <button class="delete-section-button" data-section="${section.id}">Delete This Section</button>
                                 <img class="toggle-actions-button" src="./assets/editclassbutton.png" alt="Toggle actions" data-section="${section.id}">
                             </div>
+                            
+
                         </div>
                         <!-- Rest of your section content -->
                         <ul class="classes-list" id="section-${section.id}-classes"></ul>

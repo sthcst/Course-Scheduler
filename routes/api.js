@@ -1925,6 +1925,133 @@ router.get('/courses/:course_id/sections/:section_id', async (req, res) => {
     }
 });
 
+// Add this new route handler 
+
+// Duplicate a course with all its sections and classes
+router.post('/courses/:id/duplicate', async (req, res) => {
+    const courseId = parseInt(req.params.id);
+    
+    try {
+        // Start a database transaction
+        await pool.query('BEGIN');
+        
+        // 1. Get the original course details
+        const courseResult = await pool.query(
+            'SELECT * FROM courses WHERE id = $1',
+            [courseId]
+        );
+        
+        if (courseResult.rows.length === 0) {
+            await pool.query('ROLLBACK');
+            return res.status(404).json({ error: 'Course not found' });
+        }
+        
+        const originalCourse = courseResult.rows[0];
+        const newCourseName = `${originalCourse.course_name} copy`;
+        
+        // 2. Create a new course
+        const newCourseResult = await pool.query(
+            'INSERT INTO courses (course_name, course_type) VALUES ($1, $2) RETURNING id',
+            [newCourseName, originalCourse.course_type]
+        );
+        
+        const newCourseId = newCourseResult.rows[0].id;
+        
+        // 3. Get all sections from the original course
+        const sectionsResult = await pool.query(
+            'SELECT * FROM course_sections WHERE course_id = $1 ORDER BY display_order',
+            [courseId]
+        );
+        
+        // 4. Create new sections and map old section IDs to new ones
+        const sectionIdMap = {};
+        
+        for (const section of sectionsResult.rows) {
+            const newSectionResult = await pool.query(
+                `INSERT INTO course_sections 
+                (course_id, section_name, credits_required, is_required, credits_needed_to_take, display_order) 
+                VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+                [
+                    newCourseId, 
+                    section.section_name,
+                    section.credits_required,
+                    section.is_required,
+                    section.credits_needed_to_take,
+                    section.display_order
+                ]
+            );
+            
+            sectionIdMap[section.id] = newSectionResult.rows[0].id;
+        }
+        
+        // 5. Get all class associations from the original course
+        const classAssociationsResult = await pool.query(
+            `SELECT * FROM classes_in_course 
+            WHERE course_id = $1`,
+            [courseId]
+        );
+        
+        // 6. Create new class associations
+        for (const association of classAssociationsResult.rows) {
+            const newSectionId = sectionIdMap[association.section_id];
+            
+            if (newSectionId) {
+                await pool.query(
+                    `INSERT INTO classes_in_course 
+                    (course_id, class_id, section_id, is_elective, elective_group_id) 
+                    VALUES ($1, $2, $3, $4, $5)`,
+                    [
+                        newCourseId,
+                        association.class_id,
+                        newSectionId,
+                        association.is_elective,
+                        association.elective_group_id
+                    ]
+                );
+            }
+        }
+        
+        // 7. Handle elective groups if they exist
+        const electiveGroupsResult = await pool.query(
+            `SELECT * FROM elective_groups 
+             WHERE section_id IN (SELECT id FROM course_sections WHERE course_id = $1)`,
+            [courseId]
+        );
+        
+        for (const group of electiveGroupsResult.rows) {
+            const newSectionId = sectionIdMap[group.section_id];
+            if (newSectionId) {
+                await pool.query(
+                    `INSERT INTO elective_groups
+                     (section_id, group_name, required_count)
+                     VALUES ($1, $2, $3)`,
+                    [
+                        newSectionId,
+                        group.group_name,
+                        group.required_count
+                    ]
+                );
+            }
+        }
+        
+        // Commit the transaction
+        await pool.query('COMMIT');
+        
+        // Return the new course details
+        res.json({ 
+            id: newCourseId, 
+            course_name: newCourseName,
+            course_type: originalCourse.course_type
+        });
+        
+    } catch (error) {
+        // Roll back the transaction in case of errors
+        await pool.query('ROLLBACK');
+        console.error('Error duplicating course:', error);
+        res.status(500).json({ error: 'Failed to duplicate course' });
+    }
+});
+
 
 
 // Replace your current '/courses/:course_id/sections/reorder' PUT endpoint with this one:
