@@ -668,6 +668,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   ) {
     const { requiredClasses, electiveSections, prerequisiteIds, corequisiteIdsToFetch } = processedData;
     
+    // Add these lines to define the missing variables
+    const unschedulableClasses = [];
+    const unschedulableReasons = {};
+    
     // Create map of required classes by ID for quick lookups
     const requiredClassesById = {};
     requiredClasses.forEach(cls => {
@@ -938,42 +942,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Find any prerequisites we're still missing
     uniqueClasses.forEach(cls => {
       if (cls.prerequisites && Array.isArray(cls.prerequisites)) {
-        cls.prerequisites.forEach(prereqId => {
-          const id = typeof prereqId === 'object' ? (prereqId.id || prereqId.class_id) : prereqId;
-          if (id && !combinedClassesById[id]) {
-            additionalPrerequisitesToFetch.add(id);
-            console.log(`Found missing prerequisite in second pass: ${id}`);
-          }
-        });
-      }
-    });
-    
-    // Fetch any additional prerequisites we found
-    const additionalPrerequisites = [];
-    for (const prereqId of Array.from(additionalPrerequisitesToFetch)) {
-      try {
-        const response = await fetch(`/api/classes/${prereqId}`);
-        if (response.ok) {
-          const prereq = await response.json();
-          prereq.is_required = true;
-          additionalPrerequisites.push(prereq);
-          console.log(`Fetched additional prerequisite: ${prereq.class_name} (ID: ${prereq.id})`);
-        }
-      } catch (error) {
-        console.warn(`Error fetching additional prerequisite ${prereqId}: ${error.message}`);
-      }
-    }
-    
-    // Add these to our classes before sorting and scheduling
-    uniqueClasses.push(...additionalPrerequisites);
-    
-    // Before the sort and scheduling, identify unschedulable classes
-    const unschedulableClasses = [];
-    const unschedulableReasons = {};
-    
-    // Check if any class has missing prerequisites that couldn't be fetched
-    uniqueClasses.forEach(cls => {
-      if (cls.prerequisites && Array.isArray(cls.prerequisites)) {
         const missingPrereqs = [];
         
         cls.prerequisites.forEach(prereqId => {
@@ -1230,19 +1198,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const requiredCredits = 120;
     const electiveCreditsNeeded = Math.max(0, requiredCredits - totalCredits);
     
+    // Calculate total semesters
+    const totalSemesters = schedule.length;
+    
     // Create summary items
     summaryBox.innerHTML = `
       <div class="summary-item animated-box" id="total-credits-box">
         <p>Total Credits Taken</p>
         <h2 id="total-credits">${totalCredits}</h2>
       </div>
-      <div class="summary-item animated-box" id="graduation-date-box">
-        <p>Graduation Date</p>
-        <h2 id="graduation-date">${graduationSemester}</h2>
-      </div>
       <div class="summary-item animated-box" id="electives-needed-box">
         <p>Elective Credits Needed</p>
         <h2 id="electives-needed">${electiveCreditsNeeded}</h2>
+      </div>
+      <div class="summary-item animated-box" id="total-semesters-box">
+        <p>Total Semesters</p>
+        <h2 id="total-semesters">${totalSemesters}</h2>
+      </div>
+      <div class="summary-item animated-box" id="graduation-date-box">
+        <p>Graduation Date</p>
+        <h2 id="graduation-date">${graduationSemester}</h2>
       </div>
     `;
     
@@ -1828,7 +1803,7 @@ function createSchedule(sortedClasses, startSemester, majorClassLimit, fallWinte
   let remainingClasses = [...sortedClasses];
   
   // Set a reasonable limit to prevent infinite loops
-  const MAX_SEMESTERS = 100;
+  const MAX_SEMESTERS = 15;
   
   // Extract and prioritize EIL/English classes
   const eilClasses = remainingClasses.filter(cls => 
