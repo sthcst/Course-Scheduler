@@ -284,10 +284,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         option.value = major.id;
         option.textContent = major.course_name;
         majorSelect.appendChild(option);
-      });
-      
-      majorSelect.addEventListener('change', () => {
-        document.getElementById("selectedMajor").value = majorSelect.value;
+        
+        majorSelect.addEventListener('change', () => {
+          document.getElementById("selectedMajor").value = majorSelect.value;
+        });
       });
     }
     
@@ -300,10 +300,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         option.value = minor.id;
         option.textContent = minor.course_name;
         minor1Select.appendChild(option);
-      });
-      
-      minor1Select.addEventListener('change', () => {
-        document.getElementById("selectedMinor1").value = minor1Select.value;
+        
+        minor1Select.addEventListener('change', () => {
+          document.getElementById("selectedMinor1").value = minor1Select.value;
+        });
       });
     }
     
@@ -316,10 +316,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         option.value = minor.id;
         option.textContent = minor.course_name;
         minor2Select.appendChild(option);
-      });
-      
-      minor2Select.addEventListener('change', () => {
-        document.getElementById("selectedMinor2").value = minor2Select.value;
+        
+        minor2Select.addEventListener('change', () => {
+          document.getElementById("selectedMinor2").value = minor2Select.value;
+        });
       });
     }
     
@@ -967,13 +967,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Add these to our classes before sorting and scheduling
     uniqueClasses.push(...additionalPrerequisites);
     
-    // Build corequisite map
-    const corequisiteMap = buildCorequisiteMap(uniqueClasses);
+    // Before the sort and scheduling, identify unschedulable classes
+    const unschedulableClasses = [];
+    const unschedulableReasons = {};
     
-    // Sort classes based on prerequisites
-    const sortedClasses = sortClassesByPrerequisites(uniqueClasses);
+    // Check if any class has missing prerequisites that couldn't be fetched
+    uniqueClasses.forEach(cls => {
+      if (cls.prerequisites && Array.isArray(cls.prerequisites)) {
+        const missingPrereqs = [];
+        
+        cls.prerequisites.forEach(prereqId => {
+          const id = typeof prereqId === 'object' ? (prereqId.id || prereqId.class_id) : prereqId;
+          if (id && !combinedClassesById[id] && !additionalPrerequisitesToFetch.has(id)) {
+            missingPrereqs.push(id);
+          }
+        });
+        
+        if (missingPrereqs.length > 0) {
+          unschedulableClasses.push(cls);
+          unschedulableReasons[cls.id] = `Missing prerequisites: ${missingPrereqs.join(', ')}`;
+          
+          // Log the unschedulable class
+          console.log(`Marking class as unschedulable: ${cls.class_number || ''} (${cls.class_name}) - Prerequisites missing: ${missingPrereqs.join(', ')}`);
+        }
+      }
+    });
     
-    // Generate schedule
+    // Remove unschedulable classes from the classes to be scheduled
+    const schedulableClasses = uniqueClasses.filter(cls => !unschedulableClasses.includes(cls));
+    
+    console.log(`Found ${unschedulableClasses.length} classes that cannot be scheduled due to missing prerequisites`);
+    if (unschedulableClasses.length > 0) {
+      const names = unschedulableClasses.map(cls => 
+        `${cls.class_number || ''} (${cls.class_name}) - Prerequisites: ${JSON.stringify(cls.prerequisites)}`
+      );
+      console.log("Unschedulable classes:", names);
+    }
+    
+    // Build corequisite map with only schedulable classes
+    const corequisiteMap = buildCorequisiteMap(schedulableClasses);
+    
+    // Sort schedulable classes based on prerequisites 
+    const sortedClasses = sortClassesByPrerequisites(schedulableClasses);
+    
+    // Generate schedule with only schedulable classes
     const schedule = createSchedule(
       sortedClasses,
       startSemester, 
@@ -982,6 +1019,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       springCredits,
       corequisiteMap
     );
+    
+    // Add unschedulable classes info to the schedule
+    schedule.unschedulableClasses = unschedulableClasses;
+    schedule.unschedulableReasons = unschedulableReasons;
     
     return schedule;
   }
@@ -1207,6 +1248,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Add summary box to the container
     scheduleContainer.appendChild(summaryBox);
+    
+    // Display unschedulable classes if any exist
+    if (schedule.unschedulableClasses && schedule.unschedulableClasses.length > 0) {
+      const unschedulableBox = document.createElement('div');
+      unschedulableBox.className = 'unschedulable-box warning';
+      
+      const unschedulableTitle = document.createElement('h3');
+      unschedulableTitle.textContent = 'Classes That Could Not Be Scheduled';
+      unschedulableBox.appendChild(unschedulableTitle);
+      
+      const unschedulableList = document.createElement('ul');
+      unschedulableList.className = 'unschedulable-list';
+      
+      schedule.unschedulableClasses.forEach(cls => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+          <strong>${cls.class_number || ''}</strong> ${cls.class_name} 
+          <span class="unschedulable-reason">${schedule.unschedulableReasons[cls.id] || 'Missing prerequisites'}</span>
+        `;
+        unschedulableList.appendChild(listItem);
+      });
+      
+      unschedulableBox.appendChild(unschedulableList);
+      scheduleContainer.appendChild(unschedulableBox);
+    }
     
     // Create schedule display
     const scheduleTable = document.createElement('div');

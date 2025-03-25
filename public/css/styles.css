@@ -1379,4 +1379,48 @@ select:focus {
   vertical-align: middle;
 }
 
+.unschedulable-box {
+  margin: 20px 0;
+  padding: 15px 20px;
+  background-color: #fff3cd;
+  border-left: 5px solid #ffc107;
+  border-radius: 4px;
+}
+
+.unschedulable-box.warning {
+  background-color: #ffe5e5;
+  border-left-color: #ff3b30;
+}
+
+.unschedulable-box h3 {
+  margin-top: 0;
+  color: #856404;
+}
+
+.unschedulable-box.warning h3 {
+  color: #721c24;
+}
+
+.unschedulable-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.unschedulable-list li {
+  margin-bottom: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.unschedulable-reason {
+  display: block;
+  font-size: 0.9em;
+  color: #856404;
+  margin-top: 3px;
+}
+
+.unschedulable-box.warning .unschedulable-reason {
+  color: #721c24;
+}
+
 
