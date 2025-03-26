@@ -374,39 +374,97 @@ document.addEventListener('DOMContentLoaded', async () => {
       })
     );
     
-    // Also fetch any missing prerequisite courses
-    const missingPrereqIds = new Set();
-
-    // Function to recursively collect prerequisite IDs
-    function collectPrerequisites(courseId, allCourses) {
-      const course = allCourses.find(c => c.id === courseId);
-      if (!course || !course.classes) return;
+    // Wait for all course data to load first
+    const coursesData = await Promise.all(selectedCourseDetailsPromises);
+    
+    // Collect all classes from all courses to build a comprehensive map
+    const allClasses = [];
+    const courseTypeMap = {};
+    
+    coursesData.forEach(course => {
+      // Store the course type for reference
+      courseTypeMap[course.id] = course.course_type;
       
-      course.classes.forEach(cls => {
-        if (cls.prerequisites && Array.isArray(cls.prerequisites)) {
-          cls.prerequisites.forEach(prereq => {
-            const prereqId = typeof prereq === 'object' ? prereq.id || prereq.class_id : prereq;
-            if (prereqId && !allSelectedIds.includes(prereqId)) {
-              missingPrereqIds.add(prereqId);
-              // Recursively get prerequisites of prerequisites
-              collectPrerequisites(prereqId, allCourses);
-            }
-          });
+      // Extract classes from this course
+      if (Array.isArray(course.classes)) {
+        allClasses.push(...course.classes);
+      } else if (Array.isArray(course.sections)) {
+        course.sections.forEach(section => {
+          if (Array.isArray(section.classes)) {
+            allClasses.push(...section.classes);
+          }
+        });
+      }
+    });
+    
+    // Now build the missing prerequisites set
+    const missingPrereqIds = new Set();
+    const processedIds = new Set(allSelectedIds);
+    
+    // Function to recursively collect prerequisite IDs
+    function collectPrerequisites(classObj) {
+      if (!classObj || !classObj.prerequisites || !Array.isArray(classObj.prerequisites)) return;
+      
+      classObj.prerequisites.forEach(prereq => {
+        const prereqId = typeof prereq === 'object' ? prereq.id || prereq.class_id : prereq;
+        
+        if (prereqId && !processedIds.has(prereqId)) {
+          missingPrereqIds.add(prereqId);
+          processedIds.add(prereqId); // Mark as processed
+          
+          // Look for this prereq class in our collected classes
+          const prereqClass = allClasses.find(c => c.id === prereqId);
+          if (prereqClass) {
+            // Recursively check its prerequisites too
+            collectPrerequisites(prereqClass);
+          }
         }
       });
+      
+      // Also check for corequisites
+      if (classObj.corequisites && Array.isArray(classObj.corequisites)) {
+        classObj.corequisites.forEach(coreq => {
+          const coreqId = typeof coreq === 'object' ? coreq.id || coreq.class_id : coreq;
+          
+          if (coreqId && !processedIds.has(coreqId)) {
+            missingPrereqIds.add(coreqId);
+            processedIds.add(coreqId); // Mark as processed
+          }
+        });
+      }
     }
 
-    // Find prerequisites of selected courses
-    selectedCourseIds.forEach(id => collectPrerequisites(id, basicCourses));
+    // Process all classes to find missing prerequisites
+    allClasses.forEach(cls => collectPrerequisites(cls));
 
-    // Add missing prerequisites to the fetch list
+    // Log the missing prerequisites we found
+    console.log(`Found ${missingPrereqIds.size} missing prerequisites/corequisites:`, Array.from(missingPrereqIds));
+    
+    // Add missing prerequisites to the list of IDs to fetch
     missingPrereqIds.forEach(id => {
       if (!allSelectedIds.includes(id)) {
         allSelectedIds.push(id);
       }
     });
 
-    return await Promise.all(selectedCourseDetailsPromises);
+    // Fetch the additional courses that were identified as prerequisites
+    const additionalCoursePromises = Array.from(missingPrereqIds).map(id =>
+      fetch(`/api/courses/${id}`).then(res => {
+        if (!res.ok) {
+          console.warn(`Could not fetch prerequisite course ${id}, will try as a class instead.`);
+          return null;
+        }
+        return res.json();
+      }).catch(err => {
+        console.warn(`Error fetching prerequisite course ${id}: ${err.message}`);
+        return null;
+      })
+    );
+    
+    // Add any additional courses we found
+    const additionalCourses = (await Promise.all(additionalCoursePromises)).filter(Boolean);
+    
+    return [...coursesData, ...additionalCourses];
   }
 
   // Process the selected course data into classes for scheduling
@@ -1176,6 +1234,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Clear previous schedule
     scheduleContainer.innerHTML = '';
     
+    // Check for unschedulable classes first - if present, only show error message
+    if (schedule.unschedulableClasses && schedule.unschedulableClasses.length > 0) {
+      const errorBox = document.createElement('div');
+      errorBox.className = 'error-box warning';
+      
+      const errorTitle = document.createElement('h3');
+      errorTitle.textContent = 'Your chosen Majors and Minors cannot be scheduled due to problems with the following classes listed below. Please contact your Academic Advisor to fix this issue';
+      errorBox.appendChild(errorTitle);
+      
+      const errorList = document.createElement('ul');
+      errorList.className = 'unschedulable-list';
+      
+      schedule.unschedulableClasses.forEach(cls => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+          <strong>${cls.class_number || ''}</strong> ${cls.class_name} 
+          <span class="unschedulable-reason">${schedule.unschedulableReasons[cls.id] || 'Missing prerequisites'}</span>
+        `;
+        errorList.appendChild(listItem);
+      });
+      
+      errorBox.appendChild(errorList);
+      scheduleContainer.appendChild(errorBox);
+      return; // Exit early without showing schedule
+    }
+    
     if (schedule.length === 0) {
       scheduleContainer.innerHTML = '<div class="empty-schedule">No classes to schedule. Please select a major or minor.</div>';
       return;
@@ -1201,7 +1285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Calculate total semesters
     const totalSemesters = schedule.length;
     
-    // Create summary items
+    // Create summary items with updated order
     summaryBox.innerHTML = `
       <div class="summary-item animated-box" id="total-credits-box">
         <p>Total Credits Taken</p>
@@ -1224,36 +1308,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Add summary box to the container
     scheduleContainer.appendChild(summaryBox);
     
-    // Display unschedulable classes if any exist
-    if (schedule.unschedulableClasses && schedule.unschedulableClasses.length > 0) {
-      const unschedulableBox = document.createElement('div');
-      unschedulableBox.className = 'unschedulable-box warning';
-      
-      const unschedulableTitle = document.createElement('h3');
-      unschedulableTitle.textContent = 'Classes That Could Not Be Scheduled';
-      unschedulableBox.appendChild(unschedulableTitle);
-      
-      const unschedulableList = document.createElement('ul');
-      unschedulableList.className = 'unschedulable-list';
-      
-      schedule.unschedulableClasses.forEach(cls => {
-        const listItem = document.createElement('li');
-        listItem.innerHTML = `
-          <strong>${cls.class_number || ''}</strong> ${cls.class_name} 
-          <span class="unschedulable-reason">${schedule.unschedulableReasons[cls.id] || 'Missing prerequisites'}</span>
-        `;
-        unschedulableList.appendChild(listItem);
-      });
-      
-      unschedulableBox.appendChild(unschedulableList);
-      scheduleContainer.appendChild(unschedulableBox);
-    }
-    
     // Create schedule display
     const scheduleTable = document.createElement('div');
     scheduleTable.className = 'schedule-table';
     
-    // Add each semester
+    // Add each semester (existing code)
     schedule.forEach(semester => {
       const semesterDiv = document.createElement('div');
       semesterDiv.className = semester.isWarning ? 'semester-card warning' : 'semester-card';
