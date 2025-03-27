@@ -500,9 +500,17 @@ function createSchedule(classes, startSemester, majorClassLimit, fallWinterCredi
   
   // Identify special classes for scheduling rules
   const religionClasses = remainingClasses.filter(cls => cls.category === 'religion');
+  
+  // UPDATED: Explicitly exclude STDEV 100R from EIL classes
   const eilClasses = remainingClasses.filter(cls => 
-    cls.category === 'english' || 
-    (cls.course_type && cls.course_type.toLowerCase().includes('eil'))
+    (cls.category === 'english' || 
+     (cls.course_type && cls.course_type.toLowerCase().includes('eil'))) &&
+    !(cls.class_number === "STDEV 100R" || (cls.class_name && cls.class_name.includes("STDEV 100R")))
+  );
+  
+  // Find STDEV 100R separately if needed
+  const stdevClass = remainingClasses.find(cls => 
+    cls.class_number === "STDEV 100R" || (cls.class_name && cls.class_name.includes("STDEV 100R"))
   );
   
   // Check for EIL 320 specifically
@@ -516,8 +524,14 @@ function createSchedule(classes, startSemester, majorClassLimit, fallWinterCredi
     (!cls.class_name || !cls.class_name.includes("Academic English II"))
   );
   
+  // Check if we're at EIL level 2 by checking if there are no other EIL classes
+  const isEILLevel2 = otherEILClasses.length === 0 && eil320Class;
+  
   // Keep track of semester counts
   let currentSemesterIndex = 0;
+  
+  // Track if other EIL classes have been scheduled
+  let otherEILClassesScheduled = false;
   
   while (remainingClasses.length > 0 && currentSemesterIndex < MAX_SEMESTERS) {
     // Check if we can finish the program early
@@ -528,6 +542,18 @@ function createSchedule(classes, startSemester, majorClassLimit, fallWinterCredi
     
     // Track completed classes for prerequisite verification
     const completedClasses = semesters.flatMap(sem => sem.classes);
+    
+    // Check if other EIL classes have been scheduled already
+    if (!otherEILClassesScheduled && currentSemesterIndex > 0) {
+      const scheduledEILClasses = completedClasses.filter(cls => 
+        cls.category === 'english' && 
+        cls.class_number !== "EIL 320" && 
+        (!cls.class_name || !cls.class_name.includes("Academic English II")) &&
+        cls.class_number !== "STDEV 100R" // Exclude STDEV
+      );
+      
+      otherEILClassesScheduled = scheduledEILClasses.length > 0;
+    }
     
     // Determine priority classes for this semester
     const priorityClasses = [];
@@ -549,23 +575,41 @@ function createSchedule(classes, startSemester, majorClassLimit, fallWinterCredi
       priorityClasses.push(availableReligionClasses[0]);
     }
     
-    // EIL class scheduling logic
+    // Add STDEV as a priority if it exists and hasn't been scheduled yet
+    if (stdevClass && remainingClasses.includes(stdevClass)) {
+      priorityClasses.push(stdevClass);
+    }
+    
+    // UPDATED: EIL class scheduling logic
     if (currentSemesterIndex === 0) {
-      // Prioritize first EIL class in first semester
-      otherEILClasses.forEach(cls => {
-        if (remainingClasses.includes(cls)) {
-          priorityClasses.push(cls);
-        }
-      });
-    } else if (currentSemesterIndex === 1) {
-      // Add next EIL class in second semester
-      const remaining = otherEILClasses.filter(cls => remainingClasses.includes(cls));
-      if (remaining.length > 0) {
-        priorityClasses.push(remaining[0]);
+      // In first semester:
+      // If EIL level 2, prioritize EIL 320 (now ALWAYS in first semester if level 2)
+      if (isEILLevel2 && eil320Class && remainingClasses.includes(eil320Class)) {
+        priorityClasses.push(eil320Class);
+      } 
+      // Otherwise prioritize other EIL classes
+      else {
+        otherEILClasses.forEach(cls => {
+          if (remainingClasses.includes(cls)) {
+            priorityClasses.push(cls);
+          }
+        });
       }
-    } else if (currentSemesterIndex === 2) {
-      // Prioritize EIL 320 in third semester
-      if (eil320Class && remainingClasses.includes(eil320Class)) {
+    } else if (currentSemesterIndex === 1) {
+      // In second semester:
+      // Try to finish other EIL classes if not completed in first semester
+      if (!isEILLevel2) {
+        const remainingEILClasses = otherEILClasses.filter(cls => remainingClasses.includes(cls));
+        priorityClasses.push(...remainingEILClasses);
+      }
+      
+      // If we're NOT at EIL level 2 but we've already scheduled other EIL classes, prioritize EIL 320
+      if (!isEILLevel2 && otherEILClassesScheduled && eil320Class && remainingClasses.includes(eil320Class)) {
+        priorityClasses.push(eil320Class);
+      }
+    } else {
+      // In later semesters, prioritize EIL 320 if it's still remaining and other EIL classes are done
+      if (otherEILClassesScheduled && eil320Class && remainingClasses.includes(eil320Class)) {
         priorityClasses.push(eil320Class);
       }
     }
@@ -576,7 +620,8 @@ function createSchedule(classes, startSemester, majorClassLimit, fallWinterCredi
       semesters,
       creditLimit,
       majorClassLimit,
-      priorityClasses
+      priorityClasses,
+      semesterType // Pass the current semester type
     );
     
     // No classes could be scheduled this semester - avoid infinite loop
@@ -604,24 +649,32 @@ function createSchedule(classes, startSemester, majorClassLimit, fallWinterCredi
   return semesters;
 }
 
-// Improved selectClassesForSemester to keep corequisites together
+// Improved selectClassesForSemester to keep corequisites together and check semester availability
 function selectClassesForSemester(
   availableClasses, 
   completedSemesters, 
   creditLimit, 
   majorClassLimit,
-  priorityClasses = []
+  priorityClasses = [],
+  currentSemesterType  // Add this new parameter
 ) {
   // Get already completed classes
   const completedClasses = completedSemesters.flatMap(sem => sem.classes);
   const completedClassIds = completedClasses.map(cls => cls.id);
   
-  // Filter eligible classes (prerequisites satisfied)
+  // Filter eligible classes (prerequisites satisfied AND offered in current semester)
   const eligibleClasses = availableClasses.filter(cls => {
-    // Check if prerequisites are met
+    // First check if class can be scheduled in this semester
+    if (cls.semesters_offered && Array.isArray(cls.semesters_offered) && 
+        cls.semesters_offered.length > 0) {
+      if (!cls.semesters_offered.includes(currentSemesterType)) {
+        return false; // Skip classes not offered this semester
+      }
+    }
+    
+    // Then check prerequisites as before
     if (cls.prerequisites && Array.isArray(cls.prerequisites) && cls.prerequisites.length > 0) {
       return cls.prerequisites.every(prereq => {
-        // Extract ID and ensure it's an integer
         let prereqId;
         if (typeof prereq === 'object') {
           prereqId = prereq.id || prereq.class_id;
@@ -629,7 +682,6 @@ function selectClassesForSemester(
           prereqId = parseInt(prereq, 10);
         }
         
-        // Check if prerequisite is completed
         return isNaN(prereqId) || completedClassIds.includes(prereqId);
       });
     }
@@ -888,7 +940,7 @@ function sortClassesByPrerequisites(classes) {
     
     // Cache and return result
     depthMap[classId] = maxDepth + 1;
-    return depthMap[classId];
+    return depthMap;
   }
   
   // Calculate depth for all classes
@@ -1128,5 +1180,3 @@ function selectOptimalElectives(electiveSections) {
   
   return selectedElectives;
 }
-
-//offical algorithim
