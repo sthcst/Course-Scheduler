@@ -167,12 +167,27 @@ class HuggingFaceScheduleOptimizer:
             if not movable_classes:
                 continue
                 
-            # Select a class to move (prefer non-major classes if overloaded with major classes)
-            major_count = sum(1 for c in high_sem["classes"] if c.get("isMajor") or c.get("category") == "major")
-            if major_count > 3:
-                # Prefer to move non-major classes
-                non_major_classes = [cls for cls in movable_classes if not cls.get("isMajor") and cls.get("category") != "major"]
-                class_to_move = non_major_classes[0] if non_major_classes else movable_classes[0]
+            # Prioritize classes by type - prefer keeping prerequisite classes,
+            # willing to move religion classes to later semesters
+            prerequisite_classes = []
+            religion_classes = []
+            other_classes = []
+            
+            all_classes = [cls for sem in schedule for cls in sem.get("classes", [])]
+            
+            for cls in movable_classes:
+                if cls.get("category") == "religion":
+                    religion_classes.append(cls)
+                elif any(cls.get("id") in (c.get("prerequisites", []) or []) for c in all_classes):
+                    prerequisite_classes.append(cls)
+                else:
+                    other_classes.append(cls)
+            
+            # Choose which class to move - prefer religion over others
+            if religion_classes:
+                class_to_move = religion_classes[0]
+            elif other_classes:
+                class_to_move = other_classes[0]
             else:
                 class_to_move = movable_classes[0]
             

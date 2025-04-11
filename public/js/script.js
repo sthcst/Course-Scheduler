@@ -1339,10 +1339,18 @@ function getEligibleClasses(availableClasses, completedClasses, currentSemesterT
       }
     }
     
-    // Check prerequisites
+    // Improved prerequisites check - more strict about finding the IDs
     if (cls.prerequisites && Array.isArray(cls.prerequisites) && cls.prerequisites.length > 0) {
       return cls.prerequisites.every(prereq => {
-        const prereqId = typeof prereq === 'object' ? prereq.id || prereq.class_id : prereq;
+        // Extract prerequisite ID more carefully
+        let prereqId;
+        if (typeof prereq === 'object') {
+          prereqId = prereq.id || prereq.class_id;
+        } else {
+          prereqId = parseInt(prereq, 10);
+        }
+        
+        // Only allow if this prerequisite is already completed
         return isNaN(prereqId) || completedClassIds.includes(prereqId);
       });
     }
