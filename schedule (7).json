@@ -175,9 +175,9 @@
         "corequisites": []
       },
       {
-        "id": 1,
-        "class_number": "CS 101",
-        "class_name": "Introduction to Programming Fundamentals",
+        "id": 26,
+        "class_number": "ENGL 101",
+        "class_name": "College Writing, Reading, and Research",
         "credits": 3,
         "category": "major",
         "isMajor": true,
@@ -186,13 +186,15 @@
         "is_corequisite": false,
         "is_corequisite_for": null,
         "is_prerequisite_for": null,
-        "prerequisites": [],
+        "prerequisites": [
+          65
+        ],
         "corequisites": []
       },
       {
-        "id": 26,
-        "class_number": "ENGL 101",
-        "class_name": "College Writing, Reading, and Research",
+        "id": 1,
+        "class_number": "CS 101",
+        "class_name": "Introduction to Programming Fundamentals",
         "credits": 3,
         "category": "major",
         "isMajor": true,
@@ -258,6 +260,23 @@
         "corequisites": []
       },
       {
+        "id": 27,
+        "class_number": "ENGL 315",
+        "class_name": "Topics for Advanced Writing and Analysis",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          26
+        ],
+        "corequisites": []
+      },
+      {
         "id": 21,
         "class_number": "MATH 121",
         "class_name": "Principles of Statistics",
@@ -305,23 +324,6 @@
           1
         ],
         "corequisites": []
-      },
-      {
-        "id": 8,
-        "class_number": "CS 205",
-        "class_name": "Foundations of Discrete Mathematics",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          1
-        ],
-        "corequisites": []
       }
     ],
     "totalCredits": 14
@@ -347,9 +349,9 @@
         "corequisites": []
       },
       {
-        "id": 9,
-        "class_number": "CS 206",
-        "class_name": "Discrete Mathematics II",
+        "id": 7,
+        "class_number": "HIST 470",
+        "class_name": "History and Ethics of Computing",
         "credits": 3,
         "category": "major",
         "isMajor": true,
@@ -359,8 +361,7 @@
         "is_corequisite_for": null,
         "is_prerequisite_for": null,
         "prerequisites": [
-          4,
-          8
+          27
         ],
         "corequisites": []
       },
@@ -376,9 +377,7 @@
         "is_corequisite": false,
         "is_corequisite_for": null,
         "is_prerequisite_for": null,
-        "prerequisites": [
-          21
-        ],
+        "prerequisites": [],
         "corequisites": []
       }
     ],
@@ -422,6 +421,23 @@
         "corequisites": []
       },
       {
+        "id": 8,
+        "class_number": "CS 205",
+        "class_name": "Foundations of Discrete Mathematics",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          1
+        ],
+        "corequisites": []
+      },
+      {
         "id": 5,
         "class_number": "CS 250",
         "class_name": "Database Applications",
@@ -434,23 +450,6 @@
         "is_corequisite_for": null,
         "is_prerequisite_for": null,
         "prerequisites": [],
-        "corequisites": []
-      },
-      {
-        "id": 27,
-        "class_number": "ENGL 315",
-        "class_name": "Topics for Advanced Writing and Analysis",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          26
-        ],
         "corequisites": []
       },
       {
@@ -467,9 +466,24 @@
         "is_prerequisite_for": null,
         "prerequisites": [],
         "corequisites": []
+      },
+      {
+        "id": 28,
+        "class_number": "ENTR 180",
+        "class_name": "New Venture Finance",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [],
+        "corequisites": []
       }
     ],
-    "totalCredits": 14
+    "totalCredits": 17
   },
   {
     "name": "Winter 2027",
@@ -492,9 +506,9 @@
         "corequisites": []
       },
       {
-        "id": 12,
-        "class_number": "CS 301",
-        "class_name": "Algorithms and Complexity",
+        "id": 9,
+        "class_number": "CS 206",
+        "class_name": "Discrete Mathematics II",
         "credits": 3,
         "category": "major",
         "isMajor": true,
@@ -504,25 +518,8 @@
         "is_corequisite_for": null,
         "is_prerequisite_for": null,
         "prerequisites": [
-          9,
-          11
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 13,
-        "class_number": "CS 320",
-        "class_name": "Introduction to Computational Theory",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          9
+          4,
+          8
         ],
         "corequisites": []
       },
@@ -560,140 +557,6 @@
           5
         ],
         "corequisites": []
-      }
-    ],
-    "totalCredits": 14
-  },
-  {
-    "name": "Spring 2027",
-    "type": "Spring",
-    "isFirstYear": false,
-    "classes": [
-      {
-        "id": 16,
-        "class_number": "CS 420",
-        "class_name": "Programming Languages",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          12,
-          13
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 7,
-        "class_number": "HIST 470",
-        "class_name": "History and Ethics of Computing",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          27
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 35,
-        "class_number": "HTM 133",
-        "class_name": "Introduction to Hospitality and Tourism Management",
-        "credits": 3,
-        "category": "minor",
-        "isMajor": false,
-        "is_required": true,
-        "is_elective": true,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [],
-        "corequisites": []
-      }
-    ],
-    "totalCredits": 9
-  },
-  {
-    "name": "Fall 2027",
-    "type": "Fall",
-    "isFirstYear": false,
-    "classes": [
-      {
-        "id": 15,
-        "class_number": "CS 415",
-        "class_name": "Operating Systems Design",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          10,
-          12
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 17,
-        "class_number": "CS 490R - Game Design",
-        "class_name": "Advanced Topics in Computer Science",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": true,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          12
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 14,
-        "class_number": "CS 401",
-        "class_name": "Computer Science Proficiency",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          5,
-          11
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 28,
-        "class_number": "ENTR 180",
-        "class_name": "New Venture Finance",
-        "credits": 3,
-        "category": "minor",
-        "isMajor": false,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [],
-        "corequisites": []
       },
       {
         "id": 38,
@@ -711,36 +574,34 @@
           37
         ],
         "corequisites": []
-      }
-    ],
-    "totalCredits": 15
-  },
-  {
-    "name": "Winter 2028",
-    "type": "Winter",
-    "isFirstYear": false,
-    "classes": [
-      {
-        "id": 18,
-        "class_number": "CS 490R - Data Visualization",
-        "class_name": "Advanced Topics in Computer Science",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": true,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          12
-        ],
-        "corequisites": []
       },
       {
         "id": 41,
         "class_number": "PAIS 250",
         "class_name": "Polynesian Dance and Performance",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": true,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [],
+        "corequisites": []
+      }
+    ],
+    "totalCredits": 17
+  },
+  {
+    "name": "Spring 2027",
+    "type": "Spring",
+    "isFirstYear": false,
+    "classes": [
+      {
+        "id": 35,
+        "class_number": "HTM 133",
+        "class_name": "Introduction to Hospitality and Tourism Management",
         "credits": 3,
         "category": "minor",
         "isMajor": false,
@@ -800,13 +661,31 @@
         "corequisites": []
       }
     ],
-    "totalCredits": 15
+    "totalCredits": 12
   },
   {
-    "name": "Spring 2028",
-    "type": "Spring",
+    "name": "Fall 2027",
+    "type": "Fall",
     "isFirstYear": false,
     "classes": [
+      {
+        "id": 14,
+        "class_number": "CS 401",
+        "class_name": "Web Applications Development",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          5,
+          11
+        ],
+        "corequisites": []
+      },
       {
         "id": 31,
         "class_number": "ENTR 285",
@@ -821,32 +700,6 @@
         "is_prerequisite_for": null,
         "prerequisites": [
           28
-        ],
-        "corequisites": []
-      }
-    ],
-    "totalCredits": 3
-  },
-  {
-    "name": "Fall 2028",
-    "type": "Fall",
-    "isFirstYear": false,
-    "classes": [
-      {
-        "id": 32,
-        "class_number": "ENTR 483",
-        "class_name": "New Venture Management",
-        "credits": 3,
-        "category": "minor",
-        "isMajor": false,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          30,
-          31
         ],
         "corequisites": []
       },
@@ -868,6 +721,161 @@
         "corequisites": []
       }
     ],
+    "totalCredits": 9
+  },
+  {
+    "name": "Winter 2028",
+    "type": "Winter",
+    "isFirstYear": false,
+    "classes": [
+      {
+        "id": 12,
+        "class_number": "CS 301",
+        "class_name": "Algorithms and Complexity",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          9,
+          11
+        ],
+        "corequisites": []
+      },
+      {
+        "id": 13,
+        "class_number": "CS 320",
+        "class_name": "Introduction to Computational Theory",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          9
+        ],
+        "corequisites": []
+      },
+      {
+        "id": 32,
+        "class_number": "ENTR 483",
+        "class_name": "New Venture Management",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          30,
+          31
+        ],
+        "corequisites": []
+      }
+    ],
+    "totalCredits": 9
+  },
+  {
+    "name": "Spring 2028",
+    "type": "Spring",
+    "isFirstYear": false,
+    "classes": [
+      {
+        "id": 16,
+        "class_number": "CS 420",
+        "class_name": "Programming Languages",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          12,
+          13
+        ],
+        "corequisites": []
+      }
+    ],
+    "totalCredits": 3
+  },
+  {
+    "name": "Fall 2028",
+    "type": "Fall",
+    "isFirstYear": false,
+    "classes": [
+      {
+        "id": 15,
+        "class_number": "CS 415",
+        "class_name": "Operating Systems Design",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          10,
+          12
+        ],
+        "corequisites": []
+      },
+      {
+        "id": 17,
+        "class_number": "CS 490R",
+        "class_name": "Advanced Topics in Computer Science",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": true,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          12
+        ],
+        "corequisites": []
+      }
+    ],
     "totalCredits": 6
+  },
+  {
+    "name": "Winter 2029",
+    "type": "Winter",
+    "isFirstYear": false,
+    "classes": [
+      {
+        "id": 18,
+        "class_number": "CS 490R II",
+        "class_name": "Advanced Topics in Computer Science",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": true,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          12
+        ],
+        "corequisites": []
+      }
+    ],
+    "totalCredits": 3
   }
 ]

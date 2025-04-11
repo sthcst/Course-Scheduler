@@ -269,12 +269,15 @@ async function generateScheduleFromSelections(event) {
       fallWinterCredits,
       springCredits
     );
-    
-    // 9. Display the schedule
-    renderSchedule(schedule);
+
+    // Optimize the schedule using ML model
+    const optimizedSchedule = await optimizeGeneratedSchedule(schedule);
+
+    // Render the optimized schedule
+    renderSchedule(optimizedSchedule);
 
     // Export schedule as JSON for debugging
-    const scheduleJson = getScheduleAsJson(schedule);
+    const scheduleJson = getScheduleAsJson(optimizedSchedule);
     console.log("Schedule JSON for debugging:", scheduleJson);
 
     // Create a download button for the JSON
@@ -1651,4 +1654,76 @@ function getScheduleAsJson(schedule) {
   }));
 
   return JSON.stringify(cleanSchedule, null, 2); // Pretty-print with 2-space indentation
+}
+
+// Add this after your createSchedule function
+async function optimizeGeneratedSchedule(schedule) {
+  console.log("Optimizing schedule with ML model...");
+  
+  // Get credit limit settings
+  const fallWinterCredits = parseInt(document.getElementById("fall-winter-credits").value, 10) || 15;
+  const springCredits = parseInt(document.getElementById("spring-credits").value, 10) || 12;
+  console.log(`Using credit limits: Fall/Winter=${fallWinterCredits}, Spring=${springCredits}`);
+  
+  // Ensure all semesters have valid totalCredits and add credit limits to first semester
+  const validSchedule = schedule.map((semester, index) => {
+    // Calculate totalCredits if missing or invalid
+    if (typeof semester.totalCredits !== 'number') {
+      semester.totalCredits = semester.classes.reduce((sum, cls) => sum + (cls.credits || 3), 0);
+    }
+    
+    // Add credit limit settings to first semester only
+    if (index === 0) {
+      semester.creditLimits = {
+        fallWinter: fallWinterCredits,
+        spring: springCredits
+      };
+    }
+    
+    return semester;
+  });
+  
+  try {
+    console.log("Connecting to Hugging Face schedule optimizer API...");
+    const response = await fetch('http://localhost:5001/hf_optimize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(validSchedule)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("API error response:", errorText);
+      throw new Error(`API returned status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log("API response received:", result);
+    
+    // Display the improvement explanations to the user
+    if (result.improvements && result.improvements.length > 0) {
+      const improvementsContainer = document.createElement('div');
+      improvementsContainer.className = 'improvements-container';
+      improvementsContainer.innerHTML = '<h3>Schedule Improvements</h3><ul>' +
+        result.improvements.map(improvement => `<li>${improvement}</li>`).join('') +
+        '</ul>';
+      
+      // Add to page after the schedule is rendered
+      document.getElementById('schedule-container').appendChild(improvementsContainer);
+    }
+    
+    if (result.optimized_score > result.original_score) {
+      console.log(`Schedule improved: ${result.original_score} → ${result.optimized_score}`);
+      return result.optimized_schedule;
+    } else {
+      console.log("No improvement found in schedule, keeping original");
+      return schedule;
+    }
+  } catch (error) {
+    console.warn("Schedule optimization failed, using original schedule:", error);
+    // Return the original schedule if optimization fails
+    return schedule; 
+  }
 }

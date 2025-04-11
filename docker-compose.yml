@@ -31,6 +31,25 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     command: npm run dev # Added line to use nodemon
+    networks:
+      - app-network
+
+  ml_api:
+    build:
+      context: ./ml_trainer
+      dockerfile: Dockerfile.python
+    container_name: ml_api_container
+    restart: unless-stopped
+    ports:
+      - "5001:5000"  # Changed from "5000:5000" - use port 5001 on host
+    volumes:
+      - ./ml_trainer:/app
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
