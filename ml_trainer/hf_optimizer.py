@@ -1,14 +1,26 @@
-import numpy as np
 import json
 import os
-from transformers import pipeline
 import requests
 from typing import List, Dict, Any
 
 class HuggingFaceScheduleOptimizer:
     def __init__(self):
-        # Use distilbert for sentence embeddings - small enough to run locally
-        self.nlp = pipeline("feature-extraction", model="distilbert-base-uncased")
+        # Remove transformers pipeline initialization
+        pass
+        
+    # Helper methods to replace NumPy functions
+    def _mean(self, values):
+        """Calculate mean without NumPy"""
+        if not values:
+            return 0
+        return sum(values) / len(values)
+    
+    def _variance(self, values):
+        """Calculate variance without NumPy"""
+        if not values or len(values) < 2:
+            return 0
+        mean = self._mean(values)
+        return sum((x - mean) ** 2 for x in values) / len(values)
         
     def optimize_schedule(self, original_schedule, fall_winter_credits=15, spring_credits=12):
         """Optimize a schedule using rule-based transformations
@@ -30,7 +42,6 @@ class HuggingFaceScheduleOptimizer:
         optimized_schedule = json.loads(json.dumps(original_schedule))
         
         # Apply a series of intelligent transformations with credit limits
-        # Each transformation returns a potentially modified schedule
         optimized_schedule = self._balance_credit_load(optimized_schedule, fall_winter_credits, spring_credits)
         optimized_schedule = self._consolidate_small_semesters(optimized_schedule, fall_winter_credits, spring_credits)
         optimized_schedule = self._optimize_course_distribution(optimized_schedule, fall_winter_credits, spring_credits)
@@ -57,10 +68,10 @@ class HuggingFaceScheduleOptimizer:
         # Basic features
         features = {
             "total_semesters": len(active_semesters),
-            "avg_credits": np.mean(active_semesters) if active_semesters else 0,
+            "avg_credits": self._mean(active_semesters) if active_semesters else 0,
             "max_credits": max(active_semesters) if active_semesters else 0,
             "min_credits": min(active_semesters) if active_semesters else 0,
-            "credit_variance": np.var(active_semesters) if active_semesters else 0,
+            "credit_variance": self._variance(active_semesters) if active_semesters else 0,
             "total_credits": sum(active_semesters),
             "zero_credit_semesters": sum(1 for c in semester_credits if c == 0),
             "small_semesters": sum(1 for c in active_semesters if c < 9),
@@ -82,7 +93,7 @@ class HuggingFaceScheduleOptimizer:
             minor_per_sem.append(minor_count)
             religion_per_sem.append(religion_count)
         
-        features["major_variance"] = np.var(major_per_sem) if major_per_sem else 0
+        features["major_variance"] = self._variance(major_per_sem) if major_per_sem else 0
         features["religion_distribution"] = sum(1 for c in religion_per_sem if c > 0) / len(schedule) if schedule else 0
         
         return features

@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-import numpy as np
 import json
 import os
 from flask_cors import CORS
@@ -8,7 +7,7 @@ from schedule_optimizer import ScheduleOptimizer  # Changed from ml_trainer.hf_o
 from hf_optimizer import HuggingFaceScheduleOptimizer
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 optimizer = ScheduleOptimizer()
 hf_optimizer = HuggingFaceScheduleOptimizer()
 
