@@ -37,7 +37,7 @@ services:
   ml_api:
     build:
       context: ./ml_trainer
-      dockerfile: Dockerfile.python
+      dockerfile: Dockerfile
     container_name: ml_api_container
     restart: unless-stopped
     ports:
