@@ -1693,7 +1693,7 @@ async function optimizeGeneratedSchedule(schedule) {
   
   try {
     console.log("Connecting to Hugging Face schedule optimizer API...");
-    const response = await fetch('http://localhost:5001/hf_optimize', {
+    const response = await fetch('https://course-scheduler-ml-api.onrender.com/hf_optimize', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
