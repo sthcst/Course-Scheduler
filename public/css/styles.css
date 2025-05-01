@@ -24,7 +24,40 @@ body {
     z-index: 1;
     margin-top: 0; /* Change from -50px to 0 to prevent overlap */
 }
+/* Menu navigation links */
+.menu-links {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
 
+.menu-button {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #9e1b34;
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.menu-button:hover {
+  background-color: #8a1629;
+}
+
+/* For mobile screens */
+@media (max-width: 600px) {
+  .menu-links {
+    margin-left: 10px;
+  }
+  
+  .menu-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
 .title {
     margin-top: -2px;
     font-size: 36px;
@@ -1448,6 +1481,16 @@ select:focus {
 
 .export-button:hover {
   background-color: #d6a22f;
+}
+
+/* Add this to your existing CSS file */
+.holokai-info {
+  font-size: 0.9rem;
+  margin-top: 4px;
+  color: #626262;
+  font-style: italic;
+  min-height: 20px;
+  padding-left: 4px;
 }
 
 

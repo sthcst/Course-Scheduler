@@ -29,8 +29,13 @@
         src="./assets/byuhawaii.png"
         alt="BYUH Logo"
       />
-      <!-- Admin login positioned right -->
       
+      <!-- Navigation buttons -->
+      <div class="menu-links">
+        <a href="/change_plan.html" class="menu-button">Change Your Plan</a>
+      </div>
+      
+      <!-- Admin login positioned right -->
     </div>
 
     <div class="menu-spacer"></div>
@@ -55,6 +60,8 @@
             </select>
             <!-- Keep the hidden input for ID storage -->
             <input type="hidden" id="selectedMajor" />
+            <!-- Add holokai display element -->
+            <div id="majorHolokai" class="holokai-info"></div>
           </div>
 
           <!-- Replace the minor1 search input with a dropdown -->
@@ -66,6 +73,8 @@
             </select>
             <!-- Keep the hidden input for ID storage -->
             <input type="hidden" id="selectedMinor1" />
+            <!-- Add holokai display element -->
+            <div id="minor1Holokai" class="holokai-info"></div>
           </div>
 
           <!-- Replace the minor2 search input with a dropdown -->
@@ -77,6 +86,8 @@
             </select>
             <!-- Keep the hidden input for ID storage -->
             <input type="hidden" id="selectedMinor2" />
+            <!-- Add holokai display element -->
+            <div id="minor2Holokai" class="holokai-info"></div>
           </div>
 
           <!-- English Level remains as before -->

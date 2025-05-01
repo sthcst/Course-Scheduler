@@ -120,6 +120,7 @@ router.get('/courses', async (req, res) => {
                 c.id,
                 c.course_name,
                 c.course_type,
+                c.holokai,
                 json_agg(DISTINCT jsonb_build_object(
                     'id', cs.id,
                     'section_name', cs.section_name,
@@ -190,6 +191,7 @@ router.get('/courses', async (req, res) => {
             id: row.id,
             course_name: row.course_name,
             course_type: row.course_type,
+            holokai: row.holokai,
             sections: row.sections.filter(section => section !== null).map(section => ({
                 id: section.id,
                 section_name: section.section_name,
@@ -229,7 +231,8 @@ router.get('/courses/basic', async (req, res) => {
             SELECT 
                 id,
                 course_name,
-                course_type
+                course_type,
+                holokai
             FROM courses
             ORDER BY course_name ASC
         `;
@@ -251,6 +254,7 @@ router.get('/courses/:course_id', async (req, res) => {
                 c.id,
                 c.course_name,
                 c.course_type,
+                c.holokai,
                 (SELECT json_agg(section_data)
                  FROM (
                      SELECT
@@ -305,6 +309,7 @@ router.get('/courses/:course_id', async (req, res) => {
                 id: rows[0].id,
                 course_name: rows[0].course_name,
                 course_type: rows[0].course_type,
+                holokai: rows[0].holokai,
                 sections: rows[0].sections || []
             };
             res.json(course);
@@ -955,7 +960,7 @@ router.get('/classes', async (req, res) => {
 
 
 router.post('/courses', async (req, res) => {
-    const { course_name, course_type, sections } = req.body;
+    const { course_name, course_type, holokai, sections } = req.body;
 
     // Basic validation
     if (!course_name || !course_type) {
@@ -968,11 +973,11 @@ router.post('/courses', async (req, res) => {
     try {
         // Insert the new course
         const insertCourseQuery = `
-            INSERT INTO courses (course_name, course_type)
-            VALUES ($1, $2)
-            RETURNING id, course_name, course_type
+            INSERT INTO courses (course_name, course_type, holokai)
+            VALUES ($1, $2, $3)
+            RETURNING id, course_name, course_type, holokai
         `;
-        const courseValues = [course_name, course_type];
+        const courseValues = [course_name, course_type, holokai];
         const { rows: courseRows } = await pool.query(insertCourseQuery, courseValues);
         const newCourse = courseRows[0];
 
@@ -1022,6 +1027,7 @@ router.post('/courses', async (req, res) => {
                 c.id,
                 c.course_name,
                 c.course_type,
+                c.holokai,
                 json_agg(DISTINCT jsonb_build_object(
                     'id', cs.id,
                     'section_name', cs.section_name,
@@ -1784,18 +1790,19 @@ router.delete('/classes/:class_id', async (req, res) => {
 router.put('/courses/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { course_name, course_type } = req.body;
+        const { course_name, course_type, holokai } = req.body;
 
         const query = `
             UPDATE courses 
             SET course_name = $1, 
                 course_type = $2,
+                holokai = $3,
                 updated_at = CURRENT_TIMESTAMP
-            WHERE id = $3
+            WHERE id = $4
             RETURNING *
         `;
 
-        const result = await pool.query(query, [course_name, course_type, id]);
+        const result = await pool.query(query, [course_name, course_type, holokai, id]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Course not found' });

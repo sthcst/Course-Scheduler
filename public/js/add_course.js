@@ -2,11 +2,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const addCourseButton = document.getElementById('addCourseButton');
     const courseNameInput = document.getElementById('courseName');
     const courseTypeSelect = document.getElementById('courseType');
+    const holokaiContainer = document.getElementById('holokaiContainer');
+    const holokaiTypeSelect = document.getElementById('holokaiType');
     const addCourseForm = document.getElementById('add-course-form');
+
+    // Show/hide holokai dropdown based on course type
+    courseTypeSelect.addEventListener('change', () => {
+        const courseType = courseTypeSelect.value;
+        holokaiContainer.style.display = 
+            (courseType === 'major' || courseType === 'minor') ? 'block' : 'none';
+    });
+
+    // Initial check to set correct display
+    holokaiContainer.style.display = 
+        (courseTypeSelect.value === 'major' || courseTypeSelect.value === 'minor') ? 'block' : 'none';
 
     addCourseButton.addEventListener('click', async () => {
         const courseName = courseNameInput.value.trim();
         const courseType = courseTypeSelect.value;
+        const holokai = (courseType === 'major' || courseType === 'minor') ? 
+            holokaiTypeSelect.value : null;
 
         // Basic validation
         if (!courseName) {
@@ -24,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     course_name: courseName,
                     course_type: courseType,
+                    holokai: holokai
                 }),
             });
 

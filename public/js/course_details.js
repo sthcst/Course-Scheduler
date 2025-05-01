@@ -40,7 +40,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     if (editCourseButton) {
         editCourseButton.addEventListener('click', async () => {
-            // Fetch current course data
             try {
                 const response = await fetch(`/api/courses/${courseId}`);
                 if (!response.ok) throw new Error('Failed to fetch course details');
@@ -49,6 +48,19 @@ window.addEventListener('DOMContentLoaded', async () => {
                 // Populate the form with current values
                 document.getElementById('edit-course-name').value = courseData.course_name;
                 document.getElementById('edit-course-type').value = courseData.course_type;
+                
+                // Handle holokai field
+                const editHolokaiContainer = document.getElementById('edit-holokai-container');
+                const editHolokaiSelect = document.getElementById('edit-holokai-type');
+                
+                // Show/hide holokai dropdown based on course type
+                const courseType = courseData.course_type.toLowerCase();
+                if (courseType === 'major' || courseType === 'minor') {
+                    editHolokaiContainer.style.display = 'block';
+                    editHolokaiSelect.value = courseData.holokai || '';
+                } else {
+                    editHolokaiContainer.style.display = 'none';
+                }
                 
                 // Show the modal
                 editCourseModal.style.display = 'block';
@@ -59,13 +71,31 @@ window.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Add event listener to show/hide holokai field based on course type
+    document.getElementById('edit-course-type').addEventListener('change', function() {
+        const courseType = this.value.toLowerCase();
+        const editHolokaiContainer = document.getElementById('edit-holokai-container');
+        
+        if (courseType === 'major' || courseType === 'minor') {
+            editHolokaiContainer.style.display = 'block';
+        } else {
+            editHolokaiContainer.style.display = 'none';
+        }
+    });
+
     editCourseForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        const courseType = document.getElementById('edit-course-type').value;
         const updatedData = {
             course_name: document.getElementById('edit-course-name').value,
-            course_type: document.getElementById('edit-course-type').value
+            course_type: courseType
         };
+        
+        // Only include holokai if course type is major or minor
+        if (courseType.toLowerCase() === 'major' || courseType.toLowerCase() === 'minor') {
+            updatedData.holokai = document.getElementById('edit-holokai-type').value;
+        }
     
         try {
             const response = await fetch(`/api/courses/${courseId}`, {
@@ -225,17 +255,17 @@ window.addEventListener('DOMContentLoaded', async () => {
             });
         }
         
-        // Update the HTML to include credits
+        // Update the HTML to include credits and holokai
         courseInfoDiv.innerHTML = `
             <h2>${data.course_name}</h2>
             <h3>${data.course_type || 'N/A'} <span class="course-credits">•   ${totalCredits} Credits</span></h3>
+            ${data.course_type && (data.course_type.toLowerCase() === 'major' || data.course_type.toLowerCase() === 'minor') ? 
+                `<h4>Holokai Section: ${data.holokai || 'None'}</h4>` : ''}
             <div class="editanddelete">
                 <img id="edit-course-button" src="./assets/whiteedit.png" alt="Edit course">
                 <img id="download-course-button" src="./assets/downloadcourse.png" alt="Download course">
                 <img id="delete-course-button" src="./assets/whitedelete.png" alt="Delete course">
                 <img id="copy-course-button" src="./assets/copy-button.png" alt="Duplicate course">
-
-
             </div>
         `;
 
@@ -252,8 +282,20 @@ window.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('edit-course-name').value = courseData.course_name;
                     document.getElementById('edit-course-type').value = courseData.course_type;
                     
+                    // Handle holokai field
+                    const editHolokaiContainer = document.getElementById('edit-holokai-container');
+                    const editHolokaiSelect = document.getElementById('edit-holokai-type');
+                    
+                    // Show/hide holokai dropdown based on course type
+                    const courseType = courseData.course_type.toLowerCase();
+                    if (courseType === 'major' || courseType === 'minor') {
+                        editHolokaiContainer.style.display = 'block';
+                        editHolokaiSelect.value = courseData.holokai || '';
+                    } else {
+                        editHolokaiContainer.style.display = 'none';
+                    }
+                    
                     // Show the modal
-                    const editCourseModal = document.getElementById('edit-course-modal');
                     editCourseModal.style.display = 'block';
                 } catch (error) {
                     console.error('Error fetching course details:', error);

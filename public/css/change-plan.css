@@ -1,0 +1,194 @@
+/* Additional styles for change_plan.html */
+
+/* Past and future semester containers */
+.semesters-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Warning style for semesters past 12 */
+.semester-card.warning {
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+}
+
+/* Add class button */
+.add-class-button {
+  margin: 10px 0;
+  padding: 8px 15px;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-class-button:hover {
+  background-color: #d0d0d0;
+}
+
+/* Remove class button */
+.remove-class {
+  background: none;
+  border: none;
+  color: #e53935;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+/* Search results styles */
+#class-search-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+#class-search-results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+#class-search-results li {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+#class-search-results li:hover {
+  background-color: #f5f5f5;
+}
+
+#selected-class-details {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+/* Selected class styling */
+.selected-class h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.selected-class p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* Improvements container */
+.improvements-container {
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #e8f5e9;
+  border-radius: 8px;
+  border-left: 4px solid #66bb6a;
+}
+
+.improvements-container h3 {
+  margin-top: 0;
+  color: #2e7d32;
+}
+
+.improvements-container ul {
+  margin: 10px 0 0 0;
+  padding-left: 20px;
+}
+
+.changes-explanation {
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #e3f2fd;
+  border-radius: 8px;
+  border-left: 4px solid #42a5f5;
+}
+
+.changes-explanation h3 {
+  margin-top: 0;
+  color: #0d47a1;
+}
+
+.changes-explanation ul {
+  margin: 10px 0 0 0;
+  padding-left: 20px;
+}
+
+/* Section headings */
+#past-semesters-container h2,
+#future-semesters-container h2 {
+  margin-top: 40px;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 24px;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .semesters-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .semesters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 5% auto;
+  }
+}

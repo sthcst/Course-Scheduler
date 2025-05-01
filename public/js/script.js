@@ -2,6 +2,13 @@
 let allClassesData = []; // Will store ALL classes from the API
 let basicCourses = []; // Lightweight course data for dropdowns
 
+// Track selected Holokai sections
+let selectedHolokai = {
+  major: null,
+  minor1: null,
+  minor2: null
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     // 1. Fetch basic course data for dropdowns
@@ -105,6 +112,10 @@ function createClassLookupMaps() {
 
 // Populate dropdowns with majors, minors and English levels
 function populateDropdowns(majors, minors, courses) {
+  // Save original data for refiltering later
+  const originalMajors = [...majors];
+  const originalMinors = [...minors];
+  
   // Populate Major Dropdown
   const majorSelect = document.getElementById("majorSelect");
   if (majorSelect) {
@@ -113,11 +124,26 @@ function populateDropdowns(majors, minors, courses) {
       const option = document.createElement("option");
       option.value = major.id;
       option.textContent = major.course_name;
+      // Store holokai data as a data attribute
+      if (major.holokai) {
+        option.dataset.holokai = major.holokai;
+      }
       majorSelect.appendChild(option);
+    });
+    
+    majorSelect.addEventListener('change', () => {
+      document.getElementById("selectedMajor").value = majorSelect.value;
       
-      majorSelect.addEventListener('change', () => {
-        document.getElementById("selectedMajor").value = majorSelect.value;
-      });
+      // Display holokai information
+      const selectedOption = majorSelect.options[majorSelect.selectedIndex];
+      const holokai = selectedOption.dataset.holokai || '';
+      document.getElementById("majorHolokai").textContent = holokai;
+      
+      // Update tracked holokai selection
+      selectedHolokai.major = holokai || null;
+      
+      // Refilter and update minor dropdowns
+      updateMinorDropdowns(originalMinors);
     });
   }
   
@@ -129,11 +155,27 @@ function populateDropdowns(majors, minors, courses) {
       const option = document.createElement("option");
       option.value = minor.id;
       option.textContent = minor.course_name;
+      // Store holokai data as a data attribute
+      if (minor.holokai) {
+        option.dataset.holokai = minor.holokai;
+      }
       minor1Select.appendChild(option);
+    });
+    
+    minor1Select.addEventListener('change', () => {
+      document.getElementById("selectedMinor1").value = minor1Select.value;
       
-      minor1Select.addEventListener('change', () => {
-        document.getElementById("selectedMinor1").value = minor1Select.value;
-      });
+      // Display holokai information
+      const selectedOption = minor1Select.options[minor1Select.selectedIndex];
+      const holokai = selectedOption.dataset.holokai || '';
+      document.getElementById("minor1Holokai").textContent = holokai;
+      
+      // Update tracked holokai selection
+      selectedHolokai.minor1 = holokai || null;
+      
+      // Refilter and update other dropdowns
+      updateMajorDropdown(originalMajors);
+      updateMinor2Dropdown(originalMinors);
     });
   }
   
@@ -145,11 +187,27 @@ function populateDropdowns(majors, minors, courses) {
       const option = document.createElement("option");
       option.value = minor.id;
       option.textContent = minor.course_name;
+      // Store holokai data as a data attribute
+      if (minor.holokai) {
+        option.dataset.holokai = minor.holokai;
+      }
       minor2Select.appendChild(option);
+    });
+    
+    minor2Select.addEventListener('change', () => {
+      document.getElementById("selectedMinor2").value = minor2Select.value;
       
-      minor2Select.addEventListener('change', () => {
-        document.getElementById("selectedMinor2").value = minor2Select.value;
-      });
+      // Display holokai information
+      const selectedOption = minor2Select.options[minor2Select.selectedIndex];
+      const holokai = selectedOption.dataset.holokai || '';
+      document.getElementById("minor2Holokai").textContent = holokai;
+      
+      // Update tracked holokai selection
+      selectedHolokai.minor2 = holokai || null;
+      
+      // Refilter and update other dropdowns
+      updateMajorDropdown(originalMajors);
+      updateMinor1Dropdown(originalMinors);
     });
   }
   
@@ -167,6 +225,144 @@ function populateDropdowns(majors, minors, courses) {
       englishLevelSelect.appendChild(option);
     });
   }
+}
+
+// Function to update the major dropdown based on selected minor holokai sections
+function updateMajorDropdown(originalMajors) {
+  const majorSelect = document.getElementById("majorSelect");
+  if (!majorSelect) return;
+  
+  // Remember the current selection
+  const currentValue = majorSelect.value;
+  
+  // Get selected holokai values
+  const usedHolokai = [selectedHolokai.minor1, selectedHolokai.minor2].filter(Boolean);
+  
+  // Filter majors
+  const filteredMajors = filterCourses(originalMajors, usedHolokai);
+  
+  // Repopulate dropdown
+  majorSelect.innerHTML = "<option value=''>Select a Major</option>";
+  
+  filteredMajors.forEach(major => {
+    const option = document.createElement("option");
+    option.value = major.id;
+    option.textContent = major.course_name;
+    if (major.holokai) {
+      option.dataset.holokai = major.holokai;
+    }
+    majorSelect.appendChild(option);
+  });
+  
+  // Restore selection if still available
+  if (currentValue) {
+    majorSelect.value = currentValue;
+    // If selected value is no longer in the list, reset selection and update tracking
+    if (majorSelect.value !== currentValue) {
+      document.getElementById("selectedMajor").value = '';
+      document.getElementById("majorHolokai").textContent = '';
+      selectedHolokai.major = null;
+    }
+  }
+}
+
+// Function to update both minor dropdowns
+function updateMinorDropdowns(originalMinors) {
+  updateMinor1Dropdown(originalMinors);
+  updateMinor2Dropdown(originalMinors);
+}
+
+// Function to update minor 1 dropdown
+function updateMinor1Dropdown(originalMinors) {
+  const minor1Select = document.getElementById("minor1Select");
+  if (!minor1Select) return;
+  
+  // Remember the current selection
+  const currentValue = minor1Select.value;
+  
+  // Get selected holokai values
+  const usedHolokai = [selectedHolokai.major, selectedHolokai.minor2].filter(Boolean);
+  
+  // Filter minors
+  const filteredMinors = filterCourses(originalMinors, usedHolokai);
+  
+  // Repopulate dropdown
+  minor1Select.innerHTML = "<option value=''>Select Your First Minor</option>";
+  
+  filteredMinors.forEach(minor => {
+    const option = document.createElement("option");
+    option.value = minor.id;
+    option.textContent = minor.course_name;
+    if (minor.holokai) {
+      option.dataset.holokai = minor.holokai;
+    }
+    minor1Select.appendChild(option);
+  });
+  
+  // Restore selection if still available
+  if (currentValue) {
+    minor1Select.value = currentValue;
+    // If selected value is no longer in the list, reset selection and update tracking
+    if (minor1Select.value !== currentValue) {
+      document.getElementById("selectedMinor1").value = '';
+      document.getElementById("minor1Holokai").textContent = '';
+      selectedHolokai.minor1 = null;
+    }
+  }
+}
+
+// Function to update minor 2 dropdown
+function updateMinor2Dropdown(originalMinors) {
+  const minor2Select = document.getElementById("minor2Select");
+  if (!minor2Select) return;
+  
+  // Remember the current selection
+  const currentValue = minor2Select.value;
+  
+  // Get selected holokai values
+  const usedHolokai = [selectedHolokai.major, selectedHolokai.minor1].filter(Boolean);
+  
+  // Filter minors
+  const filteredMinors = filterCourses(originalMinors, usedHolokai);
+  
+  // Repopulate dropdown
+  minor2Select.innerHTML = "<option value=''>Select Your Second Minor</option>";
+  
+  filteredMinors.forEach(minor => {
+    const option = document.createElement("option");
+    option.value = minor.id;
+    option.textContent = minor.course_name;
+    if (minor.holokai) {
+      option.dataset.holokai = minor.holokai;
+    }
+    minor2Select.appendChild(option);
+  });
+  
+  // Restore selection if still available
+  if (currentValue) {
+    minor2Select.value = currentValue;
+    // If selected value is no longer in the list, reset selection and update tracking
+    if (minor2Select.value !== currentValue) {
+      document.getElementById("selectedMinor2").value = '';
+      document.getElementById("minor2Holokai").textContent = '';
+      selectedHolokai.minor2 = null;
+    }
+  }
+}
+
+// Helper function to filter courses based on used Holokai sections
+function filterCourses(courses, usedHolokai) {
+  if (!usedHolokai || usedHolokai.length === 0) {
+    return courses; // If no Holokai sections are selected, return all courses
+  }
+  
+  return courses.filter(course => {
+    // Always include courses with null holokai
+    if (!course.holokai) return true;
+    
+    // Filter out courses with the same holokai as already selected
+    return !usedHolokai.includes(course.holokai);
+  });
 }
 
 // Main function to generate schedule from user selections - update to handle elective sections

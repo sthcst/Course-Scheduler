@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Change Your Academic Plan - Holokai Planner</title>
+    <!-- Add Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Add shared component styles -->
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/change-plan.css" />
+  </head>
+
+  <body>
+    <!-- Updated menubar with styled Admin Login link -->
+    <div id="menubar">
+      <!-- BYUH logo on left -->
+      <img
+        class="icon left"
+        id="morebutton"
+        src="./assets/byuhawaii.png"
+        alt="BYUH Logo"
+      />
+      
+      <!-- Navigation buttons -->
+      <div class="menu-links">
+        <a href="/index.html" class="menu-button">Back to Scheduler</a>
+      </div>
+    </div>
+
+    <div class="menu-spacer"></div>
+    
+    <!-- Red background with images -->
+    <div id="red-background">
+      <img src="./assets/turtle.png" alt="">
+      <img src="./assets/hawaiiandesign.png" alt="">
+    </div>
+
+    <div class="background-image">
+      <!-- Start of the container -->
+      <div class="container">
+        <header class="floating-bar">
+          <!-- Dropdown for starting semester -->
+          <div class="input-group" id="start-semester-group">
+            <label for="start-semester">What semester did you start?</label>
+            <select id="start-semester">
+              <!-- Will be populated by JavaScript -->
+            </select>
+          </div>
+
+          <!-- Input for semesters taken -->
+          <div class="input-group" id="semesters-taken-group">
+            <label for="semesters-taken">How many semesters have you taken?</label>
+            <input type="number" id="semesters-taken" min="1" max="12" value="1">
+          </div>
+
+          <!-- Current Major Dropdown -->
+          <div class="input-group" id="current-major-group">
+            <label for="currentMajorSelect">Current Major:</label>
+            <select id="currentMajorSelect">
+              <option value="">Select Your Current Major</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+            <input type="hidden" id="selectedCurrentMajor" />
+          </div>
+
+          <!-- Current Minor 1 Dropdown -->
+          <div class="input-group" id="current-minor1-group">
+            <label for="currentMinor1Select">Current Minor 1:</label>
+            <select id="currentMinor1Select">
+              <option value="">Select Your Current Minor 1</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+            <input type="hidden" id="selectedCurrentMinor1" />
+          </div>
+
+          <!-- Current Minor 2 Dropdown -->
+          <div class="input-group" id="current-minor2-group">
+            <label for="currentMinor2Select">Current Minor 2:</label>
+            <select id="currentMinor2Select">
+              <option value="">Select Your Current Minor 2</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+            <input type="hidden" id="selectedCurrentMinor2" />
+          </div>
+
+          <!-- Change Major Dropdown -->
+          <div class="input-group" id="change-major-group">
+            <label for="changeMajorSelect">Change Major To:</label>
+            <select id="changeMajorSelect">
+              <option value="keep">Keep Same Major</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+            <input type="hidden" id="selectedChangeMajor" value="keep" />
+          </div>
+
+          <!-- Change Minor 1 Dropdown -->
+          <div class="input-group" id="change-minor1-group">
+            <label for="changeMinor1Select">Change Minor 1 To:</label>
+            <select id="changeMinor1Select">
+              <option value="keep">Keep Same Minor</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+            <input type="hidden" id="selectedChangeMinor1" value="keep" />
+          </div>
+
+          <!-- Change Minor 2 Dropdown -->
+          <div class="input-group" id="change-minor2-group">
+            <label for="changeMinor2Select">Change Minor 2 To:</label>
+            <select id="changeMinor2Select">
+              <option value="keep">Keep Same Minor</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+            <input type="hidden" id="selectedChangeMinor2" value="keep" />
+          </div>
+
+          <!-- English Language Level Dropdown -->
+          <div class="form-group">
+            <label for="english-level">English Language Level:</label>
+            <select id="english-level" class="form-control">
+              <!-- Options will be populated from JavaScript -->
+            </select>
+          </div>
+
+          <div class="legend">
+            <p><span class="legend-color type-major"></span> Major Classes</p>
+            <p><span class="legend-color type-minor"></span> Minor Classes</p>
+            <p><span class="legend-color type-eil"></span> EIL/Holokai Classes</p>
+            <p><span class="legend-color type-religion"></span> Religion Classes</p>
+          </div>
+
+          <!-- Generate New Plan button -->
+          <button id="generate-new-plan" disabled>Generate New Plan</button>
+        </header>
+
+        <!-- Past Semesters Section -->
+        <div id="past-semesters-container">
+          <h2>Your Past Semesters</h2>
+          <div id="past-semesters" class="semesters-grid"></div>
+        </div>
+
+        <!-- Future Semesters Section (Initially Hidden) -->
+        <div id="future-semesters-container" class="hidden">
+          <h2>Your New Academic Plan</h2>
+          <div id="future-semesters" class="semesters-grid"></div>
+        </div>
+
+        <!-- Schedule Summary Container (Initially Hidden) -->
+        <div id="schedule-container" class="hidden"></div>
+      </div>
+      <!-- End of the container -->
+    </div>
+
+    <!-- Class Search Modal -->
+    <div id="class-search-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Add a Class</h2>
+        <div class="search-container">
+          <input type="text" id="class-search-input" placeholder="Search for a class...">
+          <ul id="class-search-results"></ul>
+        </div>
+        <div id="selected-class-details" class="hidden"></div>
+        <button id="add-class-to-semester" disabled>Add Class to Semester</button>
+      </div>
+    </div>
+
+    <script src="/js/change_plan.js"></script>
+  </body>
+</html>

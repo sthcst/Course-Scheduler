@@ -30,6 +30,7 @@ app.get('*', (req, res) => {
         '/edit_class.html': 'edit_class.html',
         '/add_new_class.html': 'add_new_class.html',
         '/search.html': 'search.html',
+        '/change_plan.html': 'change_plan.html', // Add this line
     };
 
     const fileName = routeToFileMap[pathname];
