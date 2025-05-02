@@ -54,6 +54,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (allClassesData.length > 0) {
       createClassLookupMaps();
     }
+
+    // When page loads, disable minor dropdowns and Generate Schedule button
+    disableCustomDropdown("minor1Select");
+    disableCustomDropdown("minor2Select");
+    updateGenerateButtonState();
     
   } catch (error) {
     console.error("Error during initialization:", error);
@@ -110,108 +115,124 @@ function createClassLookupMaps() {
   });
 }
 
-// Populate dropdowns with majors, minors and English levels
+// Add this function to determine holokai type class
+function getHolokaiClass(holokaiType) {
+  if (!holokaiType) return 'no-holokai';
+  
+  const type = holokaiType.toLowerCase();
+  if (type.includes('arts') || type.includes('humanities')) {
+    return 'arts-humanities';
+  } else if (type.includes('professional')) {
+    return 'professional-studies';
+  } else if (type.includes('math') || type.includes('sciences')) {
+    return 'math-sciences';
+  }
+  return 'no-holokai';
+}
+
+// Modified function to create styled custom dropdowns instead of using regular selects
 function populateDropdowns(majors, minors, courses) {
   // Save original data for refiltering later
   const originalMajors = [...majors];
   const originalMinors = [...minors];
   
-  // Populate Major Dropdown
-  const majorSelect = document.getElementById("majorSelect");
-  if (majorSelect) {
-    majorSelect.innerHTML = "<option value=''>Select a Major</option>";
-    majors.forEach(major => {
-      const option = document.createElement("option");
-      option.value = major.id;
-      option.textContent = major.course_name;
-      // Store holokai data as a data attribute
-      if (major.holokai) {
-        option.dataset.holokai = major.holokai;
-      }
-      majorSelect.appendChild(option);
-    });
+  // Create custom dropdown for Major
+  createCustomDropdown("majorSelect", "selectedMajor", majors, "Select a Major", option => {
+    // On selection handler
+    document.getElementById("majorHolokai").textContent = option.dataset.holokai || '';
+    selectedHolokai.major = option.dataset.holokai || null;
     
-    majorSelect.addEventListener('change', () => {
-      document.getElementById("selectedMajor").value = majorSelect.value;
-      
-      // Display holokai information
-      const selectedOption = majorSelect.options[majorSelect.selectedIndex];
-      const holokai = selectedOption.dataset.holokai || '';
-      document.getElementById("majorHolokai").textContent = holokai;
-      
-      // Update tracked holokai selection
-      selectedHolokai.major = holokai || null;
-      
-      // Refilter and update minor dropdowns
-      updateMinorDropdowns(originalMinors);
-    });
-  }
-  
-  // Populate Minor 1 Dropdown
-  const minor1Select = document.getElementById("minor1Select");
-  if (minor1Select) {
-    minor1Select.innerHTML = "<option value=''>Select Your First Minor</option>";
-    minors.forEach(minor => {
-      const option = document.createElement("option");
-      option.value = minor.id;
-      option.textContent = minor.course_name;
-      // Store holokai data as a data attribute
-      if (minor.holokai) {
-        option.dataset.holokai = minor.holokai;
-      }
-      minor1Select.appendChild(option);
-    });
+    // Enable minor dropdowns when a major is selected
+    if (option.dataset.value) {
+      enableCustomDropdown("minor1Select");
+      enableCustomDropdown("minor2Select");
+    } else {
+      // If major is deselected, disable minor dropdowns
+      disableCustomDropdown("minor1Select");
+      disableCustomDropdown("minor2Select");
+    }
     
-    minor1Select.addEventListener('change', () => {
-      document.getElementById("selectedMinor1").value = minor1Select.value;
-      
-      // Display holokai information
-      const selectedOption = minor1Select.options[minor1Select.selectedIndex];
-      const holokai = selectedOption.dataset.holokai || '';
-      document.getElementById("minor1Holokai").textContent = holokai;
-      
-      // Update tracked holokai selection
-      selectedHolokai.minor1 = holokai || null;
-      
-      // Refilter and update other dropdowns
-      updateMajorDropdown(originalMajors);
-      updateMinor2Dropdown(originalMinors);
-    });
-  }
-  
-  // Populate Minor 2 Dropdown
-  const minor2Select = document.getElementById("minor2Select");
-  if (minor2Select) {
-    minor2Select.innerHTML = "<option value=''>Select Your Second Minor</option>";
-    minors.forEach(minor => {
-      const option = document.createElement("option");
-      option.value = minor.id;
-      option.textContent = minor.course_name;
-      // Store holokai data as a data attribute
-      if (minor.holokai) {
-        option.dataset.holokai = minor.holokai;
-      }
-      minor2Select.appendChild(option);
-    });
+    // Reset minor selections
+    resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
+    resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
+    selectedHolokai.minor1 = null;
+    selectedHolokai.minor2 = null;
     
-    minor2Select.addEventListener('change', () => {
-      document.getElementById("selectedMinor2").value = minor2Select.value;
-      
-      // Display holokai information
-      const selectedOption = minor2Select.options[minor2Select.selectedIndex];
-      const holokai = selectedOption.dataset.holokai || '';
-      document.getElementById("minor2Holokai").textContent = holokai;
-      
-      // Update tracked holokai selection
-      selectedHolokai.minor2 = holokai || null;
-      
-      // Refilter and update other dropdowns
-      updateMajorDropdown(originalMajors);
-      updateMinor1Dropdown(originalMinors);
-    });
-  }
+    // Update minors with incompatible options
+    updateCustomDropdownsWithIncompatible("minor1Select", "minor2Select", originalMinors);
+    
+    // Update Generate button state
+    updateGenerateButtonState();
+  });
   
-  // Populate English Level Dropdown
+  // Modified minor1 selection handler
+  createCustomDropdown("minor1Select", "selectedMinor1", minors, "Select Your First Minor", option => {
+    // Check if selected option is incompatible with major
+    if (option.classList.contains('incompatible')) {
+      alert("This minor is from the same Holokai section as your major. Please choose a different Holokai section.");
+      resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
+      return;
+    }
+    
+    // Get the new Holokai type for minor1
+    const newMinor1Holokai = option.dataset.holokai || null;
+    
+    // Update UI and state
+    document.getElementById("minor1Holokai").textContent = newMinor1Holokai || '';
+    selectedHolokai.minor1 = newMinor1Holokai;
+    
+    // Check if we need to reset minor2 (only if there's now a conflict)
+    if (selectedHolokai.minor2 && selectedHolokai.minor2 === newMinor1Holokai) {
+      console.log("Minor2 has same Holokai as newly selected Minor1, resetting Minor2");
+      resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
+      selectedHolokai.minor2 = null;
+    }
+    
+    // Always update minor2 dropdown to reflect the new incompatible options
+    updateCustomDropdownWithIncompatible("minor2Select", originalMinors);
+    
+    // Update Generate button state
+    updateGenerateButtonState();
+  }, option => {
+    // Check if incompatible with major
+    return selectedHolokai.major && option.holokai === selectedHolokai.major;
+  });
+  
+  // Modified minor2 selection handler 
+  createCustomDropdown("minor2Select", "selectedMinor2", minors, "Select Your Second Minor", option => {
+    // Check if selected option is incompatible
+    if (option.classList.contains('incompatible')) {
+      alert("This minor is from the same Holokai section as your major or first minor. Please choose a different Holokai section.");
+      resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
+      return;
+    }
+    
+    // Get the new Holokai type for minor2
+    const newMinor2Holokai = option.dataset.holokai || null;
+    
+    // Update UI and state
+    document.getElementById("minor2Holokai").textContent = newMinor2Holokai || '';
+    selectedHolokai.minor2 = newMinor2Holokai;
+    
+    // Check if we need to reset minor1 (only if there's now a conflict)
+    if (selectedHolokai.minor1 && selectedHolokai.minor1 === newMinor2Holokai) {
+      console.log("Minor1 has same Holokai as newly selected Minor2, resetting Minor1");
+      resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
+      selectedHolokai.minor1 = null;
+      
+      // Update minor1 dropdown to reflect the new incompatible options
+      updateCustomDropdownWithIncompatible("minor1Select", originalMinors);
+    }
+    
+    // Update Generate button state
+    updateGenerateButtonState();
+  }, option => {
+    // Check if incompatible with major or minor1
+    return (selectedHolokai.major && option.holokai === selectedHolokai.major) ||
+           (selectedHolokai.minor1 && option.holokai === selectedHolokai.minor1);
+  });
+  
+  // Populate English Level Dropdown (unchanged)
   const englishCourses = courses.filter(course =>
     course.course_type && course.course_type.toLowerCase() === "eil/holokai"
   );
@@ -227,141 +248,219 @@ function populateDropdowns(majors, minors, courses) {
   }
 }
 
-// Function to update the major dropdown based on selected minor holokai sections
-function updateMajorDropdown(originalMajors) {
-  const majorSelect = document.getElementById("majorSelect");
-  if (!majorSelect) return;
+// Create a custom dropdown with colored dots and incompatible styling
+function createCustomDropdown(selectId, hiddenInputId, options, placeholder, onSelect, isIncompatibleFn = null) {
+  const originalSelect = document.getElementById(selectId);
+  if (!originalSelect) return;
   
-  // Remember the current selection
-  const currentValue = majorSelect.value;
-  
-  // Get selected holokai values
-  const usedHolokai = [selectedHolokai.minor1, selectedHolokai.minor2].filter(Boolean);
-  
-  // Filter majors
-  const filteredMajors = filterCourses(originalMajors, usedHolokai);
-  
-  // Repopulate dropdown
-  majorSelect.innerHTML = "<option value=''>Select a Major</option>";
-  
-  filteredMajors.forEach(major => {
-    const option = document.createElement("option");
-    option.value = major.id;
-    option.textContent = major.course_name;
-    if (major.holokai) {
-      option.dataset.holokai = major.holokai;
-    }
-    majorSelect.appendChild(option);
-  });
-  
-  // Restore selection if still available
-  if (currentValue) {
-    majorSelect.value = currentValue;
-    // If selected value is no longer in the list, reset selection and update tracking
-    if (majorSelect.value !== currentValue) {
-      document.getElementById("selectedMajor").value = '';
-      document.getElementById("majorHolokai").textContent = '';
-      selectedHolokai.major = null;
-    }
-  }
-}
-
-// Function to update both minor dropdowns
-function updateMinorDropdowns(originalMinors) {
-  updateMinor1Dropdown(originalMinors);
-  updateMinor2Dropdown(originalMinors);
-}
-
-// Function to update minor 1 dropdown
-function updateMinor1Dropdown(originalMinors) {
-  const minor1Select = document.getElementById("minor1Select");
-  if (!minor1Select) return;
-  
-  // Remember the current selection
-  const currentValue = minor1Select.value;
-  
-  // Get selected holokai values
-  const usedHolokai = [selectedHolokai.major, selectedHolokai.minor2].filter(Boolean);
-  
-  // Filter minors
-  const filteredMinors = filterCourses(originalMinors, usedHolokai);
-  
-  // Repopulate dropdown
-  minor1Select.innerHTML = "<option value=''>Select Your First Minor</option>";
-  
-  filteredMinors.forEach(minor => {
-    const option = document.createElement("option");
-    option.value = minor.id;
-    option.textContent = minor.course_name;
-    if (minor.holokai) {
-      option.dataset.holokai = minor.holokai;
-    }
-    minor1Select.appendChild(option);
-  });
-  
-  // Restore selection if still available
-  if (currentValue) {
-    minor1Select.value = currentValue;
-    // If selected value is no longer in the list, reset selection and update tracking
-    if (minor1Select.value !== currentValue) {
-      document.getElementById("selectedMinor1").value = '';
-      document.getElementById("minor1Holokai").textContent = '';
-      selectedHolokai.minor1 = null;
-    }
-  }
-}
-
-// Function to update minor 2 dropdown
-function updateMinor2Dropdown(originalMinors) {
-  const minor2Select = document.getElementById("minor2Select");
-  if (!minor2Select) return;
-  
-  // Remember the current selection
-  const currentValue = minor2Select.value;
-  
-  // Get selected holokai values
-  const usedHolokai = [selectedHolokai.major, selectedHolokai.minor1].filter(Boolean);
-  
-  // Filter minors
-  const filteredMinors = filterCourses(originalMinors, usedHolokai);
-  
-  // Repopulate dropdown
-  minor2Select.innerHTML = "<option value=''>Select Your Second Minor</option>";
-  
-  filteredMinors.forEach(minor => {
-    const option = document.createElement("option");
-    option.value = minor.id;
-    option.textContent = minor.course_name;
-    if (minor.holokai) {
-      option.dataset.holokai = minor.holokai;
-    }
-    minor2Select.appendChild(option);
-  });
-  
-  // Restore selection if still available
-  if (currentValue) {
-    minor2Select.value = currentValue;
-    // If selected value is no longer in the list, reset selection and update tracking
-    if (minor2Select.value !== currentValue) {
-      document.getElementById("selectedMinor2").value = '';
-      document.getElementById("minor2Holokai").textContent = '';
-      selectedHolokai.minor2 = null;
-    }
-  }
-}
-
-// Helper function to filter courses based on used Holokai sections
-function filterCourses(courses, usedHolokai) {
-  if (!usedHolokai || usedHolokai.length === 0) {
-    return courses; // If no Holokai sections are selected, return all courses
+  // Clear any existing containers
+  if (originalSelect.parentElement.classList.contains('custom-dropdown-container')) {
+    originalSelect.parentElement.parentElement.replaceChild(originalSelect, originalSelect.parentElement);
   }
   
-  return courses.filter(course => {
-    // Always include courses with null holokai
-    if (!course.holokai) return true;
+  // Create container
+  const container = document.createElement('div');
+  container.className = 'custom-dropdown-container';
+  originalSelect.parentNode.insertBefore(container, originalSelect);
+  container.appendChild(originalSelect);
+  
+  // Hide original select
+  originalSelect.style.display = 'none';
+  
+  // Create custom dropdown elements
+  const dropdownDisplay = document.createElement('div');
+  dropdownDisplay.className = 'dropdown-display';
+  dropdownDisplay.textContent = placeholder;
+  
+  const dropdownList = document.createElement('div');
+  dropdownList.className = 'dropdown-list';
+  dropdownList.style.display = 'none';
+  
+  // Add placeholder option
+  const placeholderItem = document.createElement('div');
+  placeholderItem.className = 'dropdown-item';
+  placeholderItem.dataset.value = '';
+  placeholderItem.textContent = placeholder;
+  dropdownList.appendChild(placeholderItem);
+  
+  // Add options with colored dots
+  options.forEach(opt => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+    item.dataset.value = opt.id;
     
-    // Filter out courses with the same holokai as already selected
-    return !usedHolokai.includes(course.holokai);
+    // Store holokai data
+    if (opt.holokai) {
+      item.dataset.holokai = opt.holokai;
+    }
+    
+    // Check if incompatible
+    const isIncompatible = isIncompatibleFn ? isIncompatibleFn(opt) : false;
+    if (isIncompatible) {
+      item.classList.add('incompatible');
+    }
+    
+    // Create colored dot
+    const holokaiClass = getHolokaiClass(opt.holokai);
+    
+    const dot = document.createElement('span');
+    dot.className = `holokai-indicator ${holokaiClass}`;
+    
+    // Append dot and text
+    item.appendChild(dot);
+    item.appendChild(document.createTextNode(' ' + opt.course_name));
+    
+    dropdownList.appendChild(item);
+  });
+  
+  // Add elements to DOM
+  container.appendChild(dropdownDisplay);
+  container.appendChild(dropdownList);
+  
+  // Add event listeners
+  dropdownDisplay.addEventListener('click', (e) => {
+    e.stopPropagation();
+    
+    // Check if dropdown is disabled
+    if (dropdownDisplay.dataset.disabled === "true") {
+      return; // Don't open if disabled
+    }
+    
+    const isOpen = dropdownList.style.display === 'block';
+    
+    // Close all other dropdowns
+    document.querySelectorAll('.dropdown-list').forEach(list => {
+      list.style.display = 'none';
+    });
+    
+    // Toggle this dropdown
+    dropdownList.style.display = isOpen ? 'none' : 'block';
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', () => {
+    dropdownList.style.display = 'none';
+  });
+  
+  dropdownList.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // Skip if dropdown is disabled
+    if (dropdownDisplay.dataset.disabled === "true") {
+      return;
+    }
+    
+    if (e.target.classList.contains('dropdown-item')) {
+      const value = e.target.dataset.value;
+      const text = e.target.textContent.trim();
+      
+      // Update display
+      if (value) {
+        const dot = e.target.querySelector('.holokai-indicator');
+        if (dot) {
+          const clonedDot = dot.cloneNode(true);
+          dropdownDisplay.innerHTML = '';
+          dropdownDisplay.appendChild(clonedDot);
+          dropdownDisplay.appendChild(document.createTextNode(' ' + text));
+        } else {
+          dropdownDisplay.textContent = text;
+        }
+      } else {
+        dropdownDisplay.textContent = placeholder;
+      }
+      
+      // Update hidden input
+      document.getElementById(hiddenInputId).value = value;
+      
+      // Call selection handler
+      onSelect(e.target);
+      
+      // Enable minor dropdowns when major is selected
+      if (selectId === "majorSelect" && value) {
+        enableCustomDropdown("minor1Select");
+        enableCustomDropdown("minor2Select");
+      }
+      
+      // Update Generate button state
+      updateGenerateButtonState();
+      
+      // Close dropdown
+      dropdownList.style.display = 'none';
+    }
+  });
+}
+
+// Reset a custom dropdown to its initial state
+function resetCustomDropdown(selectId, hiddenInputId, holokaiDisplayId) {
+  const container = document.getElementById(selectId).parentElement;
+  const display = container.querySelector('.dropdown-display');
+  const placeholder = display.textContent.includes('Select') ? 
+                      display.textContent : `Select Your ${selectId.replace('Select', '')}`;
+  
+  // Reset display text
+  display.textContent = placeholder;
+  
+  // Reset hidden input
+  document.getElementById(hiddenInputId).value = '';
+  
+  // Reset holokai display
+  document.getElementById(holokaiDisplayId).textContent = '';
+}
+
+// Update custom dropdowns with incompatible options
+function updateCustomDropdownsWithIncompatible(minor1Id, minor2Id, originalMinors) {
+  updateCustomDropdownWithIncompatible(minor1Id, originalMinors);
+  updateCustomDropdownWithIncompatible(minor2Id, originalMinors);
+}
+
+// Update a single custom dropdown with incompatible options
+function updateCustomDropdownWithIncompatible(selectId, originalMinors) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  
+  const container = select.parentElement;
+  const list = container.querySelector('.dropdown-list');
+  
+  // Clear existing items (except placeholder)
+  while (list.children.length > 1) {
+    list.removeChild(list.lastChild);
+  }
+  
+  // Add options with proper incompatible styling
+  originalMinors.forEach(minor => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+    item.dataset.value = minor.id;
+    
+    // Store holokai data
+    if (minor.holokai) {
+      item.dataset.holokai = minor.holokai;
+    }
+    
+    // Check if incompatible
+    let isIncompatible = false;
+    
+    if (selectId === "minor1Select") {
+      isIncompatible = selectedHolokai.major && minor.holokai === selectedHolokai.major;
+    } else if (selectId === "minor2Select") {
+      isIncompatible = (selectedHolokai.major && minor.holokai === selectedHolokai.major) ||
+                      (selectedHolokai.minor1 && minor.holokai === selectedHolokai.minor1);
+    }
+    
+    if (isIncompatible) {
+      item.classList.add('incompatible');
+    }
+    
+    // Create colored dot
+    const holokaiClass = getHolokaiClass(minor.holokai);
+    
+    const dot = document.createElement('span');
+    dot.className = `holokai-indicator ${holokaiClass}`;
+    
+    // Append dot and text
+    item.appendChild(dot);
+    item.appendChild(document.createTextNode(' ' + minor.course_name));
+    
+    list.appendChild(item);
   });
 }
 
@@ -1929,5 +2028,71 @@ async function optimizeGeneratedSchedule(schedule) {
     console.warn("Schedule optimization failed, using original schedule:", error);
     // Return the original schedule if optimization fails
     return schedule; 
+  }
+}
+
+// Add these functions for enabling/disabling custom dropdowns
+function disableCustomDropdown(selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  
+  const container = select.parentElement;
+  if (!container.classList.contains('custom-dropdown-container')) return;
+  
+  const display = container.querySelector('.dropdown-display');
+  if (display) {
+    display.classList.add('disabled');
+    display.dataset.disabled = "true";
+  }
+}
+
+function enableCustomDropdown(selectId) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+  
+  const container = select.parentElement;
+  if (!container.classList.contains('custom-dropdown-container')) return;
+  
+  const display = container.querySelector('.dropdown-display');
+  if (display) {
+    display.classList.remove('disabled');
+    display.dataset.disabled = "false";
+  }
+}
+
+// Function to check if all Holokai sections are different and enable/disable Generate button
+function updateGenerateButtonState() {
+  const generateButton = document.getElementById("calculate-schedule");
+  
+  // Get selected holokai values
+  const majorHolokai = selectedHolokai.major;
+  const minor1Holokai = selectedHolokai.minor1;
+  const minor2Holokai = selectedHolokai.minor2;
+  
+  // Check if all three sections are selected
+  const majorSelected = !!document.getElementById("selectedMajor").value;
+  const minor1Selected = !!document.getElementById("selectedMinor1").value;
+  const minor2Selected = !!document.getElementById("selectedMinor2").value;
+  
+  const allSelected = majorSelected && minor1Selected && minor2Selected;
+  
+  // If any are not selected, disable the button
+  if (!allSelected) {
+    generateButton.disabled = true;
+    generateButton.classList.add("disabled");
+    return;
+  }
+  
+  // Check if we have three unique Holokai sections
+  const uniqueHolokai = new Set([majorHolokai, minor1Holokai, minor2Holokai]);
+  const hasThreeSections = uniqueHolokai.size === 3;
+  
+  // Enable/disable button based on whether we have three unique sections
+  if (hasThreeSections) {
+    generateButton.disabled = false;
+    generateButton.classList.remove("disabled");
+  } else {
+    generateButton.disabled = true;
+    generateButton.classList.add("disabled");
   }
 }
