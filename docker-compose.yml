@@ -34,14 +34,14 @@ services:
     networks:
       - app-network
 
-  ml_api:
+  ml_service:
     build:
       context: ./ml_trainer
       dockerfile: Dockerfile
-    container_name: ml_api_container
+    container_name: ml_service_container
     restart: unless-stopped
     ports:
-      - "5001:5000"  # Changed from "5000:5000" - use port 5001 on host
+      - "5001:5000"
     volumes:
       - ./ml_trainer:/app
     networks:

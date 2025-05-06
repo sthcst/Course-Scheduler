@@ -277,6 +277,38 @@
         "corequisites": []
       },
       {
+        "id": 104,
+        "class_number": "ANTH 310",
+        "class_name": "Anthropology Theory",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": true,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [],
+        "corequisites": [
+          102
+        ]
+      },
+      {
+        "id": 102,
+        "class_number": "ANTH 105",
+        "class_name": "Introduction to Cultural Anthropology",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": true,
+        "is_corequisite_for": 104,
+        "is_prerequisite_for": null,
+        "prerequisites": [],
+        "corequisites": []
+      },
+      {
         "id": 21,
         "class_number": "MATH 121",
         "class_name": "Principles of Statistics",
@@ -290,38 +322,6 @@
         "is_prerequisite_for": null,
         "prerequisites": [
           20
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 3,
-        "class_number": "CS 140",
-        "class_name": "Web Design",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [],
-        "corequisites": []
-      },
-      {
-        "id": 4,
-        "class_number": "CS 202",
-        "class_name": "Introduction to Object-Oriented Programming",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          1
         ],
         "corequisites": []
       }
@@ -366,10 +366,10 @@
         "corequisites": []
       },
       {
-        "id": 22,
-        "class_number": "MATH 212",
-        "class_name": "Calculus I",
-        "credits": 5,
+        "id": 3,
+        "class_number": "CS 140",
+        "class_name": "Web Design",
+        "credits": 3,
         "category": "major",
         "isMajor": true,
         "is_required": true,
@@ -379,9 +379,26 @@
         "is_prerequisite_for": null,
         "prerequisites": [],
         "corequisites": []
+      },
+      {
+        "id": 4,
+        "class_number": "CS 202",
+        "class_name": "Introduction to Object-Oriented Programming",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          1
+        ],
+        "corequisites": []
       }
     ],
-    "totalCredits": 10
+    "totalCredits": 11
   },
   {
     "name": "Fall 2026",
@@ -438,6 +455,21 @@
         "corequisites": []
       },
       {
+        "id": 22,
+        "class_number": "MATH 212",
+        "class_name": "Calculus I",
+        "credits": 5,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [],
+        "corequisites": []
+      },
+      {
         "id": 5,
         "class_number": "CS 250",
         "class_name": "Database Applications",
@@ -451,39 +483,9 @@
         "is_prerequisite_for": null,
         "prerequisites": [],
         "corequisites": []
-      },
-      {
-        "id": 37,
-        "class_number": "PAIS 105",
-        "class_name": "Introduction to Pacific Studies",
-        "credits": 3,
-        "category": "minor",
-        "isMajor": false,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [],
-        "corequisites": []
-      },
-      {
-        "id": 28,
-        "class_number": "ENTR 180",
-        "class_name": "New Venture Finance",
-        "credits": 3,
-        "category": "minor",
-        "isMajor": false,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [],
-        "corequisites": []
       }
     ],
-    "totalCredits": 17
+    "totalCredits": 16
   },
   {
     "name": "Winter 2027",
@@ -559,29 +561,12 @@
         "corequisites": []
       },
       {
-        "id": 38,
-        "class_number": "PAIS 200",
-        "class_name": "Recognizing Place, Purpose, and Positionality on Native Land",
+        "id": 714,
+        "class_number": "CS 490R II",
+        "class_name": "Advanced Topics in Computer Science",
         "credits": 3,
-        "category": "minor",
-        "isMajor": false,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          37
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 41,
-        "class_number": "PAIS 250",
-        "class_name": "Polynesian Dance and Performance",
-        "credits": 3,
-        "category": "minor",
-        "isMajor": false,
+        "category": "major",
+        "isMajor": true,
         "is_required": true,
         "is_elective": true,
         "is_corequisite": false,
@@ -589,9 +574,24 @@
         "is_prerequisite_for": null,
         "prerequisites": [],
         "corequisites": []
+      },
+      {
+        "id": 106,
+        "class_number": "HUM 100R",
+        "class_name": "Critical Inquiry and Engagement",
+        "credits": 1,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [],
+        "corequisites": []
       }
     ],
-    "totalCredits": 17
+    "totalCredits": 15
   },
   {
     "name": "Spring 2027",
@@ -599,9 +599,39 @@
     "isFirstYear": false,
     "classes": [
       {
-        "id": 35,
-        "class_number": "HTM 133",
-        "class_name": "Introduction to Hospitality and Tourism Management",
+        "id": 102,
+        "class_number": "ANTH 105",
+        "class_name": "Introduction to Cultural Anthropology",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": 104,
+        "is_prerequisite_for": null,
+        "prerequisites": [],
+        "corequisites": []
+      },
+      {
+        "id": 126,
+        "class_number": "PSYC 111",
+        "class_name": "General Psychology",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": 363,
+        "prerequisites": [],
+        "corequisites": []
+      },
+      {
+        "id": 89,
+        "class_number": "BUSM 180",
+        "class_name": "Introduction to Business",
         "credits": 3,
         "category": "minor",
         "isMajor": false,
@@ -611,57 +641,10 @@
         "is_corequisite_for": null,
         "is_prerequisite_for": null,
         "prerequisites": [],
-        "corequisites": []
-      },
-      {
-        "id": 29,
-        "class_number": "ENTR 275",
-        "class_name": "Leadership and the Gospel of Jesus Christ: Becoming a Disciple Leader",
-        "credits": 3,
-        "category": "minor",
-        "isMajor": false,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [],
-        "corequisites": []
-      },
-      {
-        "id": 42,
-        "class_number": "PAIS 275",
-        "class_name": "Pacific Wood Carving",
-        "credits": 3,
-        "category": "minor",
-        "isMajor": false,
-        "is_required": true,
-        "is_elective": true,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [],
-        "corequisites": []
-      },
-      {
-        "id": 30,
-        "class_number": "ENTR 283",
-        "class_name": "New Venture Creation",
-        "credits": 3,
-        "category": "minor",
-        "isMajor": false,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          28
-        ],
         "corequisites": []
       }
     ],
-    "totalCredits": 12
+    "totalCredits": 9
   },
   {
     "name": "Fall 2027",
@@ -687,9 +670,9 @@
         "corequisites": []
       },
       {
-        "id": 31,
-        "class_number": "ENTR 285",
-        "class_name": "New Venture Growth Strategies",
+        "id": 68,
+        "class_number": "ACCT 186",
+        "class_name": "Introduction to Financial Computing",
         "credits": 3,
         "category": "minor",
         "isMajor": false,
@@ -697,16 +680,47 @@
         "is_elective": false,
         "is_corequisite": false,
         "is_corequisite_for": null,
-        "is_prerequisite_for": null,
+        "is_prerequisite_for": 83,
+        "prerequisites": [],
+        "corequisites": []
+      },
+      {
+        "id": 81,
+        "class_number": "ACCT 201",
+        "class_name": "Introduction to Financial Accounting",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": 82,
+        "prerequisites": [],
+        "corequisites": []
+      },
+      {
+        "id": 363,
+        "class_number": "PSYC 205",
+        "class_name": "Applied Social Statistics",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": 656,
         "prerequisites": [
-          28
+          20,
+          126
         ],
         "corequisites": []
       },
       {
-        "id": 43,
-        "class_number": "PAIS 320",
-        "class_name": "Peace and Conflict in the Pacific",
+        "id": 117,
+        "class_number": "ANTH 210",
+        "class_name": "Contemporary Pacific",
         "credits": 3,
         "category": "minor",
         "isMajor": false,
@@ -715,44 +729,7 @@
         "is_corequisite": false,
         "is_corequisite_for": null,
         "is_prerequisite_for": null,
-        "prerequisites": [
-          37
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 15,
-        "class_number": "CS 415",
-        "class_name": "Operating Systems Design",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": false,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          10,
-          12
-        ],
-        "corequisites": []
-      },
-      {
-        "id": 17,
-        "class_number": "CS 490R",
-        "class_name": "Advanced Topics in Computer Science",
-        "credits": 3,
-        "category": "major",
-        "isMajor": true,
-        "is_required": true,
-        "is_elective": true,
-        "is_corequisite": false,
-        "is_corequisite_for": null,
-        "is_prerequisite_for": null,
-        "prerequisites": [
-          12
-        ],
+        "prerequisites": [],
         "corequisites": []
       }
     ],
@@ -799,9 +776,26 @@
         "corequisites": []
       },
       {
-        "id": 32,
-        "class_number": "ENTR 483",
-        "class_name": "New Venture Management",
+        "id": 83,
+        "class_number": "ECON 200",
+        "class_name": "Principles of Microeconomics",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": true,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          68
+        ],
+        "corequisites": []
+      },
+      {
+        "id": 82,
+        "class_number": "ACCT 203",
+        "class_name": "Introduction to Managerial Accounting",
         "credits": 3,
         "category": "minor",
         "isMajor": false,
@@ -809,13 +803,36 @@
         "is_elective": false,
         "is_corequisite": false,
         "is_corequisite_for": null,
-        "is_prerequisite_for": null,
+        "is_prerequisite_for": 86,
         "prerequisites": [
-          30,
-          31
+          68,
+          81
         ],
         "corequisites": []
       },
+      {
+        "id": 103,
+        "class_number": "ANTH 270",
+        "class_name": "Language in Culture and Society: A survey of the role of language in life",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": true,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [],
+        "corequisites": []
+      }
+    ],
+    "totalCredits": 15
+  },
+  {
+    "name": "Spring 2028",
+    "type": "Spring",
+    "isFirstYear": false,
+    "classes": [
       {
         "id": 16,
         "class_number": "CS 420",
@@ -835,8 +852,52 @@
         "corequisites": []
       },
       {
-        "id": 18,
-        "class_number": "CS 490R II",
+        "id": 86,
+        "class_number": "BUSM 320",
+        "class_name": "Business Communication",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": 92,
+        "prerequisites": [
+          82,
+          26
+        ],
+        "corequisites": []
+      }
+    ],
+    "totalCredits": 6
+  },
+  {
+    "name": "Fall 2028",
+    "type": "Fall",
+    "isFirstYear": false,
+    "classes": [
+      {
+        "id": 15,
+        "class_number": "CS 415",
+        "class_name": "Operating Systems Design",
+        "credits": 3,
+        "category": "major",
+        "isMajor": true,
+        "is_required": true,
+        "is_elective": false,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          10,
+          12
+        ],
+        "corequisites": []
+      },
+      {
+        "id": 17,
+        "class_number": "CS 490R",
         "class_name": "Advanced Topics in Computer Science",
         "credits": 3,
         "category": "major",
@@ -850,8 +911,70 @@
           12
         ],
         "corequisites": []
+      },
+      {
+        "id": 92,
+        "class_number": "BUSM 304",
+        "class_name": "Principles of Marketing Management",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": true,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          89,
+          86
+        ],
+        "corequisites": []
       }
     ],
-    "totalCredits": 15
+    "totalCredits": 9
+  },
+  {
+    "name": "Winter 2029",
+    "type": "Winter",
+    "isFirstYear": false,
+    "classes": [
+      {
+        "id": 655,
+        "class_number": "BUSM 421",
+        "class_name": "Integrated Marketing Communications",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": true,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          92
+        ],
+        "corequisites": []
+      },
+      {
+        "id": 656,
+        "class_number": "BUSM 422",
+        "class_name": "Marketing Research",
+        "credits": 3,
+        "category": "minor",
+        "isMajor": false,
+        "is_required": true,
+        "is_elective": true,
+        "is_corequisite": false,
+        "is_corequisite_for": null,
+        "is_prerequisite_for": null,
+        "prerequisites": [
+          92,
+          21,
+          363
+        ],
+        "corequisites": []
+      }
+    ],
+    "totalCredits": 6
   }
 ]
