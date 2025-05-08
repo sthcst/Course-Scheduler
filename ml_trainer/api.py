@@ -116,6 +116,44 @@ def huggingface_optimize():
         print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
+@app.route('/generate_schedule', methods=['POST'])
+def generate_schedule():
+    """Generate and optimize a schedule from scratch based on user preferences"""
+    if not request.json:
+        return jsonify({"error": "No preferences provided"}), 400
+    
+    try:
+        preferences = request.json
+        print(f"Received schedule generation request with preferences: {preferences}")
+        
+        # Extract parameters from the request
+        selected_courses = preferences.get('selectedCourses', [])
+        start_semester = preferences.get('startSemester', 'Fall 2025')
+        major_class_limit = preferences.get('majorClassLimit', 4)
+        fall_winter_credits = preferences.get('fallWinterCredits', 15)
+        spring_credits = preferences.get('springCredits', 12)
+        english_level = preferences.get('englishLevel', None)
+        ten_semester_path = preferences.get('tenSemesterPath', False)
+        
+        # Use the actual implementation from hf_optimizer
+        result = hf_optimizer.generate_schedule(
+            selected_courses=selected_courses,
+            start_semester=start_semester,
+            major_class_limit=major_class_limit,
+            fall_winter_credits=fall_winter_credits,
+            spring_credits=spring_credits,
+            english_level=english_level,
+            ten_semester_path=ten_semester_path
+        )
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        import traceback
+        print(f"ERROR in /generate_schedule: {e}")
+        print(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)  # Set debug=False for production
+    app.run(host='0.0.0.0', port=port, debug=True)

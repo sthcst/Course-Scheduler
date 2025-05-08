@@ -2058,7 +2058,78 @@ router.post('/courses/:id/duplicate', async (req, res) => {
         res.status(500).json({ error: 'Failed to duplicate course' });
     }
 });
+// Add this to your routes/api.js file
 
+/**
+ * @route   GET /api/classes
+ * @desc    Get classes by course ID
+ * @access  Public
+ */
+router.get('/classes', async (req, res) => {
+    try {
+        const courseId = parseInt(req.query.course_id);
+        
+        if (isNaN(courseId)) {
+            return res.status(400).json({ error: 'Invalid course ID' });
+        }
+        
+        const { rows } = await pool.query(`
+            SELECT DISTINCT c.*
+            FROM classes c
+            JOIN classes_in_course cic ON c.id = cic.class_id
+            WHERE cic.course_id = $1
+        `, [courseId]);
+        
+        res.json(rows);
+    } catch (error) {
+        console.error('Error fetching classes:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});/**
+ * @route   GET /api/classes/english
+ * @desc    Get English classes by level
+ * @access  Public
+ */
+router.get('/classes/english', async (req, res) => {
+    try {
+        const level = req.query.level;
+        
+        if (!level) {
+            return res.status(400).json({ error: 'English level is required' });
+        }
+        
+        const { rows } = await pool.query(`
+            SELECT c.*
+            FROM classes c
+            WHERE c.category = 'english' AND c.level = $1
+        `, [level]);
+        
+        res.json(rows);
+    } catch (error) {
+        console.error('Error fetching English classes:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+/**
+ * @route   GET /api/classes/religion
+ * @desc    Get religion classes
+ * @access  Public
+ */
+router.get('/classes/religion', async (req, res) => {
+    try {
+        const { rows } = await pool.query(`
+            SELECT c.*
+            FROM classes c
+            WHERE c.category = 'religion'
+        `);
+        
+        res.json(rows);
+    } catch (error) {
+        console.error('Error fetching religion classes:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 
 // Replace your current '/courses/:course_id/sections/reorder' PUT endpoint with this one:
