@@ -60,6 +60,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     disableCustomDropdown("minor2Select");
     updateGenerateButtonState();
     
+    // Set up the 10 Semester Path checkbox
+    setupTenSemesterPath();
+    
   } catch (error) {
     console.error("Error during initialization:", error);
   }
@@ -1436,15 +1439,29 @@ function renderSchedule(schedule) {
   scheduleTable.className = 'schedule-table';
   
   // Add each semester
-  schedule.forEach(semester => {
+  schedule.forEach((semester, index) => {
     const semesterDiv = document.createElement('div');
     semesterDiv.className = 'semester-card';
+    
+    // Add 'over-limit' class if this is past the 10th semester
+    const isTenSemesterPath = document.getElementById('ten-semester-path')?.checked;
+    if (isTenSemesterPath && index >= 10) {
+      semesterDiv.classList.add('over-limit');
+    }
     
     // Semester header
     const semesterHeader = document.createElement('div');
     semesterHeader.className = 'semester-header';
     semesterHeader.textContent = semester.name;
     semesterDiv.appendChild(semesterHeader);
+    
+    // Add warning if over 10 semesters
+    if (isTenSemesterPath && index >= 10) {
+      const warningDiv = document.createElement('div');
+      warningDiv.className = 'over-limit-warning';
+      warningDiv.textContent = 'Past 10 semester goal';
+      semesterDiv.appendChild(warningDiv);
+    }
     
     // Semester classes
     const classesList = document.createElement('ul');
@@ -2095,4 +2112,53 @@ function updateGenerateButtonState() {
     generateButton.disabled = true;
     generateButton.classList.add("disabled");
   }
+}
+
+// Function to handle 10 Semester Path checkbox
+function setupTenSemesterPath() {
+  const checkbox = document.getElementById('ten-semester-path');
+  if (!checkbox) return;
+  
+  // Get the three dropdowns we need to control
+  const majorClassLimitDropdown = document.getElementById('major-class-limit');
+  const fallWinterCreditsDropdown = document.getElementById('fall-winter-credits');
+  const springCreditsDropdown = document.getElementById('spring-credits');
+  
+  // Store original values to restore when unchecked
+  let originalValues = {
+    majorLimit: majorClassLimitDropdown.value,
+    fallWinter: fallWinterCreditsDropdown.value,
+    spring: springCreditsDropdown.value
+  };
+  
+  checkbox.addEventListener('change', function() {
+    if (this.checked) {
+      // Store current values before overriding
+      originalValues = {
+        majorLimit: majorClassLimitDropdown.value,
+        fallWinter: fallWinterCreditsDropdown.value,
+        spring: springCreditsDropdown.value
+      };
+      
+      // Set to maximum values
+      majorClassLimitDropdown.value = '4';
+      fallWinterCreditsDropdown.value = '18';
+      springCreditsDropdown.value = '12';
+      
+      // Disable the dropdowns
+      majorClassLimitDropdown.disabled = true;
+      fallWinterCreditsDropdown.disabled = true;
+      springCreditsDropdown.disabled = true;
+    } else {
+      // Restore original values
+      majorClassLimitDropdown.value = originalValues.majorLimit;
+      fallWinterCreditsDropdown.value = originalValues.fallWinter;
+      springCreditsDropdown.value = originalValues.spring;
+      
+      // Enable the dropdowns
+      majorClassLimitDropdown.disabled = false;
+      fallWinterCreditsDropdown.disabled = false;
+      springCreditsDropdown.disabled = false;
+    }
+  });
 }
