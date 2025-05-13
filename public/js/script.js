@@ -2,12 +2,165 @@
 let allClassesData = []; // Will store ALL classes from the API
 let basicCourses = []; // Lightweight course data for dropdowns
 
-// Track selected Holokai sections
+// Separate tracking for each menu's Holokai selections
 let selectedHolokai = {
   major: null,
   minor1: null,
   minor2: null
 };
+
+// Add a separate object for the semester-based path
+let selectedHolokaiSemester = {
+  major: null,
+  minor1: null,
+  minor2: null
+};
+
+// View management functions
+function showWelcomeScreen() {
+  document.getElementById('welcome-screen').classList.remove('hidden');
+  document.getElementById('credits-based-menu').classList.add('hidden');
+  document.getElementById('semesters-based-menu').classList.add('hidden');
+  
+  // Reset selections when going back to welcome screen
+  selectedHolokai = {
+    major: null,
+    minor1: null,
+    minor2: null
+  };
+  
+  selectedHolokaiSemester = {
+    major: null, 
+    minor1: null,
+    minor2: null
+  };
+}
+
+function showCreditsBasedMenu() {
+  document.getElementById('welcome-screen').classList.add('hidden');
+  document.getElementById('credits-based-menu').classList.remove('hidden');
+  document.getElementById('semesters-based-menu').classList.add('hidden');
+  
+  // Reset semester-based selections when switching to credits-based menu
+  selectedHolokaiSemester = {
+    major: null,
+    minor1: null,
+    minor2: null
+  };
+}
+
+function showSemestersBasedMenu() {
+  document.getElementById('welcome-screen').classList.add('hidden');
+  document.getElementById('credits-based-menu').classList.add('hidden');
+  document.getElementById('semesters-based-menu').classList.remove('hidden');
+  
+  // Reset credits-based selections when switching to semester-based menu
+  selectedHolokai = {
+    major: null,
+    minor1: null,
+    minor2: null
+  };
+}
+
+// First year credits popup
+function createCreditsPopup(target) {
+  const checkbox = document.getElementById(target);
+  const rect = checkbox.getBoundingClientRect();
+  
+  // Create popup
+  const popup = document.createElement('div');
+  popup.className = 'credits-popup simple-popup';
+  popup.id = 'credits-popup';
+  
+  // Popup content
+  popup.innerHTML = `
+    <div class="popup-header">
+      <h3 class="popup-title">First Year Credit Limits</h3>
+      <button class="close-popup">&times;</button>
+    </div>
+    <div class="popup-content">
+      <div class="input-group">
+        <label for="first-year-fall-winter">Fall/Winter Credits:</label>
+        <select id="first-year-fall-winter">
+          <option value="12">12 Credits</option>
+          <option value="13">13 Credits</option>
+          <option value="14">14 Credits</option>
+          <option value="15" selected>15 Credits</option>
+          <option value="16">16 Credits</option>
+          <option value="17">17 Credits</option>
+          <option value="18">18 Credits</option>
+        </select>
+      </div>
+      
+      <div class="input-group">
+        <label for="first-year-spring">Spring Credits:</label>
+        <select id="first-year-spring">
+          <option value="9">9 Credits</option>
+          <option value="10" selected>10 Credits</option>
+          <option value="11">11 Credits</option>
+          <option value="12">12 Credits</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="popup-buttons">
+      <button id="save-credits">Save</button>
+    </div>
+  `;
+  
+  // Add to document
+  document.body.appendChild(popup);
+  
+  // Position function to reuse for initial placement and window resize
+  const positionPopup = () => {
+    const updatedRect = checkbox.getBoundingClientRect();
+    const topPosition = updatedRect.bottom + window.scrollY + 10;
+    const leftPosition = updatedRect.left + window.scrollX;
+    
+    popup.style.position = 'absolute';
+    popup.style.top = `${topPosition}px`;
+    popup.style.left = `${leftPosition}px`;
+    popup.style.transform = 'none';
+  };
+  
+  // Initial positioning
+  positionPopup();
+  
+  // Handle window resize
+  const handleResize = () => {
+    positionPopup();
+  };
+  
+  window.addEventListener('resize', handleResize);
+  
+  // Handle close button click
+  popup.querySelector('.close-popup').addEventListener('click', () => {
+    popup.remove();
+    window.removeEventListener('resize', handleResize);
+  });
+  
+  // Handle click outside
+  document.addEventListener('click', function closePopup(event) {
+    if (!popup.contains(event.target) && event.target !== checkbox) {
+      popup.remove();
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('click', closePopup);
+    }
+  });
+  
+  // Handle save button click
+  popup.querySelector('#save-credits').addEventListener('click', () => {
+    const fallWinterCredits = popup.querySelector('#first-year-fall-winter').value;
+    const springCredits = popup.querySelector('#first-year-spring').value;
+    
+    // Store the selected values to use when generating the schedule
+    sessionStorage.setItem('firstYearFallWinterCredits', fallWinterCredits);
+    sessionStorage.setItem('firstYearSpringCredits', springCredits);
+    
+    popup.remove();
+    window.removeEventListener('resize', handleResize);
+  });
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -29,7 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       .sort((a, b) => a.course_name.localeCompare(b.course_name));
 
     // Populate dropdowns
-    populateDropdowns(majors, minors, basicCourses);
+    populateAllDropdowns(majors, minors, basicCourses);
     
     // UPDATED: Fetch classes from the proper endpoint
     try {
@@ -60,17 +213,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     disableCustomDropdown("minor2Select");
     updateGenerateButtonState();
     
-    // Set up the 10 Semester Path checkbox
-    setupTenSemesterPath();
+    // Setup view navigation
+    document.getElementById('credits-path-btn').addEventListener('click', () => {
+      showCreditsBasedMenu();
+    });
+    
+    document.getElementById('semesters-path-btn').addEventListener('click', showSemestersBasedMenu);
+    document.getElementById('credits-back-btn').addEventListener('click', showWelcomeScreen);
+    document.getElementById('semesters-back-btn').addEventListener('click', showWelcomeScreen);
+    
+    // Setup credits limit checkboxes
+    document.getElementById('limit-first-year-sem').addEventListener('change', function() {
+      if (this.checked) {
+        createCreditsPopup('limit-first-year-sem');
+      }
+    });
+    
+    // Add event listener for the credits-based menu checkbox
+    document.getElementById('limit-first-year-credits').addEventListener('change', function() {
+      if (this.checked) {
+        createCreditsPopup('limit-first-year-credits');
+      }
+    });
+    
+    // Make sure we initially show the welcome screen
+    showWelcomeScreen();
+    
+    // Set up the schedule generation buttons for both views
+    document.getElementById('calculate-schedule').addEventListener('click', generateScheduleFromCredits);
+    document.getElementById('calculate-schedule-sem').addEventListener('click', generateScheduleFromSemesters);
     
   } catch (error) {
     console.error("Error during initialization:", error);
-  }
-
-  // Set up the schedule generation button
-  const generateButton = document.getElementById("calculate-schedule");
-  if (generateButton) {
-    generateButton.addEventListener('click', generateScheduleFromSelections);
   }
 });
 
@@ -410,18 +584,22 @@ function resetCustomDropdown(selectId, hiddenInputId, holokaiDisplayId) {
 }
 
 // Update custom dropdowns with incompatible options
-function updateCustomDropdownsWithIncompatible(minor1Id, minor2Id, originalMinors) {
-  updateCustomDropdownWithIncompatible(minor1Id, originalMinors);
-  updateCustomDropdownWithIncompatible(minor2Id, originalMinors);
+function updateCustomDropdownsWithIncompatible(minor1Id, minor2Id, originalMinors, holokaiSource = null) {
+  updateCustomDropdownWithIncompatible(minor1Id, originalMinors, holokaiSource);
+  updateCustomDropdownWithIncompatible(minor2Id, originalMinors, holokaiSource);
 }
 
 // Update a single custom dropdown with incompatible options
-function updateCustomDropdownWithIncompatible(selectId, originalMinors) {
+function updateCustomDropdownWithIncompatible(selectId, originalMinors, holokaiSource = null) {
   const select = document.getElementById(selectId);
   if (!select) return;
   
   const container = select.parentElement;
   const list = container.querySelector('.dropdown-list');
+  
+  // Determine which holokai object to use
+  const holokai = holokaiSource || 
+                 (selectId.includes('-sem') ? selectedHolokaiSemester : selectedHolokai);
   
   // Clear existing items (except placeholder)
   while (list.children.length > 1) {
@@ -442,11 +620,11 @@ function updateCustomDropdownWithIncompatible(selectId, originalMinors) {
     // Check if incompatible
     let isIncompatible = false;
     
-    if (selectId === "minor1Select") {
-      isIncompatible = selectedHolokai.major && minor.holokai === selectedHolokai.major;
-    } else if (selectId === "minor2Select") {
-      isIncompatible = (selectedHolokai.major && minor.holokai === selectedHolokai.major) ||
-                      (selectedHolokai.minor1 && minor.holokai === selectedHolokai.minor1);
+    if (selectId.includes("minor1")) {
+      isIncompatible = holokai.major && minor.holokai === holokai.major;
+    } else if (selectId.includes("minor2")) {
+      isIncompatible = (holokai.major && minor.holokai === holokai.major) ||
+                      (holokai.minor1 && minor.holokai === holokai.minor1);
     }
     
     if (isIncompatible) {
@@ -490,7 +668,6 @@ async function generateScheduleFromSelections(event) {
     const majorClassLimit = parseInt(document.getElementById("major-class-limit").value, 10);
     const fallWinterCredits = parseInt(document.getElementById("fall-winter-credits").value, 10);
     const springCredits = parseInt(document.getElementById("spring-credits").value, 10);
-    const tenSemesterPath = document.getElementById("ten-semester-path")?.checked || false;
     
     console.log("Sending user preferences to AI scheduler:", { 
       selectedCourseIds, 
@@ -498,8 +675,7 @@ async function generateScheduleFromSelections(event) {
       startSemester,
       majorClassLimit,
       fallWinterCredits,
-      springCredits,
-      tenSemesterPath
+      springCredits
     });
 
     // Send preferences to new AI scheduler endpoint
@@ -514,8 +690,7 @@ async function generateScheduleFromSelections(event) {
         startSemester: startSemester,
         majorClassLimit: majorClassLimit,
         fallWinterCredits: fallWinterCredits,
-        springCredits: springCredits,
-        tenSemesterPath: tenSemesterPath
+        springCredits: springCredits
       })
     });
     
@@ -637,29 +812,15 @@ function renderSchedule(schedule) {
   scheduleTable.className = 'schedule-table';
   
   // Add each semester
-  schedule.forEach((semester, index) => {
+  schedule.forEach((semester) => {
     const semesterDiv = document.createElement('div');
     semesterDiv.className = 'semester-card';
-    
-    // Add 'over-limit' class if this is past the 10th semester
-    const isTenSemesterPath = document.getElementById('ten-semester-path')?.checked;
-    if (isTenSemesterPath && index >= 10) {
-      semesterDiv.classList.add('over-limit');
-    }
     
     // Semester header
     const semesterHeader = document.createElement('div');
     semesterHeader.className = 'semester-header';
     semesterHeader.textContent = semester.name;
     semesterDiv.appendChild(semesterHeader);
-    
-    // Add warning if over 10 semesters
-    if (isTenSemesterPath && index >= 10) {
-      const warningDiv = document.createElement('div');
-      warningDiv.className = 'over-limit-warning';
-      warningDiv.textContent = 'Past 10 semester goal';
-      semesterDiv.appendChild(warningDiv);
-    }
     
     // Semester classes
     const classesList = document.createElement('ul');
@@ -744,23 +905,31 @@ function enableCustomDropdown(selectId) {
 }
 
 // Function to check if all Holokai sections are different and enable/disable Generate button
-function updateGenerateButtonState() {
-  const generateButton = document.getElementById("calculate-schedule");
+function updateGenerateButtonState(suffix = '') {
+  const generateButton = document.getElementById(`calculate-schedule${suffix ? '-' + suffix : ''}`);
+  if (!generateButton) return;
+  
+  // Use the appropriate object based on which menu we're in
+  const holokai = suffix === 'sem' ? selectedHolokaiSemester : selectedHolokai;
   
   // Get selected holokai values
-  const majorHolokai = selectedHolokai.major;
-  const minor1Holokai = selectedHolokai.minor1;
-  const minor2Holokai = selectedHolokai.minor2;
+  const majorHolokai = holokai.major;
+  const minor1Holokai = holokai.minor1;
+  const minor2Holokai = holokai.minor2;
   
   // Check if all three sections are selected
-  const majorSelected = !!document.getElementById("selectedMajor").value;
-  const minor1Selected = !!document.getElementById("selectedMinor1").value;
-  const minor2Selected = !!document.getElementById("selectedMinor2").value;
+  const majorSelected = !!document.getElementById(`selectedMajor${suffix ? '-' + suffix : ''}`).value;
+  const minor1Selected = !!document.getElementById(`selectedMinor1${suffix ? '-' + suffix : ''}`).value;
+  const minor2Selected = !!document.getElementById(`selectedMinor2${suffix ? '-' + suffix : ''}`).value;
+  
+  console.log(`Button check (${suffix}): Major: ${majorSelected}, Minor1: ${minor1Selected}, Minor2: ${minor2Selected}`);
+  console.log(`Holokai values (${suffix}):`, majorHolokai, minor1Holokai, minor2Holokai);
   
   const allSelected = majorSelected && minor1Selected && minor2Selected;
   
   // If any are not selected, disable the button
   if (!allSelected) {
+    console.log(`Not all selections made in menu ${suffix || 'credits'}`);
     generateButton.disabled = true;
     generateButton.classList.add("disabled");
     return;
@@ -770,61 +939,327 @@ function updateGenerateButtonState() {
   const uniqueHolokai = new Set([majorHolokai, minor1Holokai, minor2Holokai]);
   const hasThreeSections = uniqueHolokai.size === 3;
   
+  console.log(`Unique Holokai sections (${suffix}): ${uniqueHolokai.size}`);
+  
   // Enable/disable button based on whether we have three unique sections
   if (hasThreeSections) {
+    console.log(`Enabling button for menu ${suffix || 'credits'}`);
     generateButton.disabled = false;
     generateButton.classList.remove("disabled");
   } else {
+    console.log(`Not all unique Holokai sections in menu ${suffix || 'credits'}`);
     generateButton.disabled = true;
     generateButton.classList.add("disabled");
   }
 }
 
-// Function to handle 10 Semester Path checkbox
-function setupTenSemesterPath() {
-  const checkbox = document.getElementById('ten-semester-path');
-  if (!checkbox) return;
+// Modify the populateDropdowns function to handle both menus
+function populateAllDropdowns(majors, minors, courses) {
+  // Original credits-based dropdowns
+  populateDropdowns(majors, minors, courses);
   
-  // Get the three dropdowns we need to control
-  const majorClassLimitDropdown = document.getElementById('major-class-limit');
-  const fallWinterCreditsDropdown = document.getElementById('fall-winter-credits');
-  const springCreditsDropdown = document.getElementById('spring-credits');
-  
-  // Store original values to restore when unchecked
-  let originalValues = {
-    majorLimit: majorClassLimitDropdown.value,
-    fallWinter: fallWinterCreditsDropdown.value,
-    spring: springCreditsDropdown.value
-  };
-  
-  checkbox.addEventListener('change', function() {
-    if (this.checked) {
-      // Store current values before overriding
-      originalValues = {
-        majorLimit: majorClassLimitDropdown.value,
-        fallWinter: fallWinterCreditsDropdown.value,
-        spring: springCreditsDropdown.value
-      };
-      
-      // Set to maximum values
-      majorClassLimitDropdown.value = '4';
-      fallWinterCreditsDropdown.value = '18';
-      springCreditsDropdown.value = '12';
-      
-      // Disable the dropdowns
-      majorClassLimitDropdown.disabled = true;
-      fallWinterCreditsDropdown.disabled = true;
-      springCreditsDropdown.disabled = true;
+  // Populate semester-based dropdowns
+  createCustomDropdown("majorSelect-sem", "selectedMajor-sem", majors, "Select a Major", option => {
+    document.getElementById("majorHolokai-sem").textContent = option.dataset.holokai || '';
+    selectedHolokaiSemester.major = option.dataset.holokai || null;
+    
+    if (option.dataset.value) {
+      enableCustomDropdown("minor1Select-sem");
+      enableCustomDropdown("minor2Select-sem");
     } else {
-      // Restore original values
-      majorClassLimitDropdown.value = originalValues.majorLimit;
-      fallWinterCreditsDropdown.value = originalValues.fallWinter;
-      springCreditsDropdown.value = originalValues.spring;
-      
-      // Enable the dropdowns
-      majorClassLimitDropdown.disabled = false;
-      fallWinterCreditsDropdown.disabled = false;
-      springCreditsDropdown.disabled = false;
+      disableCustomDropdown("minor1Select-sem");
+      disableCustomDropdown("minor2Select-sem");
     }
+    
+    resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
+    resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
+    selectedHolokaiSemester.minor1 = null;
+    selectedHolokaiSemester.minor2 = null;
+    
+    // Pass selectedHolokaiSemester explicitly
+    updateCustomDropdownsWithIncompatible("minor1Select-sem", "minor2Select-sem", minors, selectedHolokaiSemester);
+    updateGenerateButtonState('sem');
   });
+  
+  // Add minor1 dropdown for semester-based menu
+  createCustomDropdown("minor1Select-sem", "selectedMinor1-sem", minors, "Select Your First Minor", option => {
+    if (option.classList.contains('incompatible')) {
+      alert("This minor is from the same Holokai section as your major. Please choose a different Holokai section.");
+      resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
+      return;
+    }
+    
+    const newMinor1Holokai = option.dataset.holokai || null;
+    document.getElementById("minor1Holokai-sem").textContent = newMinor1Holokai || '';
+    selectedHolokaiSemester.minor1 = newMinor1Holokai;
+    
+    if (selectedHolokaiSemester.minor2 && selectedHolokaiSemester.minor2 === newMinor1Holokai) {
+      resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
+      selectedHolokaiSemester.minor2 = null;
+    }
+    
+    // Pass selectedHolokaiSemester explicitly
+    updateCustomDropdownWithIncompatible("minor2Select-sem", minors, selectedHolokaiSemester);
+    updateGenerateButtonState('sem');
+  }, option => {
+    // Use the semester-based Holokai object for incompatibility check
+    return selectedHolokaiSemester.major && option.holokai === selectedHolokaiSemester.major;
+  });
+  
+  // Add minor2 dropdown for semester-based menu
+  createCustomDropdown("minor2Select-sem", "selectedMinor2-sem", minors, "Select Your Second Minor", option => {
+    if (option.classList.contains('incompatible')) {
+      alert("This minor is from the same Holokai section as your major or first minor. Please choose a different Holokai section.");
+      resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
+      return;
+    }
+    
+    const newMinor2Holokai = option.dataset.holokai || null;
+    document.getElementById("minor2Holokai-sem").textContent = newMinor2Holokai || '';
+    selectedHolokaiSemester.minor2 = newMinor2Holokai;
+    
+    if (selectedHolokaiSemester.minor1 && selectedHolokaiSemester.minor1 === newMinor2Holokai) {
+      resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
+      selectedHolokaiSemester.minor1 = null;
+      // Pass selectedHolokaiSemester explicitly
+      updateCustomDropdownWithIncompatible("minor1Select-sem", minors, selectedHolokaiSemester);
+    }
+    
+    updateGenerateButtonState('sem');
+  }, option => {
+    // Use the semester-based Holokai object for incompatibility check
+    return (selectedHolokaiSemester.major && option.holokai === selectedHolokaiSemester.major) ||
+           (selectedHolokaiSemester.minor1 && option.holokai === selectedHolokaiSemester.minor1);
+  });
+  
+  // Populate English Level Dropdown for semester-based menu
+  const englishCourses = courses.filter(course =>
+    course.course_type && course.course_type.toLowerCase() === "eil/holokai"
+  );
+  const englishLevelSelectSem = document.getElementById("english-level-sem");
+  if (englishLevelSelectSem) {
+    englishLevelSelectSem.innerHTML = "";
+    englishCourses.forEach(course => {
+      const option = document.createElement("option");
+      option.value = course.course_name;
+      option.textContent = course.course_name;
+      englishLevelSelectSem.appendChild(option);
+    });
+  }
+}
+
+// Function to generate schedule based on semester count
+function generateScheduleFromSemesters(event) {
+  event.preventDefault();
+  console.log("Generating schedule by number of semesters...");
+  
+  // Get selected values from the semesters-based form
+  const selectedMajor = Number(document.getElementById("selectedMajor-sem").value);
+  const selectedMinor1 = Number(document.getElementById("selectedMinor1-sem").value);
+  const selectedMinor2 = Number(document.getElementById("selectedMinor2-sem").value);
+  const selectedCourseIds = [selectedMajor, selectedMinor1, selectedMinor2].filter(id => !isNaN(id));
+  
+  const englishLevel = document.getElementById("english-level-sem").value;
+  const startSemester = document.getElementById("start-semester-sem").value;
+  const targetSemesters = document.getElementById("total-semesters").value;
+  
+  // Check if first year credits are limited
+  const limitFirstYear = document.getElementById("limit-first-year-sem").checked;
+  let fallWinterCredits = 18; // Default to maximum
+  let springCredits = 12;     // Default to maximum
+  
+  if (limitFirstYear) {
+    // Get saved values from the popup
+    fallWinterCredits = sessionStorage.getItem('firstYearFallWinterCredits') || 15;
+    springCredits = sessionStorage.getItem('firstYearSpringCredits') || 10;
+  }
+  
+  console.log("Generating schedule with target semester count:", {
+    selectedCourseIds,
+    englishLevel,
+    startSemester,
+    targetSemesters,
+    limitFirstYear,
+    fallWinterCredits,
+    springCredits
+  });
+  
+  // Send request to generate schedule
+  fetch('/api/generate-schedule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      selectedCourses: selectedCourseIds,
+      englishLevel: englishLevel,
+      startSemester: startSemester,
+      targetSemesters: parseInt(targetSemesters),
+      fallWinterCredits: parseInt(fallWinterCredits),
+      springCredits: parseInt(springCredits),
+      scheduleByTargetSemesters: true
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      return response.text().then(text => {
+        throw new Error(`API returned status: ${response.status}`);
+      });
+    }
+    return response.json();
+  })
+  .then(result => {
+    console.log("Schedule generated:", result);
+    renderSchedule(result.schedule);
+    
+    // Add improvements explanation if available
+    if (result.improvements && result.improvements.length > 0) {
+      const improvementsContainer = document.createElement('div');
+      improvementsContainer.className = 'improvements-container';
+      improvementsContainer.innerHTML = '<h3>Schedule Insights</h3><ul>' +
+        result.improvements.map(improvement => `<li>${improvement}</li>`).join('') +
+        '</ul>';
+        
+      // Add to page after the schedule is rendered
+      document.getElementById('schedule-container').appendChild(improvementsContainer);
+    }
+    
+    // Add export button
+    const scheduleJson = JSON.stringify(result.schedule, null, 2);
+    const exportButton = document.createElement('button');
+    exportButton.textContent = 'Export Schedule JSON';
+    exportButton.className = 'export-button';
+    exportButton.addEventListener('click', () => {
+      const blob = new Blob([scheduleJson], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'schedule.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // Add button after the schedule
+    document.getElementById('schedule-container').appendChild(exportButton);
+  })
+  .catch(error => {
+    console.error("Error generating schedule:", error);
+    alert("There was an error generating your schedule. Please try again.");
+  });
+}
+
+// Function to generate schedule based on credits per semester
+async function generateScheduleFromCredits(event) {
+  event.preventDefault();
+  console.log("Starting schedule generation with AI...");
+
+  // Show loading indicator
+  const generateButton = document.getElementById("calculate-schedule");
+  generateButton.textContent = "Generating...";
+  generateButton.disabled = true;
+
+  try {
+    // Get selected course IDs
+    const selectedMajor = Number(document.getElementById("selectedMajor").value);
+    const selectedMinor1 = Number(document.getElementById("selectedMinor1").value);
+    const selectedMinor2 = Number(document.getElementById("selectedMinor2").value);
+    const selectedCourseIds = [selectedMajor, selectedMinor1, selectedMinor2].filter(id => !isNaN(id));
+    
+    // Get other settings
+    const englishLevel = document.getElementById("english-level").value;
+    const startSemester = document.getElementById("start-semester").value;
+    const majorClassLimit = parseInt(document.getElementById("major-class-limit").value, 10);
+    
+    // Check if first year credits are limited
+    const limitFirstYear = document.getElementById("limit-first-year-credits").checked;
+    let fallWinterCredits = parseInt(document.getElementById("fall-winter-credits").value, 10);
+    let springCredits = parseInt(document.getElementById("spring-credits").value, 10);
+    
+    if (limitFirstYear) {
+      // Get saved values from the popup
+      fallWinterCredits = parseInt(sessionStorage.getItem('firstYearFallWinterCredits') || 15);
+      springCredits = parseInt(sessionStorage.getItem('firstYearSpringCredits') || 10);
+    }
+    
+    console.log("Sending user preferences to AI scheduler:", { 
+      selectedCourseIds, 
+      englishLevel, 
+      startSemester,
+      majorClassLimit,
+      limitFirstYear,
+      fallWinterCredits,
+      springCredits
+    });
+
+    // Send preferences to new AI scheduler endpoint
+    const response = await fetch('/api/generate-schedule', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        selectedCourses: selectedCourseIds,
+        englishLevel: englishLevel,
+        startSemester: startSemester,
+        majorClassLimit: majorClassLimit,
+        fallWinterCredits: fallWinterCredits,
+        springCredits: springCredits,
+        limitFirstYear: limitFirstYear
+      })
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("API error response:", errorText);
+      throw new Error(`API returned status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log("AI-generated schedule received:", result);
+    
+    // Render the returned schedule
+    renderSchedule(result.schedule);
+
+    // Add improvements explanation if available
+    if (result.improvements && result.improvements.length > 0) {
+      const improvementsContainer = document.createElement('div');
+      improvementsContainer.className = 'improvements-container';
+      improvementsContainer.innerHTML = '<h3>Schedule Insights</h3><ul>' +
+        result.improvements.map(improvement => `<li>${improvement}</li>`).join('') +
+        '</ul>';
+        
+      // Add to page after the schedule is rendered
+      document.getElementById('schedule-container').appendChild(improvementsContainer);
+    }
+
+    // Add export button
+    const scheduleJson = JSON.stringify(result.schedule, null, 2);
+    const exportButton = document.createElement('button');
+    exportButton.textContent = 'Export Schedule JSON';
+    exportButton.className = 'export-button';
+    exportButton.addEventListener('click', () => {
+      const blob = new Blob([scheduleJson], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'schedule.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // Add button after the schedule
+    document.getElementById('schedule-container').appendChild(exportButton);
+
+  } catch (error) {
+    console.error("Error generating schedule:", error);
+    alert("There was an error generating your schedule. Please try again.");
+  } finally {
+    // Reset button
+    generateButton.textContent = "Generate Schedule";
+    generateButton.disabled = false;
+  }
 }

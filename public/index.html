@@ -50,8 +50,34 @@
      
       <!-- Start of the container -->
       <div class="container">
-        <header class="floating-bar">
-          <!-- Replace the major search input with a dropdown -->
+        <header class="floating-bar" id="welcome-screen">
+          <div class="welcome-container">
+            <h2 class="welcome-title">Welcome to Holokai Planner</h2>
+            <p class="welcome-text">Choose how you would like to create your college path:</p>
+            
+            <div class="path-options">
+              <button id="semesters-path-btn" class="path-button">
+                <i class="fa fa-calendar"></i>
+                Create college path by number of semesters
+              </button>
+              
+              <button id="credits-path-btn" class="path-button">
+                <i class="fa fa-graduation-cap"></i>
+                Create college path by credits per semester
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Original menu (now hidden initially) -->
+        <header class="floating-bar hidden" id="credits-based-menu">
+          <!-- Back button -->
+          <div class="back-button-container">
+            <button class="back-button" id="credits-back-btn" title="Back to Options">
+            </button>
+          </div>
+          
+          <!-- Original content -->
           <div class="input-group" id="major-search-group">
             <label for="majorSelect">Major:</label>
             <select id="majorSelect">
@@ -64,7 +90,6 @@
             <div id="majorHolokai" class="holokai-info"></div>
           </div>
 
-          <!-- Replace the minor1 search input with a dropdown -->
           <div class="input-group" id="minor1-search-group">
             <label for="minor1Select">Minor 1:</label>
             <select id="minor1Select">
@@ -77,7 +102,6 @@
             <div id="minor1Holokai" class="holokai-info"></div>
           </div>
 
-          <!-- Replace the minor2 search input with a dropdown -->
           <div class="input-group" id="minor2-search-group">
             <label for="minor2Select">Minor 2:</label>
             <select id="minor2Select">
@@ -90,13 +114,11 @@
             <div id="minor2Holokai" class="holokai-info"></div>
           </div>
 
-          <!-- English Level remains as before -->
           <div class="input-group">
             <label for="english-level">English Level:</label>
             <select id="english-level"></select>
           </div>
 
-          <!-- Other input groups remain the same -->
           <div class="input-group">
             <label for="start-semester">Starting Semester:</label>
             <select id="start-semester">
@@ -142,10 +164,9 @@
           </div>
 
           <div class="input-group checkbox-group">
-            <label for="ten-semester-path">
-              <input type="checkbox" id="ten-semester-path"> 10 Semester Path
+            <label for="limit-first-year-credits">
+              <input type="checkbox" id="limit-first-year-credits"> Limit First Year Credits
             </label>
-            <div class="path-info">Maximizes credits per semester for a 10-semester graduation</div>
           </div>
 
           <div class="legend">
@@ -160,8 +181,95 @@
             </p>
           </div>
 
-          <!-- Generate Schedule button -->
           <button id="calculate-schedule">Generate Schedule</button>
+        </header>
+
+        <!-- Semesters-based menu (hidden initially) -->
+        <header class="floating-bar hidden" id="semesters-based-menu">
+          <!-- Back button -->
+          <div class="back-button-container">
+            <button class="back-button" id="semesters-back-btn" title="Back to Options">
+            </button>
+          </div>
+          
+          <!-- Modified content for semesters approach -->
+          <div class="input-group" id="major-search-group-sem">
+            <label for="majorSelect-sem">Major:</label>
+            <select id="majorSelect-sem">
+              <option value="">Select a Major</option>
+              <!-- Options will be populated by JavaScript -->
+            </select>
+            <input type="hidden" id="selectedMajor-sem" name="selectedMajor" value="">
+            <div id="majorHolokai-sem" class="holokai-info"></div>
+          </div>
+
+          <!-- Minor 1 dropdown -->
+          <div class="input-group" id="minor1-search-group-sem">
+            <label for="minor1Select-sem">Minor 1:</label>
+            <select id="minor1Select-sem">
+              <option value="">Select Your First Minor</option>
+            </select>
+            <input type="hidden" id="selectedMinor1-sem" name="selectedMinor1" value="">
+            <div id="minor1Holokai-sem" class="holokai-info"></div>
+          </div>
+
+          <!-- Minor 2 dropdown -->
+          <div class="input-group" id="minor2-search-group-sem">
+            <label for="minor2Select-sem">Minor 2:</label>
+            <select id="minor2Select-sem">
+              <option value="">Select Your Second Minor</option>
+            </select>
+            <input type="hidden" id="selectedMinor2-sem" name="selectedMinor2" value="">
+            <div id="minor2Holokai-sem" class="holokai-info"></div>
+          </div>
+
+          <!-- English Level -->
+          <div class="input-group">
+            <label for="english-level-sem">English Level:</label>
+            <select id="english-level-sem"></select>
+          </div>
+
+          <!-- Starting semester -->
+          <div class="input-group">
+            <label for="start-semester-sem">Starting Semester:</label>
+            <select id="start-semester-sem">
+              <option value="Winter 2025">Winter 2025</option>
+              <option value="Spring 2025">Spring 2025</option>
+              <option value="Fall 2025">Fall 2025</option>
+              <option value="Winter 2026">Winter 2026</option>
+              <option value="Spring 2026">Spring 2026</option>
+            </select>
+          </div>
+
+          <!-- New dropdown for number of semesters -->
+          <div class="input-group">
+            <label for="total-semesters">Target Number of Semesters:</label>
+            <select id="total-semesters">
+              <option value="8">8 Semesters (4 Years)</option>
+              <option value="9">9 Semesters (4.5 Years)</option>
+              <option value="10" selected>10 Semesters (5 Years)</option>
+              <option value="11">11 Semesters (5.5 Years)</option>
+              <option value="12">12 Semesters (6 Years)</option>
+            </select>
+          </div>
+
+          <!-- Limit first year credits checkbox -->
+          <div class="input-group checkbox-group">
+            <label for="limit-first-year-sem">
+              <input type="checkbox" id="limit-first-year-sem"> Limit First Year Credits
+            </label>
+          </div>
+
+          <!-- Legend -->
+          <div class="legend">
+            <p><span class="legend-color type-major"></span> Major Classes</p>
+            <p><span class="legend-color type-minor"></span> Minor Classes</p>
+            <p><span class="legend-color type-eil"></span> EIL/Holokai Classes</p>
+            <p><span class="legend-color type-religion"></span> Religion Classes</p>
+          </div>
+
+          <!-- Generate Schedule button -->
+          <button id="calculate-schedule-sem">Generate Schedule</button>
         </header>
 
         <!-- Schedule Container (Initially Hidden) -->

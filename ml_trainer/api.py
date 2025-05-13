@@ -1,15 +1,39 @@
 from flask import Flask, request, jsonify
 import json
 import os
+import sqlite3  # Or use other DB connector like psycopg2 for PostgreSQL
 from flask_cors import CORS
-# Fix the import path - this was the issue
-from schedule_optimizer import ScheduleOptimizer  # Changed from ml_trainer.hf_optimizer
+from schedule_optimizer import ScheduleOptimizer
 from hf_optimizer import HuggingFaceScheduleOptimizer
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 optimizer = ScheduleOptimizer()
 hf_optimizer = HuggingFaceScheduleOptimizer()
+
+# Improved database connection function with better path handling
+def get_db_connection():
+    # Try different possible database paths for flexibility
+    possible_paths = [
+        os.path.join(os.path.dirname(__file__), '..', 'database', 'course_scheduler.db'),
+        '/app/database/course_scheduler.db',  # Docker container path
+        '../database/course_scheduler.db'     # Relative path
+    ]
+    
+    connection = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            try:
+                print(f"Connecting to database at: {path}")
+                connection = sqlite3.connect(path)
+                connection.row_factory = sqlite3.Row
+                return connection
+            except Exception as e:
+                print(f"Failed to connect to {path}: {e}")
+    
+    # If we get here, no connection was made
+    print("WARNING: Could not connect to any database!")
+    return None
 
 # Load the trained model
 model_path = os.path.join(os.path.dirname(__file__), 'schedule_model.json')
@@ -21,7 +45,7 @@ else:
 @app.route('/ping', methods=['GET'])
 def ping():
     """Simple endpoint to test if the API is running"""
-    return jsonify({"status": "ok", "message": "API is running"}), 200
+    return jsonify({"status": "ok", "message": "ML service is running"})
 
 @app.route('/evaluate', methods=['POST'])
 def evaluate_schedule():
@@ -30,10 +54,11 @@ def evaluate_schedule():
         return jsonify({"error": "No schedule provided"}), 400
     
     try:
-        schedule = request.json
-        score = optimizer.evaluate_schedule(schedule)
-        return jsonify({"score": float(score)})
+        schedule = request.json.get('schedule', [])
+        result = optimizer.evaluate_schedule(schedule)
+        return jsonify(result)
     except Exception as e:
+        print(f"Error in /evaluate: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/optimize', methods=['POST'])
@@ -43,49 +68,11 @@ def optimize_schedule():
         return jsonify({"error": "No schedule provided"}), 400
     
     try:
-        schedule = request.json
-        print(f"Received schedule with {len(schedule) if isinstance(schedule, list) else 'invalid'} semesters")
-        
-        # Validate schedule format
-        if not isinstance(schedule, list):
-            return jsonify({"error": "Schedule must be an array"}), 400
-            
-        if len(schedule) == 0:
-            return jsonify({"error": "Schedule cannot be empty"}), 400
-            
-        for semester in schedule:
-            if not isinstance(semester, dict) or 'classes' not in semester:
-                return jsonify({"error": "Each semester must have classes array"}), 400
-        
-        # Generate several variations and pick the best one
-        print("Evaluating original schedule...")
-        best_score = optimizer.evaluate_schedule(schedule)
-        print(f"Original schedule score: {best_score}")
-        best_schedule = schedule
-        
-        # Try various transformations to optimize the schedule
-        for i in range(10):
-            print(f"Creating variation {i+1}/10")
-            variation = optimizer.create_schedule_variation(schedule)
-            score = optimizer.evaluate_schedule(variation)
-            print(f"Variation {i+1} score: {score}")
-            
-            if score > best_score:
-                best_score = score
-                best_schedule = variation
-                print(f"Found better schedule: {score}")
-        
-        # Return the optimized schedule
-        return jsonify({
-            "original_score": float(optimizer.evaluate_schedule(schedule)),
-            "optimized_score": float(best_score),
-            "optimized_schedule": best_schedule
-        })
-    
+        schedule = request.json.get('schedule', [])
+        result = optimizer.optimize_schedule(schedule)
+        return jsonify(result)
     except Exception as e:
-        import traceback
-        print(f"ERROR in /optimize: {e}")
-        print(traceback.format_exc())
+        print(f"Error in /optimize: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/hf_optimize', methods=['POST'])
@@ -95,25 +82,11 @@ def huggingface_optimize():
         return jsonify({"error": "No schedule provided"}), 400
     
     try:
-        schedule = request.json
-        print(f"Received schedule for HuggingFace optimization with {len(schedule) if isinstance(schedule, list) else 'invalid'} semesters")
-        
-        # Validate schedule format
-        if not isinstance(schedule, list):
-            return jsonify({"error": "Schedule must be an array"}), 400
-            
-        if len(schedule) == 0:
-            return jsonify({"error": "Schedule cannot be empty"}), 400
-        
-        # Perform HuggingFace-powered optimization
+        schedule = request.json.get('schedule', [])
         result = hf_optimizer.optimize_schedule(schedule)
-        
         return jsonify(result)
-    
     except Exception as e:
-        import traceback
-        print(f"ERROR in /hf_optimize: {e}")
-        print(traceback.format_exc())
+        print(f"Error in /hf_optimize: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/generate_schedule', methods=['POST'])
@@ -135,9 +108,36 @@ def generate_schedule():
         english_level = preferences.get('englishLevel', None)
         ten_semester_path = preferences.get('tenSemesterPath', False)
         
-        # Use the actual implementation from hf_optimizer
-        result = hf_optimizer.generate_schedule(
+        # Fetch classes directly from database
+        classes = []
+        conn = get_db_connection()
+        
+        if conn is None:
+            return jsonify({"error": "Database connection failed"}), 500
+            
+        try:
+            if selected_courses:
+                # Convert to comma-separated string for SQL IN clause
+                course_ids_str = ','.join(map(str, selected_courses))
+                query = f"SELECT * FROM classes WHERE course_id IN ({course_ids_str})"
+                
+                cursor = conn.execute(query)
+                
+                # Convert to list of dictionaries
+                for row in cursor:
+                    class_data = dict(row)
+                    classes.append(class_data)
+                
+                print(f"Fetched {len(classes)} classes from database")
+            else:
+                print("No courses selected")
+        finally:
+            conn.close()
+        
+        # Use the optimizer with directly fetched classes
+        result = hf_optimizer.generate_schedule_with_classes(
             selected_courses=selected_courses,
+            classes_data=classes,  # Pass pre-fetched classes
             start_semester=start_semester,
             major_class_limit=major_class_limit,
             fall_winter_credits=fall_winter_credits,

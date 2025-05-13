@@ -26,7 +26,31 @@ class HuggingFaceScheduleOptimizer:
                           fall_winter_credits=15, spring_credits=12, english_level=None, 
                           ten_semester_path=False):
         """Generate a complete schedule based on user preferences and course requirements"""
-        all_classes = self._fetch_classes_for_courses(selected_courses)
+        # This method is obsolete - use generate_schedule_with_classes instead
+        # This remains only for backwards compatibility
+        print("Warning: generate_schedule is deprecated. Use generate_schedule_with_classes instead")
+        return {
+            "schedule": [],
+            "score": 0,
+            "improvements": ["This method is deprecated. Please use generate_schedule_with_classes."]
+        }
+    
+    def generate_schedule_with_classes(self, selected_courses, classes_data, start_semester, 
+                                      major_class_limit=4, fall_winter_credits=15, 
+                                      spring_credits=12, english_level=None, 
+                                      ten_semester_path=False):
+        """Generate a complete schedule using pre-fetched classes"""
+        # Only use the first course (major) from selected_courses
+        if selected_courses and len(selected_courses) > 0:
+            major_course_id = selected_courses[0]
+            print(f"Only using major course: {major_course_id}")
+            
+            # Filter classes for just the major course
+            all_classes = [cls for cls in classes_data if cls.get('course_id') == major_course_id]
+            print(f"Filtered to {len(all_classes)} classes for major course {major_course_id}")
+        else:
+            all_classes = []
+            print("No courses selected")
         
         # Initialize empty schedule
         schedule = []
@@ -42,7 +66,8 @@ class HuggingFaceScheduleOptimizer:
             semester = {
                 "semester": self._format_semester(current_semester),
                 "classes": [],
-                "totalCredits": 0
+                "totalCredits": 0,
+                "name": self._format_semester(current_semester)  # Add name for frontend
             }
             
             # Determine credit limit for this semester
@@ -77,18 +102,46 @@ class HuggingFaceScheduleOptimizer:
         
         for course_id in course_ids:
             try:
+                print(f"Fetching classes for course_id: {course_id}")
                 # Try Docker network service name first
                 response = requests.get(f"http://web_container:3000/api/classes?course_id={course_id}")
                 
                 if response.status_code == 200:
                     course_classes = response.json()
-                    print(f"Fetched {len(course_classes)} classes for course {course_id}")
-                    classes.extend(course_classes)
+                    if isinstance(course_classes, list):
+                        # Check if we need to filter the results ourselves
+                        filtered_classes = [cls for cls in course_classes if cls.get('course_id') == course_id]
+                        
+                        # If API didn't filter properly (we got too many classes), use our filtered list
+                        if len(filtered_classes) < len(course_classes):
+                            print(f"API returned {len(course_classes)} classes, filtered down to {len(filtered_classes)} for course {course_id}")
+                            classes.extend(filtered_classes)
+                        else:
+                            print(f"Fetched {len(course_classes)} classes for course {course_id}")
+                            classes.extend(course_classes)
+                    else:
+                        print(f"Unexpected response format for course {course_id}")
                 else:
                     print(f"Error fetching classes for course {course_id}: {response.status_code}")
+                    
+                    # Try local fallback if Docker container fails
+                    try:
+                        fallback_response = requests.get(f"http://localhost:3000/api/classes?course_id={course_id}")
+                        if fallback_response.status_code == 200:
+                            course_classes = fallback_response.json()
+                            if isinstance(course_classes, list):
+                                filtered_classes = [cls for cls in course_classes if cls.get('course_id') == course_id]
+                                print(f"Fallback: Fetched {len(filtered_classes)} classes for course {course_id}")
+                                classes.extend(filtered_classes)
+                        else:
+                            print(f"Fallback: Error fetching classes for course {course_id}: {fallback_response.status_code}")
+                    except Exception as fallback_error:
+                        print(f"Fallback: Exception fetching classes for course {course_id}: {fallback_error}")
+                        
             except Exception as e:
                 print(f"Exception fetching classes for course {course_id}: {e}")
         
+        print(f"Total classes fetched for scheduling: {len(classes)}")
         return classes
 
     def _parse_semester(self, semester_string):
