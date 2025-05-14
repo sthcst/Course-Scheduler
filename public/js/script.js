@@ -28,6 +28,14 @@ function showWelcomeScreen() {
   document.getElementById('credits-based-menu').classList.add('hidden');
   document.getElementById('semesters-based-menu').classList.add('hidden');
   
+  // Hide the schedule when returning to welcome screen
+  const scheduleContainer = document.getElementById('schedule-container');
+  if (scheduleContainer) {
+    scheduleContainer.classList.add('hidden');
+    // Optionally clear the content
+    scheduleContainer.innerHTML = '';
+  }
+  
   // Reset selections when going back to welcome screen
   selectedHolokai = {
     major: null,
@@ -1070,6 +1078,7 @@ async function generateScheduleFromSemesters(event) {
   console.log("Generating schedule by number of semesters...");
   
   // Show loading indicator
+  showLoadingIndicator();
   const generateButton = document.getElementById("calculate-schedule-sem");
   generateButton.textContent = "Generating...";
   generateButton.disabled = true;
@@ -1129,15 +1138,62 @@ async function generateScheduleFromSemesters(event) {
       body: JSON.stringify(schedulerData)
     });
     
-    // Process response and render schedule
-    // [rest of the function remains unchanged]
+    // Debug: Log the raw response
+    console.log("Response status:", response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("API error response:", errorText);
+      throw new Error(`API returned status: ${response.status}`);
+    }
+    
+    // Get the JSON data
+    const result = await response.json();
+    console.log("Schedule data received:", result);
+    
+    // Check if we have the expected data structure
+    if (!result.schedule || !Array.isArray(result.schedule)) {
+      console.error("Invalid schedule format:", result);
+      alert("Received invalid schedule data. Check console for details.");
+      hideLoadingIndicator();
+      return;
+    }
+    
+    // Make sure schedule container exists
+    const scheduleContainer = document.getElementById('schedule-container');
+    if (!scheduleContainer) {
+      console.error("Schedule container not found in DOM!");
+      alert("Cannot display schedule: container element not found.");
+      hideLoadingIndicator();
+      return;
+    }
+    
+    console.log("About to render semester-based schedule with", result.schedule.length, "semesters");
+    
+    // Render the schedule
+    renderSchedule(result.schedule);
+    
+    // Add metadata if available
+    if (result.metadata) {
+      const metadataContainer = document.createElement('div');
+      metadataContainer.className = 'schedule-metadata';
+      metadataContainer.innerHTML = `
+        <h3>Schedule Quality: ${Math.round(result.metadata.score * 100)}%</h3>
+        <div class="improvements">
+          ${result.metadata.improvements.map(imp => `<p>• ${imp}</p>`).join('')}
+        </div>
+      `;
+      scheduleContainer.appendChild(metadataContainer);
+    }
+    
   } catch (error) {
     console.error("Error generating schedule:", error);
     alert("There was an error generating your schedule. Please try again.");
   } finally {
-    // Reset button
+    // Reset button and hide loading indicator
     generateButton.textContent = "Generate Schedule";
     generateButton.disabled = false;
+    hideLoadingIndicator();
   }
 }
 
