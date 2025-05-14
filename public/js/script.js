@@ -1235,13 +1235,12 @@ async function generateScheduleFromCredits(event) {
  */
 async function fetchRequiredCourseData(majorId, minor1Id, minor2Id, eilLevel) {
   try {
-    // Create array to hold the course data
     const courseData = [];
-    // Track all class IDs already included
     const includedClassIds = new Set();
-    // Track class IDs that need to be fetched for prerequisites/corequisites
     const requiredClassIds = new Set();
-    
+    // NEW: Track classes that belong to main courses vs. additional prereqs
+    const mainCourseClassIds = new Set();
+
     // Helper function to fetch course data with better error handling
     const fetchCourse = async (id) => {
       try {
@@ -1258,6 +1257,8 @@ async function fetchRequiredCourseData(majorId, minor1Id, minor2Id, eilLevel) {
           section.classes.forEach(classItem => {
             // Add this class ID to our included set
             includedClassIds.add(classItem.id);
+            // NEW: Mark this class as part of a main course
+            mainCourseClassIds.add(classItem.id);
             
             // Check prerequisites for classes we need to fetch later
             if (Array.isArray(classItem.prerequisites)) {
@@ -1326,11 +1327,17 @@ async function fetchRequiredCourseData(majorId, minor1Id, minor2Id, eilLevel) {
     courseData.push(religionData);
     
     // Handle EIL level options
-    if (eilLevel && eilLevel !== "Fluent") {
-      // Determine EIL ID based on the level
-      const eilId = eilLevel.includes("Level 1") ? 5 : 6;
-      const eilData = await fetchCourse(eilId);
-      courseData.push(eilData);
+    if (eilLevel) {
+      if (eilLevel === "Fluent") {
+        // Even for fluent students, fetch course with ID 7
+        const fluentCourseData = await fetchCourse(7);
+        courseData.push(fluentCourseData);
+      } else {
+        // Determine EIL ID based on the level
+        const eilId = eilLevel.includes("Level 1") ? 5 : 6;
+        const eilData = await fetchCourse(eilId);
+        courseData.push(eilData);
+      }
     }
     
     // Now fetch any missing prerequisite/corequisite classes
@@ -1344,7 +1351,8 @@ async function fetchRequiredCourseData(majorId, minor1Id, minor2Id, eilLevel) {
       requiredClassIds.clear(); // Reset for next wave
       
       for (const classId of currentBatch) {
-        if (!processedIds.has(classId)) {
+        // NEW: Skip if this class is already part of a main course
+        if (!processedIds.has(classId) && !mainCourseClassIds.has(classId)) {
           processedIds.add(classId);
           
           try {
@@ -1355,7 +1363,7 @@ async function fetchRequiredCourseData(majorId, minor1Id, minor2Id, eilLevel) {
             if (Array.isArray(classData.prerequisites)) {
               classData.prerequisites.forEach(prereq => {
                 const prereqId = typeof prereq === 'object' ? prereq.id : prereq;
-                if (prereqId && !processedIds.has(prereqId)) {
+                if (prereqId && !processedIds.has(prereqId) && !mainCourseClassIds.has(prereqId)) {
                   requiredClassIds.add(prereqId);
                 }
               });
@@ -1364,7 +1372,7 @@ async function fetchRequiredCourseData(majorId, minor1Id, minor2Id, eilLevel) {
             if (Array.isArray(classData.corequisites)) {
               classData.corequisites.forEach(coreq => {
                 const coreqId = typeof coreq === 'object' ? coreq.id : coreq;
-                if (coreqId && !processedIds.has(coreqId)) {
+                if (coreqId && !processedIds.has(coreqId) && !mainCourseClassIds.has(coreqId)) {
                   requiredClassIds.add(coreqId);
                 }
               });
@@ -1376,7 +1384,7 @@ async function fetchRequiredCourseData(majorId, minor1Id, minor2Id, eilLevel) {
       }
     }
     
-    // Add the additional classes to the payload
+    // Add the additional classes to the payload only if there are any
     if (additionalClasses.length > 0) {
       courseData.push({
         id: 'additional',
@@ -1442,3 +1450,4 @@ function previewSchedulerPayload(type = 'credits') {
   
   console.log("The actual API call will include the full course data from the database");
 }
+
