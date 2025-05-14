@@ -1,0 +1,115 @@
+import json
+from typing import Dict, List, Any, Set, Tuple
+
+class ScheduleDataProcessor:
+    """Process raw schedule data from JSON payloads into a format suitable for optimization"""
+    
+    def __init__(self):
+        self.class_dependencies = {}
+        self.class_info = {}
+        
+    def process_payload(self, payload: Dict) -> Dict:
+        """Process incoming payload and extract relevant scheduling data"""
+        course_data = payload.get("courseData", [])
+        preferences = payload.get("preferences", {})
+        
+        # Mapping of class IDs to their full information
+        all_classes = {}
+        
+        # Extract all classes and their requirements
+        for course in course_data:
+            course_id = course.get("id")
+            course_type = course.get("course_type")
+            
+            if course_id == "additional":
+                # Process additional prerequisites and corequisites
+                self._process_additional_classes(course, all_classes)
+                continue
+                
+            # Process regular courses
+            for section in course.get("sections", []):
+                is_elective_section = not section.get("is_required", True)
+                credits_needed = section.get("credits_needed_to_take")
+                
+                for cls in section.get("classes", []):
+                    cls_id = cls.get("id")
+                    all_classes[cls_id] = {
+                        **cls,
+                        "course_id": course_id,
+                        "course_type": course_type,
+                        "section_id": section.get("id"),
+                        "is_elective_section": is_elective_section,
+                        "credits_needed": credits_needed
+                    }
+        
+        # Map prerequisites and corequisites using IDs
+        self._map_class_dependencies(all_classes)
+        
+        # Extract scheduling approach and parameters
+        scheduling_approach = preferences.get("approach")
+        start_semester = preferences.get("startSemester")
+        
+        scheduling_params = {
+            "approach": scheduling_approach,
+            "startSemester": start_semester
+        }
+        
+        if scheduling_approach == "credits-based":
+            scheduling_params.update({
+                "fallWinterCredits": preferences.get("fallWinterCredits", 15),
+                "springCredits": preferences.get("springCredits", 10),
+                "majorClassLimit": preferences.get("majorClassLimit", 3)
+            })
+        else:  # semesters-based
+            scheduling_params.update({
+                "targetSemesters": preferences.get("targetSemesters", 8)
+            })
+        
+        # Handle first year limits if applicable
+        limit_first_year = preferences.get("limitFirstYear", False)
+        if limit_first_year:
+            first_year_limits = preferences.get("firstYearLimits", {})
+            scheduling_params.update({
+                "limitFirstYear": True,
+                "firstYearFallWinterCredits": first_year_limits.get("fallWinterCredits", 12),
+                "firstYearSpringCredits": first_year_limits.get("springCredits", 9)
+            })
+        
+        return {
+            "classes": all_classes,
+            "parameters": scheduling_params
+        }
+    
+    def _process_additional_classes(self, course: Dict, all_classes: Dict):
+        """Process classes from the additional section"""
+        for section in course.get("sections", []):
+            for cls in section.get("classes", []):
+                cls_id = cls.get("id")
+                all_classes[cls_id] = {
+                    **cls,
+                    "course_id": "additional",
+                    "course_type": "system",
+                    "section_id": section.get("id"),
+                    "is_elective_section": False,
+                    "credits_needed": None
+                }
+    
+    def _map_class_dependencies(self, all_classes: Dict):
+        """Map prerequisites and corequisites using class IDs"""
+        for cls_id, cls_info in all_classes.items():
+            # Map prerequisites
+            prerequisites = cls_info.get("prerequisites", [])
+            mapped_prereqs = []
+            for prereq_id in prerequisites:
+                if isinstance(prereq_id, int) and prereq_id in all_classes:
+                    mapped_prereqs.append(prereq_id)
+            cls_info["prerequisites"] = mapped_prereqs
+            
+            # Map corequisites
+            corequisites = cls_info.get("corequisites", [])
+            mapped_coreqs = []
+            for coreq in corequisites:
+                coreq_id = coreq.get("id") if isinstance(coreq, dict) else coreq
+                if coreq_id in all_classes:
+                    mapped_coreqs.append(coreq_id)
+            cls_info["corequisites"] = mapped_coreqs
