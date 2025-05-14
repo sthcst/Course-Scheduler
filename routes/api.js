@@ -249,6 +249,9 @@ router.get('/courses/basic', async (req, res) => {
 router.get('/courses/:course_id', async (req, res) => {
     try {
         const { course_id } = req.params;
+        const { fields } = req.query;
+        
+        // Use a CASE expression for conditional fields instead of string concatenation
         const query = `
             SELECT 
                 c.id,
@@ -275,8 +278,8 @@ router.get('/courses/:course_id', async (req, res) => {
                              'times_offered', cl.times_offered,
                              'is_senior_class', cl.is_senior_class,
                              'restrictions', cl.restrictions,
-                             'description', cl.description,
                              'credits', cl.credits,
+                             'description', CASE WHEN $2 = 'essential' THEN NULL ELSE cl.description END,
                              'is_elective', cic2.is_elective,
                              'elective_group', CASE 
                                  WHEN cic2.elective_group_id IS NOT NULL THEN json_build_object(
@@ -301,7 +304,7 @@ router.get('/courses/:course_id', async (req, res) => {
             WHERE c.id = $1
         `;
 
-        const { rows } = await pool.query(query, [course_id]);
+        const { rows } = await pool.query(query, [course_id, fields || 'full']);
 
         if (rows.length > 0) {
             // Format the response
@@ -490,6 +493,7 @@ router.get('/classes/search', async (req, res) => {
 
 router.get('/classes/:class_id', async (req, res) => {
     const { class_id } = req.params;
+    const { fields } = req.query;
 
     try {
         const classIdNum = parseInt(class_id, 10);
@@ -497,12 +501,26 @@ router.get('/classes/:class_id', async (req, res) => {
             return res.status(400).json({ error: 'class_id must be an integer.' });
         }
 
+        // Modify the query based on fields parameter
+        const descriptionField = fields === 'essential' ? 
+            '' : ', c.description'; // Skip description when fields=essential
+
         // Updated query with proper type casting
         const classQuery = `
             SELECT 
-                c.*,
-                json_agg(DISTINCT prereq.*) FILTER (WHERE prereq.id IS NOT NULL) as prerequisites,
-                json_agg(DISTINCT coreq.*) FILTER (WHERE coreq.id IS NOT NULL) as corequisites
+                c.id,
+                c.class_number,
+                c.class_name,
+                c.semesters_offered,
+                c.prerequisites,
+                c.corequisites,
+                c.credits,
+                c.days_offered,
+                c.times_offered,
+                c.is_senior_class,
+                c.restrictions${descriptionField},
+                json_agg(DISTINCT prereq.*) FILTER (WHERE prereq.id IS NOT NULL) as prerequisites_details,
+                json_agg(DISTINCT coreq.*) FILTER (WHERE coreq.id IS NOT NULL) as corequisites_details
             FROM classes c
             LEFT JOIN LATERAL (
                 SELECT p.id, p.class_number, p.class_name
@@ -525,11 +543,11 @@ router.get('/classes/:class_id', async (req, res) => {
         }
 
         // Format prerequisites and corequisites arrays
-        const prerequisites = Array.isArray(classData.prerequisites) && classData.prerequisites[0] !== null
-            ? classData.prerequisites 
+        const prerequisites = Array.isArray(classData.prerequisites_details) && classData.prerequisites_details[0] !== null
+            ? classData.prerequisites_details 
             : [];
-        const corequisites = Array.isArray(classData.corequisites) && classData.corequisites[0] !== null
-            ? classData.corequisites 
+        const corequisites = Array.isArray(classData.corequisites_details) && classData.corequisites_details[0] !== null
+            ? classData.corequisites_details 
             : [];
 
         const response = {
@@ -538,7 +556,7 @@ router.get('/classes/:class_id', async (req, res) => {
             class_name: classData.class_name,
             semesters_offered: classData.semesters_offered,
             credits: classData.credits,
-            is_senior_class: classData.is_senior_class,  // <-- Include the senior flag here
+            is_senior_class: classData.is_senior_class,
             restrictions: classData.restrictions,
             description: classData.description,
             prerequisites: prerequisites,
