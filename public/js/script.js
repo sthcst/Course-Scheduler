@@ -1451,3 +1451,164 @@ function previewSchedulerPayload(type = 'credits') {
   console.log("The actual API call will include the full course data from the database");
 }
 
+// Add this code where you handle the response from the generate-schedule endpoint
+
+async function generateScheduleFromCredits() {
+  try {
+    // Show loading indicator
+    showLoadingIndicator();
+    
+    const payload = await buildSchedulePayload();
+    console.log("Sending payload:", payload);
+    
+    const response = await fetch('/api/generate-schedule', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    
+    // Debug: Log the raw response
+    console.log("Response status:", response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("API error response:", errorText);
+      throw new Error(`API returned status: ${response.status}`);
+    }
+    
+    // Get the JSON data
+    const result = await response.json();
+    console.log("Schedule data received:", result);
+    
+    // Check if we have the expected data structure
+    if (!result.schedule || !Array.isArray(result.schedule)) {
+      console.error("Invalid schedule format:", result);
+      alert("Received invalid schedule data. Check console for details.");
+      hideLoadingIndicator();
+      return;
+    }
+    
+    // Make sure schedule container exists
+    const scheduleContainer = document.getElementById('schedule-container');
+    if (!scheduleContainer) {
+      console.error("Schedule container not found in DOM!");
+      alert("Cannot display schedule: container element not found.");
+      hideLoadingIndicator();
+      return;
+    }
+    
+    console.log("About to render schedule with", result.schedule.length, "semesters");
+    
+    // Render the schedule
+    renderSchedule(result.schedule);
+    
+    // Add metadata if available
+    if (result.metadata) {
+      const metadataContainer = document.createElement('div');
+      metadataContainer.className = 'schedule-metadata';
+      metadataContainer.innerHTML = `
+        <h3>Schedule Quality: ${Math.round(result.metadata.score * 100)}%</h3>
+        <div class="improvements">
+          ${result.metadata.improvements.map(imp => `<p>• ${imp}</p>`).join('')}
+        </div>
+      `;
+      scheduleContainer.appendChild(metadataContainer);
+    }
+    
+    // Hide loading indicator
+    hideLoadingIndicator();
+    
+  } catch (error) {
+    console.error("Error generating schedule:", error);
+    alert("Failed to generate schedule: " + error.message);
+    hideLoadingIndicator();
+  }
+}
+
+/**
+ * Shows a loading indicator while the schedule is being generated
+ */
+function showLoadingIndicator() {
+  // Check if we already have a loading indicator
+  let loadingIndicator = document.getElementById('loading-indicator');
+  
+  if (!loadingIndicator) {
+    // Create a new loading indicator
+    loadingIndicator = document.createElement('div');
+    loadingIndicator.id = 'loading-indicator';
+    loadingIndicator.className = 'loading-indicator';
+    loadingIndicator.innerHTML = `
+      <div class="spinner"></div>
+      <p>Generating your schedule...</p>
+    `;
+    document.body.appendChild(loadingIndicator);
+  } else {
+    // Show existing indicator
+    loadingIndicator.classList.remove('hidden');
+  }
+}
+
+/**
+ * Hides the loading indicator when schedule generation is complete
+ */
+function hideLoadingIndicator() {
+  const loadingIndicator = document.getElementById('loading-indicator');
+  if (loadingIndicator) {
+    loadingIndicator.classList.add('hidden');
+  }
+}
+
+/**
+ * Builds the schedule payload data for the API
+ */
+async function buildSchedulePayload() {
+  // Get selected course IDs
+  const selectedMajor = Number(document.getElementById("selectedMajor").value);
+  const selectedMinor1 = Number(document.getElementById("selectedMinor1").value);
+  const selectedMinor2 = Number(document.getElementById("selectedMinor2").value);
+  const englishLevel = document.getElementById("english-level").value;
+  
+  // Fetch detailed course data
+  const courseData = await fetchRequiredCourseData(
+    selectedMajor, 
+    selectedMinor1, 
+    selectedMinor2, 
+    englishLevel
+  );
+  
+  // Get other settings
+  const startSemester = document.getElementById("start-semester").value;
+  const majorClassLimit = parseInt(document.getElementById("major-class-limit").value, 10);
+  
+  // Get regular semester credit limits
+  const fallWinterCredits = parseInt(document.getElementById("fall-winter-credits").value, 10);
+  const springCredits = parseInt(document.getElementById("spring-credits").value, 10);
+  
+  // Check if first year credits are limited
+  const limitFirstYear = document.getElementById("limit-first-year-credits").checked;
+  
+  // Prepare preferences object
+  const preferences = {
+    startSemester,
+    majorClassLimit,
+    fallWinterCredits,
+    springCredits,
+    approach: "credits-based"
+  };
+  
+  // Add first year limits if that option is checked
+  if (limitFirstYear) {
+    preferences.limitFirstYear = true;
+    preferences.firstYearLimits = {
+      fallWinterCredits: parseInt(sessionStorage.getItem('firstYearFallWinterCredits') || 15),
+      springCredits: parseInt(sessionStorage.getItem('firstYearSpringCredits') || 10)
+    };
+  }
+  
+  // Prepare the complete data package for the AI scheduler
+  return {
+    courseData: courseData,
+    preferences: preferences
+  };
+}
+
