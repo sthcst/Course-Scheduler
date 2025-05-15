@@ -109,7 +109,7 @@ class HuggingFaceScheduleOptimizer:
         schedule = []
         current_semester = {"type": start_type, "year": start_year, "classes": [], "totalCredits": 0}
         
-        # Track whether we're in the first year
+        # Track whether we're in the first year - MODIFIED: first 4 semesters (zero-indexed experiment)
         first_year = True
         semester_count = 0
         
@@ -143,8 +143,8 @@ class HuggingFaceScheduleOptimizer:
                 # Update semester type and year
                 next_type, next_year = self._next_semester(current_semester["type"], current_semester["year"])
                 
-                # Check if we've moved past the first year
-                if first_year and (semester_count >= 3 or (semester_count >= 2 and next_type == "Fall")):
+                # MODIFIED: Check if we've moved past the first year - try using 4 semesters
+                if first_year and semester_count >= 4:
                     first_year = False
                 
                 current_semester = {"type": next_type, "year": next_year, "classes": [], "totalCredits": 0}
@@ -174,8 +174,8 @@ class HuggingFaceScheduleOptimizer:
         for i in range(target_semesters):
             semester_type, semester_year = self._nth_semester_after(start_type, start_year, i)
             
-            # Determine if this is a first-year semester
-            is_first_year = (i < 3) and not (i == 2 and semester_type == "Fall")
+            # MODIFIED: Determine if this is a first-year semester (try using 4 semesters)
+            is_first_year = i < 4
             
             if is_first_year:
                 credit_limit = first_year_spring if semester_type == "Spring" else first_year_fall_winter
@@ -190,7 +190,7 @@ class HuggingFaceScheduleOptimizer:
                 "creditLimit": credit_limit
             })
         
-        # Now distribute classes across semesters
+        # Rest of the function remains unchanged
         for class_id in sorted_classes:
             cls = classes[class_id]
             class_credits = cls.get("credits", 3)
@@ -402,9 +402,87 @@ class HuggingFaceScheduleOptimizer:
             
     def _balance_credit_load(self, schedule, fall_winter_credits, spring_credits):
         """Balance credits across semesters respecting credit limits"""
-        # Implementation of credit balancing algorithm
-        # This method tries to move classes from high-credit to low-credit semesters
-        return schedule
+        if not schedule or len(schedule) < 2:
+            return schedule
+        
+        # Make a deep copy to avoid modifying the original
+        balanced_schedule = []
+        for sem in schedule:
+            new_sem = {}
+            for key, value in sem.items():
+                if key == "classes":
+                    new_sem[key] = list(value)  # Copy the list of classes
+                else:
+                    new_sem[key] = value
+            balanced_schedule.append(new_sem)
+        
+        # Apply first year limits to first 4 semesters
+        for i in range(min(4, len(balanced_schedule))):
+            semester = balanced_schedule[i]
+            # Get appropriate credit limit for this semester in first year
+            first_year_limit = 9 if semester["type"] == "Spring" else 12
+            
+            # If semester exceeds first year limit
+            if semester["totalCredits"] > first_year_limit:
+                # Sort classes by credits (try to move smaller classes first)
+                movable_classes = sorted(
+                    semester["classes"], 
+                    key=lambda c: c.get("credits", 3)
+                )
+                
+                # Try to move classes to later semesters
+                classes_to_move = []
+                credits_to_remove = semester["totalCredits"] - first_year_limit
+                
+                # Identify classes to move
+                for cls in movable_classes:
+                    class_credits = cls.get("credits", 3)
+                    if class_credits <= credits_to_remove:
+                        classes_to_move.append(cls)
+                        credits_to_remove -= class_credits
+                        if credits_to_remove <= 0:
+                            break
+                
+                # Move identified classes to the next semester
+                for cls in classes_to_move:
+                    semester["classes"].remove(cls)
+                    semester["totalCredits"] -= cls.get("credits", 3)
+                    
+                    # Make sure there's a next semester to move to
+                    if i+1 >= len(balanced_schedule):
+                        next_type, next_year = self._next_semester(semester["type"], semester["year"])
+                        balanced_schedule.append({
+                            "type": next_type, 
+                            "year": next_year,
+                            "classes": [],
+                            "totalCredits": 0
+                        })
+                    
+                    # Add to next semester
+                    next_semester = balanced_schedule[i+1]
+                    next_semester["classes"].append(cls)
+                    next_semester["totalCredits"] += cls.get("credits", 3)
+        
+        return balanced_schedule
+
+    def _can_move_class(self, cls, from_semester, to_semester, schedule):
+        """Check if a class can be moved from one semester to another without violating prerequisites"""
+        # Can't move earlier
+        if to_semester < from_semester:
+            return False
+            
+        # Check if the class has prerequisites
+        prereqs = cls.get("prerequisites", [])
+        if not prereqs:
+            return True  # No prerequisites, can move freely
+        
+        # Check if all prerequisites are still met after move
+        scheduled_classes = set()
+        for i in range(to_semester):
+            for scheduled_class in schedule[i]["classes"]:
+                scheduled_classes.add(scheduled_class["id"])
+        
+        return all(prereq_id in scheduled_classes for prereq_id in prereqs)
     
     def _consolidate_small_semesters(self, schedule, fall_winter_credits, spring_credits):
         """Eliminate very small semesters by moving classes to other semesters"""

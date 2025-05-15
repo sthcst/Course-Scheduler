@@ -4,7 +4,7 @@
         "improvements": [
             "Made minor adjustments to improve schedule quality"
         ],
-        "score": 0.6166666666666667,
+        "score": 0.6124999999999999,
         "startSemester": "Winter 2025"
     },
     "schedule": [
@@ -126,7 +126,14 @@
                         "Spring"
                     ],
                     "times_offered": []
-                },
+                }
+            ],
+            "totalCredits": 10,
+            "type": "Winter",
+            "year": 2025
+        },
+        {
+            "classes": [
                 {
                     "class_name": "Reading/Writing",
                     "class_number": "EIL 317",
@@ -151,14 +158,7 @@
                         "Spring"
                     ],
                     "times_offered": []
-                }
-            ],
-            "totalCredits": 14,
-            "type": "Winter",
-            "year": 2025
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "Listening/Speaking",
                     "class_number": "EIL 313",
@@ -183,7 +183,14 @@
                         "Spring"
                     ],
                     "times_offered": []
-                },
+                }
+            ],
+            "totalCredits": 8,
+            "type": "Spring",
+            "year": 2025
+        },
+        {
+            "classes": [
                 {
                     "class_name": "The Int'l Student in the University",
                     "class_number": "EIL 201",
@@ -258,14 +265,7 @@
                         "Spring"
                     ],
                     "times_offered": []
-                }
-            ],
-            "totalCredits": 9,
-            "type": "Spring",
-            "year": 2025
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "New Testament I",
                     "class_number": "REL 211",
@@ -340,7 +340,14 @@
                         "Spring"
                     ],
                     "times_offered": []
-                },
+                }
+            ],
+            "totalCredits": 11,
+            "type": "Fall",
+            "year": 2025
+        },
+        {
+            "classes": [
                 {
                     "class_name": "Latter-day Saint History 1846-1893",
                     "class_number": "REL 342",
@@ -465,14 +472,7 @@
                         "Spring"
                     ],
                     "times_offered": []
-                }
-            ],
-            "totalCredits": 16,
-            "type": "Fall",
-            "year": 2025
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "The Teachings and Doctrine of the Book of Mormon",
                     "class_number": "REL 275",
@@ -572,7 +572,14 @@
                         "Spring"
                     ],
                     "times_offered": []
-                },
+                }
+            ],
+            "totalCredits": 18,
+            "type": "Winter",
+            "year": 2026
+        },
+        {
+            "classes": [
                 {
                     "class_name": "Pacific Wood Carving",
                     "class_number": "PAIS 275",
@@ -622,14 +629,7 @@
                         "Spring"
                     ],
                     "times_offered": []
-                }
-            ],
-            "totalCredits": 14,
-            "type": "Winter",
-            "year": 2026
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "Introduction to Pacific Studies",
                     "class_number": "PAIS 105",
@@ -678,7 +678,14 @@
                         "Winter"
                     ],
                     "times_offered": []
-                },
+                }
+            ],
+            "totalCredits": 12,
+            "type": "Spring",
+            "year": 2026
+        },
+        {
+            "classes": [
                 {
                     "class_name": "Introduction to Hospitality and Tourism Management",
                     "class_number": "HTM 133",
@@ -701,14 +708,7 @@
                         "Spring"
                     ],
                     "times_offered": []
-                }
-            ],
-            "totalCredits": 9,
-            "type": "Spring",
-            "year": 2026
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "Social Impact Entrepreneurship",
                     "class_number": "ENTR 380",
@@ -834,7 +834,7 @@
                     "times_offered": []
                 }
             ],
-            "totalCredits": 15,
+            "totalCredits": 18,
             "type": "Fall",
             "year": 2026
         },
@@ -944,14 +944,7 @@
                         "Winter"
                     ],
                     "times_offered": []
-                }
-            ],
-            "totalCredits": 14,
-            "type": "Winter",
-            "year": 2027
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "Database Applications",
                     "class_number": "CS 250",
@@ -975,7 +968,14 @@
                         "Winter"
                     ],
                     "times_offered": []
-                },
+                }
+            ],
+            "totalCredits": 17,
+            "type": "Winter",
+            "year": 2027
+        },
+        {
+            "classes": [
                 {
                     "class_name": "Web Design",
                     "class_number": "CS 140",
@@ -1025,14 +1025,7 @@
                         "Spring"
                     ],
                     "times_offered": []
-                }
-            ],
-            "totalCredits": 9,
-            "type": "Spring",
-            "year": 2027
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "Introduction to Programming Fundamentals",
                     "class_number": "CS 101",
@@ -1057,8 +1050,8 @@
                     "times_offered": []
                 }
             ],
-            "totalCredits": 3,
-            "type": "Fall",
+            "totalCredits": 9,
+            "type": "Spring",
             "year": 2027
         }
     ]
