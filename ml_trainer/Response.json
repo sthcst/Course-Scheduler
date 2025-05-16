@@ -11,17 +11,31 @@
         {
             "classes": [
                 {
-                    "class_name": "Physics I",
-                    "class_number": "PHYS 205",
+                    "class_name": "Advanced Topics in Computer Science",
+                    "class_number": "CS 490R",
                     "corequisites": [],
-                    "credits": 4,
-                    "id": 23,
+                    "credits": 3,
+                    "id": 17,
                     "is_elective": true,
                     "prerequisites": [
-                        22
+                        12
                     ],
                     "semesters_offered": [
                         "Fall"
+                    ]
+                },
+                {
+                    "class_name": "Advanced Topics in Computer Science",
+                    "class_number": "CS 490 R III",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 67,
+                    "is_elective": true,
+                    "prerequisites": [
+                        12
+                    ],
+                    "semesters_offered": [
+                        "Spring"
                     ]
                 },
                 {
@@ -32,6 +46,37 @@
                     "id": 33,
                     "is_elective": true,
                     "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ]
+                },
+                {
+                    "class_name": "Indigenous Pacific Research Methodology",
+                    "class_number": "PAIS 201",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 39,
+                    "is_elective": true,
+                    "prerequisites": [
+                        37
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Pacific Social Development",
+                    "class_number": "PAIS 220",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 40,
+                    "is_elective": true,
+                    "prerequisites": [
+                        37
+                    ],
                     "semesters_offered": [
                         "Fall",
                         "Winter"
@@ -53,6 +98,34 @@
                     ]
                 },
                 {
+                    "class_name": "Intro to The Church of Jesus Christ of Latter-day Saints",
+                    "class_number": "REL 100",
+                    "corequisites": [],
+                    "credits": 2,
+                    "id": 50,
+                    "is_elective": true,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Family History (Genealogy)",
+                    "class_number": "REL 261",
+                    "corequisites": [],
+                    "credits": 2,
+                    "id": 51,
+                    "is_elective": true,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
                     "class_name": "Book of Mormon I",
                     "class_number": "REL 121",
                     "corequisites": [],
@@ -67,7 +140,7 @@
                     ]
                 }
             ],
-            "totalCredits": 12,
+            "totalCredits": 24,
             "type": "Fall",
             "year": 2025
         }

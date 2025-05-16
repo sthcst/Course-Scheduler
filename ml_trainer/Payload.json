@@ -366,26 +366,6 @@
                     "display_order": 3,
                     "classes": [
                         {
-                            "id": 23,
-                            "class_name": "Physics I",
-                            "class_number": "PHYS 205",
-                            "semesters_offered": [
-                                "Fall"
-                            ],
-                            "prerequisites": [
-                                22
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 4,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
                             "id": 70,
                             "class_name": "Introduction to General Chemistry",
                             "class_number": "CHEM 101",
@@ -1364,13 +1344,13 @@
             ]
         },
         {
-            "id": 5,
-            "course_name": "EIL Level 1",
+            "id": 7,
+            "course_name": "FLUENT",
             "course_type": "eil/holokai",
             "holokai": null,
             "sections": [
                 {
-                    "id": 17,
+                    "id": 21,
                     "section_name": "Holokai Student Development",
                     "credits_required": 0,
                     "is_required": true,
@@ -1393,96 +1373,6 @@
                             "is_senior_class": false,
                             "restrictions": "",
                             "credits": 1,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        }
-                    ]
-                },
-                {
-                    "id": 18,
-                    "section_name": "EIL Section",
-                    "credits_required": 0,
-                    "is_required": true,
-                    "credits_needed_to_take": null,
-                    "display_order": 0,
-                    "classes": [
-                        {
-                            "id": 62,
-                            "class_name": "The Int'l Student in the University",
-                            "class_number": "EIL 201",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 2,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 63,
-                            "class_name": "Listening/Speaking",
-                            "class_number": "EIL 313",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 4,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 64,
-                            "class_name": "Reading/Writing",
-                            "class_number": "EIL 317",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 4,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 65,
-                            "class_name": "Academic English II",
-                            "class_number": "EIL 320",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 4,
                             "description": null,
                             "is_elective": false,
                             "elective_group": null

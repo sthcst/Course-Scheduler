@@ -145,6 +145,20 @@ class ScheduleOptimizer:
                                       credits_needed: int) -> List[Course]:
         """Find best combination of elective courses that meets credit requirement"""
         
+        def get_course_with_coreqs(course: Course) -> Tuple[int, List[Course]]:
+            """Get total credits and list of courses including corequisites"""
+            total_credits = course.credits
+            course_group = [course]
+            
+            # Add corequisite courses and their credits
+            for coreq_id in course.corequisites:
+                coreq = next((c for c in self._all_courses if c.id == coreq_id), None)
+                if coreq:
+                    total_credits += coreq.credits
+                    course_group.append(coreq)
+                    
+            return total_credits, course_group
+
         def get_combinations(available_courses: List[Course], target_credits: int) -> List[List[Course]]:
             """Get all possible combinations of courses that sum to target credits"""
             valid_combinations = []
@@ -158,28 +172,40 @@ class ScheduleOptimizer:
                     
                 for i in range(start, len(available_courses)):
                     course = available_courses[i]
-                    current.append(course)
-                    backtrack(i + 1, remaining_credits - course.credits, current)
-                    current.pop()
+                    # Get course credits including corequisites
+                    total_credits, course_group = get_course_with_coreqs(course)
                     
+                    # Add all courses from group
+                    for c in course_group:
+                        current.append(c)
+                    backtrack(i + 1, remaining_credits - total_credits, current)
+                    # Remove all courses from group
+                    for _ in range(len(course_group)):
+                        current.pop()
+                        
             backtrack(0, target_credits, [])
             return valid_combinations
 
         # Get elective courses only
         elective_courses = [c for c in courses if c.is_elective]
         
-        # Find all valid combinations
+        # First try single courses with their corequisites
+        for course in elective_courses:
+            total_credits, course_group = get_course_with_coreqs(course)
+            if total_credits == credits_needed:
+                print(f"Found combination with coreqs: {[c.class_number for c in course_group]} = {total_credits} credits")
+                return course_group
+                
+        # If no single course + coreqs matches, try combinations
         combinations = get_combinations(elective_courses, credits_needed)
         
-        # If no combinations found with exact credits, return None
-        if not combinations:
-            print(f"No valid combinations found for {credits_needed} credits in section")
-            return None
+        if combinations:
+            chosen_combo = combinations[0]
+            print(f"Found combination: {[c.class_number for c in chosen_combo]} = {sum(c.credits for c in chosen_combo)} credits")
+            return chosen_combo
             
-        # Return first valid combination
-        chosen_combo = combinations[0]
-        print(f"Found combination: {[c.class_number for c in chosen_combo]} = {sum(c.credits for c in chosen_combo)} credits")
-        return chosen_combo
+        print(f"No valid combinations found for {credits_needed} credits in section")
+        return None
 
     def _course_to_dict(self, course: Course) -> Dict:
         return {
