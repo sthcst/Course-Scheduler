@@ -1198,85 +1198,57 @@ async function generateScheduleFromSemesters(event) {
 }
 
 // Function to generate schedule based on credits per semester
-async function generateScheduleFromCredits(event) {
-  event.preventDefault();
-  console.log("Starting schedule generation with credits-based approach...");
-
-  // Show loading indicator
-  const generateButton = document.getElementById("calculate-schedule");
-  generateButton.textContent = "Generating...";
-  generateButton.disabled = true;
-
+async function generateScheduleFromCredits() {
   try {
-    // Get selected course IDs
-    const selectedMajor = Number(document.getElementById("selectedMajor").value);
-    const selectedMinor1 = Number(document.getElementById("selectedMinor1").value);
-    const selectedMinor2 = Number(document.getElementById("selectedMinor2").value);
-    const englishLevel = document.getElementById("english-level").value;
+    showLoadingIndicator();
     
-    // Fetch detailed course data
-    const courseData = await fetchRequiredCourseData(
-      selectedMajor, 
-      selectedMinor1, 
-      selectedMinor2, 
-      englishLevel
-    );
+    const payload = await buildSchedulePayload();
+    console.log("Sending payload:", payload);
     
-    // Get other settings
-    const startSemester = document.getElementById("start-semester").value;
-    const majorClassLimit = parseInt(document.getElementById("major-class-limit").value, 10);
-    
-    // Get regular semester credit limits
-    const fallWinterCredits = parseInt(document.getElementById("fall-winter-credits").value, 10);
-    const springCredits = parseInt(document.getElementById("spring-credits").value, 10);
-    
-    // Check if first year credits are limited
-    const limitFirstYear = document.getElementById("limit-first-year-credits").checked;
-    
-    // Prepare preferences object
-    const preferences = {
-      startSemester,
-      majorClassLimit,
-      fallWinterCredits, // These are the REGULAR credits for all years after first year
-      springCredits,     // These are the REGULAR credits for all years after first year
-      approach: "credits-based"
-    };
-    
-    // Add first year limits if that option is checked
-    if (limitFirstYear) {
-      preferences.limitFirstYear = true;
-      preferences.firstYearLimits = {
-        fallWinterCredits: parseInt(sessionStorage.getItem('firstYearFallWinterCredits') || 15),
-        springCredits: parseInt(sessionStorage.getItem('firstYearSpringCredits') || 10)
-      };
-    }
-    
-    // Prepare the complete data package for the AI scheduler
-    const schedulerData = {
-      courseData: courseData,
-      preferences: preferences
-    };
-    
-    console.log("Sending data to AI scheduler:", schedulerData);
-
-    // Send to the API
     const response = await fetch('/api/generate-schedule', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(schedulerData)
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
     });
     
-    // Process response and render schedule
-    // [rest of the function remains unchanged]
+    if (!response.ok) {
+      throw new Error(`API returned status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log("Raw API response:", result);
+    
+    // Fix: Extract schedule array from nested structure if needed
+    const schedule = result.schedule.schedule || result.schedule;
+    const metadata = result.metadata || result.schedule.metadata;
+    
+    if (!Array.isArray(schedule)) {
+      console.error("Invalid schedule format:", schedule);
+      throw new Error("Schedule must be an array");
+    }
+    
+    // Render the schedule
+    const scheduleContainer = document.getElementById('schedule-container');
+    renderSchedule(schedule);
+    
+    // Update metadata display
+    if (metadata) {
+      const metadataContainer = document.createElement('div');
+      metadataContainer.className = 'schedule-metadata';
+      metadataContainer.innerHTML = `
+        <h3>Schedule Quality: ${Math.round(metadata.score * 100)}%</h3>
+        <div class="improvements">
+          ${metadata.improvements ? metadata.improvements.map(imp => `<p>• ${imp}</p>`).join('') : ''}
+        </div>
+      `;
+      scheduleContainer.appendChild(metadataContainer);
+    }
+    
   } catch (error) {
     console.error("Error generating schedule:", error);
-    alert("There was an error generating your schedule. Please try again.");
+    alert("Failed to generate schedule: " + error.message);
   } finally {
-    // Reset button
-    generateButton.textContent = "Generate Schedule";
-    generateButton.disabled = false;
+    hideLoadingIndicator();
   }
 }
 
@@ -1511,7 +1483,6 @@ function previewSchedulerPayload(type = 'credits') {
 
 async function generateScheduleFromCredits() {
   try {
-    // Show loading indicator
     showLoadingIndicator();
     
     const payload = await buildSchedulePayload();

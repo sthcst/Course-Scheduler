@@ -3,14 +3,12 @@ import json
 import os
 import sqlite3  # Or use other DB connector like psycopg2 for PostgreSQL
 from flask_cors import CORS
-from schedule_optimizer import ScheduleOptimizer
-from hf_optimizer import HuggingFaceScheduleOptimizer
+from constraint_optimizer import ScheduleOptimizer
 from data_processor import ScheduleDataProcessor
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 optimizer = ScheduleOptimizer()
-hf_optimizer = HuggingFaceScheduleOptimizer()
 data_processor = ScheduleDataProcessor()
 
 # Improved database connection function with better path handling
@@ -36,13 +34,6 @@ def get_db_connection():
     # If we get here, no connection was made
     print("WARNING: Could not connect to any database!")
     return None
-
-# Load the trained model
-model_path = os.path.join(os.path.dirname(__file__), 'schedule_model.json')
-if os.path.exists(model_path):
-    optimizer.load_model(model_path)
-else:
-    print("Warning: Model not found. Using default optimization parameters.")
 
 @app.route('/ping', methods=['GET'])
 def ping():
@@ -133,72 +124,22 @@ def optimize_schedule():
         print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
-@app.route('/hf_optimize', methods=['POST'])
-def huggingface_optimize():
-    """Optimize a course schedule using the JSON schedule data format."""
-    if not request.json:
-        return jsonify({"error": "No schedule data provided"}), 400
-    
-    try:
-        schedule_data = request.json
-        print("Received course schedule data for optimization")
-        
-        # Process the raw JSON payload
-        processed_data = data_processor.process_payload(schedule_data)
-        
-        # Generate optimized schedule
-        result = hf_optimizer.optimize_schedule(processed_data)
-        
-        # Format the response
-        formatted_response = {
-            "schedule": result["optimized_schedule"],
-            "score": result["optimized_score"],
-            "improvements": result["improvements"]
-        }
-        
-        return jsonify(formatted_response)
-    
-    except Exception as e:
-        import traceback
-        print(f"ERROR in /hf_optimize: {e}")
-        print(traceback.format_exc())
-        return jsonify({"error": str(e)}), 500
-
 @app.route('/generate-schedule', methods=['POST'])
 def generate_schedule():
-    """Generate a course schedule from scratch using the course data."""
-    if not request.json:
-        return jsonify({"error": "No course data provided"}), 400
-    
     try:
-        # This endpoint will process the full course selection payload
-        course_data = request.json
-        preferences = course_data.get("preferences", {})
+        data = request.json
+        processed_data = data_processor.process_payload(data)
+        schedule_result = optimizer.create_schedule(processed_data)
         
-        print(f"Received request to generate schedule with approach: {preferences.get('approach', 'unknown')}")
+        # Debug logging
+        print("Generated schedule response:", schedule_result)
         
-        # Process the raw JSON payload
-        processed_data = data_processor.process_payload(course_data)
+        return jsonify(schedule_result)
         
-        # Generate optimized schedule
-        result = hf_optimizer.optimize_schedule(processed_data)
-        
-        return jsonify({
-            "schedule": result["optimized_schedule"],
-            "metadata": {
-                "score": result["optimized_score"],
-                "improvements": result["improvements"],
-                "approach": preferences.get("approach", "unknown"),
-                "startSemester": preferences.get("startSemester", "unknown")
-            }
-        })
-    
     except Exception as e:
-        import traceback
-        print(f"ERROR in /generate-schedule: {e}")
-        print(traceback.format_exc())
+        print("Error generating schedule:", str(e))
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)  # Set debug=False for production
+    app.run(host='0.0.0.0', port=port, debug=True)  # Enable debug mode for development

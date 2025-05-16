@@ -1,0 +1,75 @@
+{
+    "metadata": {
+        "approach": "testing-electives",
+        "improvements": [
+            "Testing elective selection only"
+        ],
+        "score": 1,
+        "startSemester": "Winter 2025"
+    },
+    "schedule": [
+        {
+            "classes": [
+                {
+                    "class_name": "Physics I",
+                    "class_number": "PHYS 205",
+                    "corequisites": [],
+                    "credits": 4,
+                    "id": 23,
+                    "is_elective": true,
+                    "prerequisites": [
+                        22
+                    ],
+                    "semesters_offered": [
+                        "Fall"
+                    ]
+                },
+                {
+                    "class_name": "Personal Financial Management",
+                    "class_number": "ENTR 318",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 33,
+                    "is_elective": true,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ]
+                },
+                {
+                    "class_name": "Peace and Conflict in the Pacific",
+                    "class_number": "PAIS 320",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 43,
+                    "is_elective": true,
+                    "prerequisites": [
+                        37
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ]
+                },
+                {
+                    "class_name": "Book of Mormon I",
+                    "class_number": "REL 121",
+                    "corequisites": [],
+                    "credits": 2,
+                    "id": 55,
+                    "is_elective": true,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                }
+            ],
+            "totalCredits": 12,
+            "type": "Fall",
+            "year": 2025
+        }
+    ]
+}

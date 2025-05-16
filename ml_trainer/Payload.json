@@ -375,13 +375,11 @@
                             "prerequisites": [
                                 22
                             ],
-                            "corequisites": [
-                                352
-                            ],
+                            "corequisites": [],
                             "days_offered": [],
                             "times_offered": [],
                             "is_senior_class": false,
-                            "restrictions": null,
+                            "restrictions": "",
                             "credits": 4,
                             "description": null,
                             "is_elective": true,
@@ -1503,28 +1501,6 @@
                     "section_name": "Required External Classes",
                     "classes": [
                         {
-                            "id": 352,
-                            "class_number": "PHYS 155L",
-                            "class_name": "Physics I Lab",
-                            "semesters_offered": [
-                                "Fall",
-                                "Spring"
-                            ],
-                            "credits": 1,
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "prerequisites": [],
-                            "corequisites": [
-                                {
-                                    "id": 23,
-                                    "class_number": "PHYS 205",
-                                    "class_name": "Physics I"
-                                }
-                            ],
-                            "days_offered": [],
-                            "times_offered": []
-                        },
-                        {
                             "id": 77,
                             "class_number": "MATH 110",
                             "class_name": "College Algebra",
@@ -1594,13 +1570,8 @@
     "preferences": {
         "startSemester": "Winter 2025",
         "majorClassLimit": 4,
-        "fallWinterCredits": 18,
-        "springCredits": 12,
-        "approach": "credits-based",
-        "limitFirstYear": true,
-        "firstYearLimits": {
-            "fallWinterCredits": 12,
-            "springCredits": 9
-        }
+        "fallWinterCredits": 16,
+        "springCredits": 10,
+        "approach": "credits-based"
     }
 }
