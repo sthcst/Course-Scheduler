@@ -1462,6 +1462,11 @@
         "majorClassLimit": 4,
         "fallWinterCredits": 16,
         "springCredits": 10,
-        "approach": "credits-based"
+        "approach": "credits-based",
+        "limitFirstYear": true,
+        "firstYearLimits": {
+            "fallWinterCredits": 12,
+            "springCredits": 9
+        }
     }
 }

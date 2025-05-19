@@ -2,7 +2,7 @@
     "metadata": {
         "approach": "testing-electives",
         "improvements": [
-            "Testing elective selection only"
+            "Distributed electives across semesters respecting credit limits"
         ],
         "score": 1,
         "startSemester": "Winter 2025"
@@ -11,31 +11,35 @@
         {
             "classes": [
                 {
-                    "class_name": "Advanced Topics in Computer Science",
-                    "class_number": "CS 490R",
-                    "corequisites": [],
-                    "credits": 3,
-                    "id": 17,
-                    "is_elective": true,
-                    "prerequisites": [
-                        12
+                    "class_name": "Introduction to Chemistry Lab",
+                    "class_number": "CHEM 101L",
+                    "corequisites": [
+                        70
                     ],
+                    "credits": 1,
+                    "id": 71,
+                    "is_elective": false,
+                    "prerequisites": [],
                     "semesters_offered": [
-                        "Fall"
+                        "Fall",
+                        "Winter"
                     ]
                 },
                 {
-                    "class_name": "Advanced Topics in Computer Science",
-                    "class_number": "CS 490 R III",
-                    "corequisites": [],
+                    "class_name": "Introduction to General Chemistry",
+                    "class_number": "CHEM 101",
+                    "corequisites": [
+                        71
+                    ],
                     "credits": 3,
-                    "id": 67,
+                    "id": 70,
                     "is_elective": true,
                     "prerequisites": [
-                        12
+                        77
                     ],
                     "semesters_offered": [
-                        "Spring"
+                        "Fall",
+                        "Winter"
                     ]
                 },
                 {
@@ -46,52 +50,6 @@
                     "id": 33,
                     "is_elective": true,
                     "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
-                    ]
-                },
-                {
-                    "class_name": "Indigenous Pacific Research Methodology",
-                    "class_number": "PAIS 201",
-                    "corequisites": [],
-                    "credits": 3,
-                    "id": 39,
-                    "is_elective": true,
-                    "prerequisites": [
-                        37
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Pacific Social Development",
-                    "class_number": "PAIS 220",
-                    "corequisites": [],
-                    "credits": 3,
-                    "id": 40,
-                    "is_elective": true,
-                    "prerequisites": [
-                        37
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
-                    ]
-                },
-                {
-                    "class_name": "Peace and Conflict in the Pacific",
-                    "class_number": "PAIS 320",
-                    "corequisites": [],
-                    "credits": 3,
-                    "id": 43,
-                    "is_elective": true,
-                    "prerequisites": [
-                        37
-                    ],
                     "semesters_offered": [
                         "Fall",
                         "Winter"
@@ -124,7 +82,14 @@
                         "Winter",
                         "Spring"
                     ]
-                },
+                }
+            ],
+            "totalCredits": 11,
+            "type": "Winter",
+            "year": 2025
+        },
+        {
+            "classes": [
                 {
                     "class_name": "Book of Mormon I",
                     "class_number": "REL 121",
@@ -138,9 +103,90 @@
                         "Winter",
                         "Spring"
                     ]
+                },
+                {
+                    "class_name": "Advanced Topics in Computer Science",
+                    "class_number": "CS 490 R III",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 67,
+                    "is_elective": true,
+                    "prerequisites": [
+                        12
+                    ],
+                    "semesters_offered": [
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Indigenous Pacific Research Methodology",
+                    "class_number": "PAIS 201",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 39,
+                    "is_elective": true,
+                    "prerequisites": [
+                        37
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
                 }
             ],
-            "totalCredits": 24,
+            "totalCredits": 8,
+            "type": "Spring",
+            "year": 2025
+        },
+        {
+            "classes": [
+                {
+                    "class_name": "Advanced Topics in Computer Science",
+                    "class_number": "CS 490R",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 17,
+                    "is_elective": true,
+                    "prerequisites": [
+                        12
+                    ],
+                    "semesters_offered": [
+                        "Fall"
+                    ]
+                },
+                {
+                    "class_name": "Pacific Social Development",
+                    "class_number": "PAIS 220",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 40,
+                    "is_elective": true,
+                    "prerequisites": [
+                        37
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ]
+                },
+                {
+                    "class_name": "Peace and Conflict in the Pacific",
+                    "class_number": "PAIS 320",
+                    "corequisites": [],
+                    "credits": 3,
+                    "id": 43,
+                    "is_elective": true,
+                    "prerequisites": [
+                        37
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ]
+                }
+            ],
+            "totalCredits": 9,
             "type": "Fall",
             "year": 2025
         }

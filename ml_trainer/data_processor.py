@@ -1,5 +1,9 @@
 import json
 from typing import Dict, List, Any, Set, Tuple
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class ScheduleDataProcessor:
     """Process raw schedule data from JSON payloads into a format suitable for optimization"""
@@ -9,9 +13,19 @@ class ScheduleDataProcessor:
         self.class_info = {}
         
     def process_payload(self, payload: Dict) -> Dict:
-        """Process incoming payload and extract relevant scheduling data"""
-        course_data = payload.get("courseData", [])
+        logger.info("Starting payload processing")
+        
+        # Log preferences
         preferences = payload.get("preferences", {})
+        logger.info(f"Raw preferences: {json.dumps(preferences, indent=2)}")
+        
+        # Log credit limits
+        first_year_limits = preferences.get("firstYearLimits", {})
+        logger.info(f"First year limits: {json.dumps(first_year_limits, indent=2)}")
+        logger.info(f"Regular Fall/Winter credits: {preferences.get('fallWinterCredits')}")
+        logger.info(f"Regular Spring credits: {preferences.get('springCredits')}")
+        
+        course_data = payload.get("courseData", [])
         
         # Mapping of class IDs to their full information
         all_classes = {}
@@ -51,29 +65,14 @@ class ScheduleDataProcessor:
         
         scheduling_params = {
             "approach": scheduling_approach,
-            "startSemester": start_semester
+            "startSemester": start_semester,
+            "fallWinterCredits": preferences.get("fallWinterCredits", 15),
+            "springCredits": preferences.get("springCredits", 10),
+            "firstYearLimits": first_year_limits,
+            "limitFirstYear": preferences.get("limitFirstYear", False)
         }
         
-        if scheduling_approach == "credits-based":
-            scheduling_params.update({
-                "fallWinterCredits": preferences.get("fallWinterCredits", 15),
-                "springCredits": preferences.get("springCredits", 10),
-                "majorClassLimit": preferences.get("majorClassLimit", 3)
-            })
-        else:  # semesters-based
-            scheduling_params.update({
-                "targetSemesters": preferences.get("targetSemesters", 8)
-            })
-        
-        # Handle first year limits if applicable
-        limit_first_year = preferences.get("limitFirstYear", False)
-        if limit_first_year:
-            first_year_limits = preferences.get("firstYearLimits", {})
-            scheduling_params.update({
-                "limitFirstYear": True,
-                "firstYearFallWinterCredits": first_year_limits.get("fallWinterCredits", 12),
-                "firstYearSpringCredits": first_year_limits.get("springCredits", 9)
-            })
+        logger.info(f"Processed scheduling parameters: {json.dumps(scheduling_params, indent=2)}")
         
         return {
             "classes": all_classes,
