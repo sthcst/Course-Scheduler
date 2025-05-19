@@ -88,20 +88,28 @@ class ScheduleOptimizer:
         params = processed_data["parameters"]
         logger.info(f"Received scheduling parameters: {params}")
         
-        # Log first year limits
-        first_year_limits = params.get("firstYearLimits", {
-            "fallWinterCredits": 12,
-            "springCredits": 9
-        })
-        logger.info(f"Using first year limits: {first_year_limits}")
+        # Handle empty or missing firstYearLimits
+        if not params.get("firstYearLimits") or not isinstance(params["firstYearLimits"], dict):
+            params["firstYearLimits"] = {
+                "fallWinterCredits": params["fallWinterCredits"],
+                "springCredits": params["springCredits"]
+            }
+        else:
+            # Ensure both required keys exist with defaults
+            params["firstYearLimits"] = {
+                "fallWinterCredits": params["firstYearLimits"].get("fallWinterCredits", params["fallWinterCredits"]),
+                "springCredits": params["firstYearLimits"].get("springCredits", params["springCredits"])
+            }
+        
+        logger.info(f"Using first year limits: {params['firstYearLimits']}")
         
         # Initialize semesters with logging
         semesters = self._initialize_semesters(
             params["startSemester"],
             params["fallWinterCredits"],
             params["springCredits"],
-            first_year_limits["fallWinterCredits"],
-            first_year_limits["springCredits"]
+            params["firstYearLimits"]["fallWinterCredits"],
+            params["firstYearLimits"]["springCredits"]
         )
         
         logger.info("Initialized semesters with credit limits:")
@@ -160,17 +168,27 @@ class ScheduleOptimizer:
                     
                 course_credits = self._get_total_credits(course, remaining_courses)
                 if current_credits + course_credits <= semester.credit_limit:
-                    # Add course and its corequisites
-                    added_courses = self._add_course_with_coreqs(course, remaining_courses)
-                    semester_courses.extend(added_courses)
-                    current_credits += course_credits
-                    
-                    # Remove scheduled courses
-                    for c in added_courses:
-                        remaining_courses.remove(c)
+                    try:
+                        # Add course and its corequisites
+                        added_courses = self._add_course_with_coreqs(course, remaining_courses)
+                        semester_courses.extend(added_courses)
+                        current_credits += course_credits
                         
-                    logger.info(f"Scheduled {course.class_number} (+{course_credits} cr) in {semester.type} {semester.year}")
-        
+                        # Safely remove scheduled courses
+                        for c in added_courses:
+                            try:
+                                if c in remaining_courses:  # Check if course is still in list
+                                    remaining_courses.remove(c)
+                                    logger.info(f"Removed {c.class_number} from remaining courses")
+                            except ValueError as e:
+                                logger.warning(f"Could not remove {c.class_number}: {str(e)}")
+                                continue
+                                
+                        logger.info(f"Scheduled {course.class_number} (+{course_credits} cr) in {semester.type} {semester.year}")
+                    except Exception as e:
+                        logger.error(f"Error scheduling {course.class_number}: {str(e)}")
+                        continue
+    
             if semester_courses:
                 scheduled_semesters.append({
                     "type": semester.type,
