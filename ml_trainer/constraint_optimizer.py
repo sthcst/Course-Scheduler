@@ -107,6 +107,9 @@ class ScheduleOptimizer:
 
     def create_schedule(self, processed_data: Dict) -> Dict:
         """Create a schedule with both required and elective classes"""
+        # Reset satisfied sections at the start of each schedule creation
+        self.satisfied_sections = set()
+    
         params = processed_data["parameters"]
         logger.info(f"Received scheduling parameters: {params}")
         

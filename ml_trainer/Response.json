@@ -298,40 +298,6 @@
                     ]
                 },
                 {
-                    "class_name": "Introduction to Chemistry Lab",
-                    "class_number": "CHEM 101L",
-                    "corequisites": [
-                        70
-                    ],
-                    "course_type": "major",
-                    "credits": 1,
-                    "id": 71,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
-                    ]
-                },
-                {
-                    "class_name": "Introduction to General Chemistry",
-                    "class_number": "CHEM 101",
-                    "corequisites": [
-                        71
-                    ],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 70,
-                    "is_elective": true,
-                    "prerequisites": [
-                        77
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
-                    ]
-                },
-                {
                     "class_name": "Principles of Statistics",
                     "class_number": "MATH 121",
                     "corequisites": [],
@@ -347,9 +313,24 @@
                         "Winter",
                         "Spring"
                     ]
+                },
+                {
+                    "class_name": "College Writing, Reading, and Research",
+                    "class_number": "ENGL 101",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 26,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
                 }
             ],
-            "totalCredits": 16,
+            "totalCredits": 15,
             "type": "Winter",
             "year": 2026
         },
@@ -371,14 +352,16 @@
                     ]
                 },
                 {
-                    "class_name": "College Writing, Reading, and Research",
-                    "class_number": "ENGL 101",
+                    "class_name": "Topics for Advanced Writing and Analysis",
+                    "class_number": "ENGL 315",
                     "corequisites": [],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 26,
+                    "id": 27,
                     "is_elective": false,
-                    "prerequisites": [],
+                    "prerequisites": [
+                        26
+                    ],
                     "semesters_offered": [
                         "Fall",
                         "Winter",
@@ -408,23 +391,6 @@
         {
             "classes": [
                 {
-                    "class_name": "Topics for Advanced Writing and Analysis",
-                    "class_number": "ENGL 315",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 27,
-                    "is_elective": false,
-                    "prerequisites": [
-                        26
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
                     "class_name": "History and Ethics of Computing",
                     "class_number": "HIST 470",
                     "corequisites": [],
@@ -438,21 +404,6 @@
                     "semesters_offered": [
                         "Fall",
                         "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Advanced Topics in Computer Science",
-                    "class_number": "CS 490R",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 17,
-                    "is_elective": true,
-                    "prerequisites": [
-                        12
-                    ],
-                    "semesters_offered": [
-                        "Fall"
                     ]
                 },
                 {
@@ -484,14 +435,7 @@
                         "Winter",
                         "Spring"
                     ]
-                }
-            ],
-            "totalCredits": 15,
-            "type": "Fall",
-            "year": 2026
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "New Venture Creation",
                     "class_number": "ENTR 283",
@@ -525,7 +469,14 @@
                         "Winter",
                         "Spring"
                     ]
-                },
+                }
+            ],
+            "totalCredits": 15,
+            "type": "Fall",
+            "year": 2026
+        },
+        {
+            "classes": [
                 {
                     "class_name": "New Venture Management",
                     "class_number": "ENTR 483",
@@ -545,20 +496,6 @@
                     ]
                 },
                 {
-                    "class_name": "Personal Financial Management",
-                    "class_number": "ENTR 318",
-                    "corequisites": [],
-                    "course_type": "minor",
-                    "credits": 3,
-                    "id": 33,
-                    "is_elective": true,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
-                    ]
-                },
-                {
                     "class_name": "Introduction to Pacific Studies",
                     "class_number": "PAIS 105",
                     "corequisites": [],
@@ -572,14 +509,7 @@
                         "Winter",
                         "Spring"
                     ]
-                }
-            ],
-            "totalCredits": 15,
-            "type": "Winter",
-            "year": 2027
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "Recognizing Place, Purpose, and Positionality on Native Land",
                     "class_number": "PAIS 200",
@@ -588,23 +518,6 @@
                     "credits": 3,
                     "id": 38,
                     "is_elective": false,
-                    "prerequisites": [
-                        37
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Indigenous Pacific Research Methodology",
-                    "class_number": "PAIS 201",
-                    "corequisites": [],
-                    "course_type": "minor",
-                    "credits": 3,
-                    "id": 39,
-                    "is_elective": true,
                     "prerequisites": [
                         37
                     ],
@@ -643,29 +556,6 @@
                         "Winter",
                         "Spring"
                     ]
-                }
-            ],
-            "totalCredits": 10,
-            "type": "Spring",
-            "year": 2027
-        },
-        {
-            "classes": [
-                {
-                    "class_name": "Peace and Conflict in the Pacific",
-                    "class_number": "PAIS 320",
-                    "corequisites": [],
-                    "course_type": "minor",
-                    "credits": 3,
-                    "id": 43,
-                    "is_elective": true,
-                    "prerequisites": [
-                        37
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
-                    ]
                 },
                 {
                     "class_name": "The Teachings and Doctrine of the Book of Mormon",
@@ -681,15 +571,22 @@
                         "Winter",
                         "Spring"
                     ]
-                },
+                }
+            ],
+            "totalCredits": 15,
+            "type": "Winter",
+            "year": 2027
+        },
+        {
+            "classes": [
                 {
-                    "class_name": "Intro to The Church of Jesus Christ of Latter-day Saints",
-                    "class_number": "REL 100",
+                    "class_name": "The Int'l Student in the University",
+                    "class_number": "EIL 201",
                     "corequisites": [],
-                    "course_type": "religion",
+                    "course_type": "eil/holokai",
                     "credits": 2,
-                    "id": 50,
-                    "is_elective": true,
+                    "id": 62,
+                    "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
@@ -698,13 +595,28 @@
                     ]
                 },
                 {
-                    "class_name": "Book of Mormon I",
-                    "class_number": "REL 121",
+                    "class_name": "Listening/Speaking",
+                    "class_number": "EIL 313",
                     "corequisites": [],
-                    "course_type": "religion",
-                    "credits": 2,
-                    "id": 55,
-                    "is_elective": true,
+                    "course_type": "eil/holokai",
+                    "credits": 4,
+                    "id": 63,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Reading/Writing",
+                    "class_number": "EIL 317",
+                    "corequisites": [],
+                    "course_type": "eil/holokai",
+                    "credits": 4,
+                    "id": 64,
+                    "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
@@ -713,7 +625,29 @@
                     ]
                 }
             ],
-            "totalCredits": 9,
+            "totalCredits": 10,
+            "type": "Spring",
+            "year": 2027
+        },
+        {
+            "classes": [
+                {
+                    "class_name": "Academic English II",
+                    "class_number": "EIL 320",
+                    "corequisites": [],
+                    "course_type": "eil/holokai",
+                    "credits": 4,
+                    "id": 65,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                }
+            ],
+            "totalCredits": 4,
             "type": "Fall",
             "year": 2027
         }
