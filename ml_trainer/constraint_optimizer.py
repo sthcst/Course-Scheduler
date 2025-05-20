@@ -7,7 +7,7 @@ import logging
 class Course:
     id: int
     name: str
-    class_number: str  # Add class number field
+    class_number: str
     credits: int
     prerequisites: List[int]
     corequisites: List[int]
@@ -15,6 +15,7 @@ class Course:
     is_elective: bool
     section_id: int
     credits_needed: int = None
+    course_type: str = ""  # Add course_type field
 
 @dataclass
 class Semester:
@@ -83,10 +84,34 @@ class ScheduleOptimizer:
                 return params["springCredits"]
             return params["fallWinterCredits"]
 
+    def _convert_to_courses(self, raw_classes: Dict) -> List[Course]:
+        """Convert raw class data to Course objects"""
+        courses = []
+        for id, data in raw_classes.items():
+            course = Course(
+                id=int(id),
+                name=data["class_name"],
+                class_number=data.get("class_number", ""),
+                credits=data["credits"],
+                prerequisites=data.get("prerequisites", []),
+                corequisites=data.get("corequisites", []),
+                semesters_offered=data["semesters_offered"],
+                is_elective=data.get("is_elective", False),
+                section_id=data["section_id"],
+                credits_needed=data.get("credits_needed"),
+                course_type=data.get("course_type", "")  # Get course_type directly from data
+            )
+            courses.append(course)
+            logger.info(f"Created course {course.class_number} with type {course.course_type}")
+        return courses
+
     def create_schedule(self, processed_data: Dict) -> Dict:
         """Create a schedule distributing electives across semesters"""
         params = processed_data["parameters"]
         logger.info(f"Received scheduling parameters: {params}")
+        
+        # Remove previous course type mapping code since we're getting it directly from data
+        self._all_courses = self._convert_to_courses(processed_data["classes"])
         
         # Handle empty or missing firstYearLimits
         if not params.get("firstYearLimits") or not isinstance(params["firstYearLimits"], dict):
@@ -115,9 +140,6 @@ class ScheduleOptimizer:
         logger.info("Initialized semesters with credit limits:")
         for i, sem in enumerate(semesters):
             logger.info(f"Semester {i+1}: {sem.type} {sem.year}, Credit limit: {sem.credit_limit}")
-        
-        # Store all courses for reference
-        self._all_courses = self._convert_to_courses(processed_data["classes"])
         
         # Group courses by section
         sections = self._group_by_section(self._all_courses)
@@ -209,24 +231,6 @@ class ScheduleOptimizer:
             "schedule": scheduled_semesters
         }
 
-    def _convert_to_courses(self, raw_classes: Dict) -> List[Course]:
-        courses = []
-        for id, data in raw_classes.items():
-            course = Course(
-                id=int(id),
-                name=data["class_name"],
-                class_number=data.get("class_number", ""),  # Add class_number field
-                credits=data["credits"],
-                prerequisites=data.get("prerequisites", []),
-                corequisites=data.get("corequisites", []),
-                semesters_offered=data["semesters_offered"],
-                is_elective=data.get("is_elective", False),
-                section_id=data["section_id"],
-                credits_needed=data.get("credits_needed")
-            )
-            courses.append(course)
-        return courses
-
     def _initialize_semesters(self, start_semester: str, 
                             regular_fall_winter: int,
                             regular_spring: int,
@@ -307,12 +311,13 @@ class ScheduleOptimizer:
         return {
             "id": course.id,
             "class_name": course.name,
-            "class_number": course.class_number,  # Add class number to output
+            "class_number": course.class_number,
             "credits": course.credits,
             "prerequisites": course.prerequisites,
             "corequisites": course.corequisites,
             "semesters_offered": course.semesters_offered,
-            "is_elective": course.is_elective
+            "is_elective": course.is_elective,
+            "course_type": course.course_type  # Add course_type to output
         }
 
     def _sort_by_prerequisites(self, courses: List[Course]) -> List[Course]:

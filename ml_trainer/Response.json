@@ -16,6 +16,7 @@
                     "corequisites": [
                         70
                     ],
+                    "course_type": "major",
                     "credits": 1,
                     "id": 71,
                     "is_elective": false,
@@ -31,6 +32,7 @@
                     "corequisites": [
                         71
                     ],
+                    "course_type": "major",
                     "credits": 3,
                     "id": 70,
                     "is_elective": true,
@@ -46,6 +48,7 @@
                     "class_name": "Personal Financial Management",
                     "class_number": "ENTR 318",
                     "corequisites": [],
+                    "course_type": "minor",
                     "credits": 3,
                     "id": 33,
                     "is_elective": true,
@@ -59,6 +62,7 @@
                     "class_name": "Intro to The Church of Jesus Christ of Latter-day Saints",
                     "class_number": "REL 100",
                     "corequisites": [],
+                    "course_type": "religion",
                     "credits": 2,
                     "id": 50,
                     "is_elective": true,
@@ -73,6 +77,7 @@
                     "class_name": "Family History (Genealogy)",
                     "class_number": "REL 261",
                     "corequisites": [],
+                    "course_type": "religion",
                     "credits": 2,
                     "id": 51,
                     "is_elective": true,
@@ -82,18 +87,12 @@
                         "Winter",
                         "Spring"
                     ]
-                }
-            ],
-            "totalCredits": 11,
-            "type": "Winter",
-            "year": 2025
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "Book of Mormon I",
                     "class_number": "REL 121",
                     "corequisites": [],
+                    "course_type": "religion",
                     "credits": 2,
                     "id": 55,
                     "is_elective": true,
@@ -105,9 +104,35 @@
                     ]
                 },
                 {
+                    "class_name": "Introduction to General Chemistry",
+                    "class_number": "CHEM 101",
+                    "corequisites": [
+                        71
+                    ],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 70,
+                    "is_elective": true,
+                    "prerequisites": [
+                        77
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ]
+                }
+            ],
+            "totalCredits": 16,
+            "type": "Winter",
+            "year": 2025
+        },
+        {
+            "classes": [
+                {
                     "class_name": "Advanced Topics in Computer Science",
                     "class_number": "CS 490 R III",
                     "corequisites": [],
+                    "course_type": "major",
                     "credits": 3,
                     "id": 67,
                     "is_elective": true,
@@ -122,6 +147,7 @@
                     "class_name": "Indigenous Pacific Research Methodology",
                     "class_number": "PAIS 201",
                     "corequisites": [],
+                    "course_type": "minor",
                     "credits": 3,
                     "id": 39,
                     "is_elective": true,
@@ -135,7 +161,7 @@
                     ]
                 }
             ],
-            "totalCredits": 8,
+            "totalCredits": 6,
             "type": "Spring",
             "year": 2025
         },
@@ -145,6 +171,7 @@
                     "class_name": "Advanced Topics in Computer Science",
                     "class_number": "CS 490R",
                     "corequisites": [],
+                    "course_type": "major",
                     "credits": 3,
                     "id": 17,
                     "is_elective": true,
@@ -159,6 +186,7 @@
                     "class_name": "Pacific Social Development",
                     "class_number": "PAIS 220",
                     "corequisites": [],
+                    "course_type": "minor",
                     "credits": 3,
                     "id": 40,
                     "is_elective": true,
@@ -174,6 +202,7 @@
                     "class_name": "Peace and Conflict in the Pacific",
                     "class_number": "PAIS 320",
                     "corequisites": [],
+                    "course_type": "minor",
                     "credits": 3,
                     "id": 43,
                     "is_elective": true,

@@ -84,10 +84,20 @@ class ScheduleDataProcessor:
         for section in course.get("sections", []):
             for cls in section.get("classes", []):
                 cls_id = cls.get("id")
+                # Get corequisite's course type if it exists
+                course_type = "system"
+                if cls.get("corequisites"):
+                    for coreq in cls["corequisites"]:
+                        coreq_id = coreq.get("id") if isinstance(coreq, dict) else coreq
+                        # Look up corequisite's course in all_classes
+                        if coreq_id in all_classes:
+                            course_type = all_classes[coreq_id].get("course_type", "system")
+                            break
+            
                 all_classes[cls_id] = {
                     **cls,
                     "course_id": "additional",
-                    "course_type": "system",
+                    "course_type": course_type,
                     "section_id": section.get("id"),
                     "is_elective_section": False,
                     "credits_needed": None

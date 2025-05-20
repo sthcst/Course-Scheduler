@@ -769,129 +769,113 @@ async function generateScheduleFromSelections(event) {
 
 // Render the schedule to the UI
 function renderSchedule(schedule) {
-  const scheduleContainer = document.getElementById('schedule-container');
-  if (!scheduleContainer) return;
-  
-  // Remove the 'hidden' class to make the schedule visible
-  scheduleContainer.classList.remove('hidden');
-  
-  // Clear previous schedule
-  scheduleContainer.innerHTML = '';
-  
-  if (schedule.length === 0) {
-    scheduleContainer.innerHTML = '<div class="empty-schedule">No classes to schedule. Please select a major or minor.</div>';
-    return;
-  }
-  
-  // Create the summary boxes
-  const summaryBox = document.createElement('div');
-  summaryBox.className = 'summary-box';
-  summaryBox.id = 'summary';
-  
-  // Calculate total credits
-  const totalCredits = schedule.reduce((sum, semester) => {
-    return sum + semester.classes.reduce((semSum, cls) => semSum + (cls.credits || 3), 0);
-  }, 0);
-  
-  // Get graduation date (last semester)
-  const graduationSemester = schedule[schedule.length - 1].name;
-  
-  // Calculate elective credits (assuming 120 credits are needed to graduate)
-  const requiredCredits = 120;
-  const electiveCreditsNeeded = Math.max(0, requiredCredits - totalCredits);
-  
-  // Calculate total semesters
-  const totalSemesters = schedule.length;
-  
-  // Create summary items (unchanged)
-  summaryBox.innerHTML = `
-    <div class="summary-item animated-box" id="total-credits-box">
-      <p>Total Credits Taken</p>
-      <h2 id="total-credits">${totalCredits}</h2>
-    </div>
-    <div class="summary-item animated-box" id="electives-needed-box">
-      <p>Elective Credits Needed</p>
-      <h2 id="electives-needed">${electiveCreditsNeeded}</h2>
-    </div>
-    <div class="summary-item animated-box" id="total-semesters-box">
-      <p>Total Semesters</p>
-      <h2 id="total-semesters">${totalSemesters}</h2>
-    </div>
-    <div class="summary-item animated-box" id="graduation-date-box">
-      <p>Graduation Date</p>
-      <h2 id="graduation-date">${graduationSemester}</h2>
-    </div>
-  `;
-  
-  // Add summary box to the container
-  scheduleContainer.appendChild(summaryBox);
-  
-  // Create schedule display
-  const scheduleTable = document.createElement('div');
-  scheduleTable.className = 'schedule-table';
-  
-  // Add each semester
-  schedule.forEach((semester) => {
-    const semesterDiv = document.createElement('div');
-    semesterDiv.className = 'semester-card';
+    const scheduleContainer = document.getElementById('schedule-container');
+    if (!scheduleContainer) return;
     
-    // Semester header
-    const semesterHeader = document.createElement('div');
-    semesterHeader.className = 'semester-header';
-    semesterHeader.textContent = semester.name;
-    semesterDiv.appendChild(semesterHeader);
-    
-    // Semester classes
-    const classesList = document.createElement('ul');
-    classesList.className = 'classes-list';
-    
-    // NEW: Create a set to track displayed class numbers to avoid duplicates
-    const displayedClassNumbers = new Set();
-    
-    semester.classes.forEach(cls => {
-      // NEW: Skip classes with duplicate class numbers in the same semester
-      const classNumber = cls.class_number || '';
-      if (classNumber && displayedClassNumbers.has(classNumber)) {
-        console.log(`Preventing duplicate display of ${classNumber} in ${semester.name}`);
-        return;
-      }
-      
-      // If we have a class number, mark it as displayed
-      if (classNumber) {
-        displayedClassNumbers.add(classNumber);
-      }
-      
-      const classItem = document.createElement('li');
-      classItem.className = 'class-item';
-      
-      // Class type indicator (major, minor, etc)
-      const categoryTag = cls.isMajor ? 'major' : 
-                          (cls.category === 'english' ? 'english' :
-                          (cls.category === 'religion' ? 'religion' : 'minor'));
-      
-      classItem.innerHTML = `
-        <span class="class-tag ${categoryTag}">${categoryTag.charAt(0).toUpperCase() + categoryTag.slice(1)}</span>
-        <span class="class-number">${classNumber}</span>
-        <span class="class-name">${cls.class_name}</span>
-        <span class="class-credits">${cls.credits || 3} cr</span>
-      `;
-      
-      classesList.appendChild(classItem);
+    // Remove the 'hidden' class and clear previous content
+    scheduleContainer.classList.remove('hidden');
+    scheduleContainer.innerHTML = '';
+
+    // Create and add summary box
+    const summaryBox = createSummaryBox(schedule);
+    scheduleContainer.appendChild(summaryBox);
+
+    // Create schedule display
+    const scheduleTable = document.createElement('div');
+    scheduleTable.className = 'schedule-table';
+
+    // Add each semester
+    schedule.forEach((semester) => {
+        const semesterDiv = document.createElement('div');
+        semesterDiv.className = 'semester-card';
+        
+        // Semester header
+        const semesterHeader = document.createElement('div');
+        semesterHeader.className = 'semester-header';
+        // Use type and year from semester object
+        semesterHeader.textContent = `${semester.type} ${semester.year}`;
+        semesterDiv.appendChild(semesterHeader);
+        
+        // Semester classes
+        const classesList = document.createElement('ul');
+        classesList.className = 'classes-list';
+        
+        // Track displayed class numbers
+        const displayedClassNumbers = new Set();
+        
+        semester.classes.forEach(cls => {
+            // Skip duplicates
+            if (displayedClassNumbers.has(cls.class_number)) {
+                return;
+            }
+            displayedClassNumbers.add(cls.class_number);
+            
+            const classItem = document.createElement('li');
+            classItem.className = 'class-item';
+            
+            // Use course_type directly from the API response
+            const courseType = cls.course_type || 'unknown';
+            
+            classItem.innerHTML = `
+                <span class="class-tag ${courseType}">${courseType}</span>
+                <span class="class-number">${cls.class_number}</span>
+                <span class="class-name">${cls.class_name}</span>
+                <span class="class-credits">${cls.credits || 3} cr</span>
+            `;
+            
+            classesList.appendChild(classItem);
+        });
+        
+        semesterDiv.appendChild(classesList);
+        
+        // Add semester credits
+        const semesterCredits = semester.totalCredits || 
+            semester.classes.reduce((sum, cls) => sum + (cls.credits || 3), 0);
+        const creditsDiv = document.createElement('div');
+        creditsDiv.className = 'semester-credits';
+        creditsDiv.textContent = `Total: ${semesterCredits} credits`;
+        semesterDiv.appendChild(creditsDiv);
+        
+        scheduleTable.appendChild(semesterDiv);
     });
     
-    semesterDiv.appendChild(classesList);
+    scheduleContainer.appendChild(scheduleTable);
+}
+
+// Helper function to create summary box
+function createSummaryBox(schedule) {
+    const summaryBox = document.createElement('div');
+    summaryBox.className = 'summary-box';
+    summaryBox.id = 'summary';
     
-    // Add semester credits
-    const semesterCredits = semester.classes.reduce((sum, cls) => sum + (cls.credits || 3), 0);
-    const creditsDiv = document.createElement('div');
-    creditsDiv.className = 'semester-credits';
-    creditsDiv.textContent = `Total: ${semesterCredits} credits`;
-    semesterDiv.appendChild(creditsDiv);
+    // Calculate totals
+    const totalCredits = schedule.reduce((sum, sem) => sum + (sem.totalCredits || 0), 0);
+    const requiredCredits = 120;
+    const electiveCreditsNeeded = Math.max(0, requiredCredits - totalCredits);
+    const totalSemesters = schedule.length;
+    const lastSemester = schedule[schedule.length - 1];
+    const graduationDate = `${lastSemester.type} ${lastSemester.year}`;
     
-    scheduleTable.appendChild(semesterDiv);
-  });
-  
-  scheduleContainer.appendChild(scheduleTable);
+    summaryBox.innerHTML = `
+        <div class="summary-item animated-box" id="total-credits-box">
+            <p>Total Credits Taken</p>
+            <h2 id="total-credits">${totalCredits}</h2>
+        </div>
+        <div class="summary-item animated-box" id="electives-needed-box">
+            <p>Elective Credits Needed</p>
+            <h2 id="electives-needed">${electiveCreditsNeeded}</h2>
+        </div>
+        <div class="summary-item animated-box" id="total-semesters-box">
+            <p>Total Semesters</p>
+            <h2 id="total-semesters">${totalSemesters}</h2>
+        </div>
+        <div class="summary-item animated-box" id="graduation-date-box">
+            <p>Graduation Date</p>
+            <h2 id="graduation-date">${graduationDate}</h2>
+        </div>
+    `;
+    
+    return summaryBox;
 }
 
 // Add these functions for enabling/disabling custom dropdowns
@@ -1212,33 +1196,40 @@ async function generateScheduleFromCredits() {
     });
     
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("API error response:", errorText);
       throw new Error(`API returned status: ${response.status}`);
     }
     
     const result = await response.json();
-    console.log("Raw API response:", result);
+    console.log("Schedule data received:", result);
     
-    // Fix: Extract schedule array from nested structure if needed
-    const schedule = result.schedule.schedule || result.schedule;
-    const metadata = result.metadata || result.schedule.metadata;
-    
-    if (!Array.isArray(schedule)) {
-      console.error("Invalid schedule format:", schedule);
-      throw new Error("Schedule must be an array");
+    if (!result.schedule || !Array.isArray(result.schedule)) {
+      console.error("Invalid schedule format:", result);
+      alert("Received invalid schedule data. Check console for details.");
+      return;
     }
     
-    // Render the schedule
     const scheduleContainer = document.getElementById('schedule-container');
-    renderSchedule(schedule);
+    if (!scheduleContainer) {
+      console.error("Schedule container not found in DOM!");
+      alert("Cannot display schedule: container element not found.");
+      return;
+    }
     
-    // Update metadata display
-    if (metadata) {
+    console.log("About to render schedule with", result.schedule.length, "semesters");
+    
+    // Render the schedule
+    renderSchedule(result.schedule);
+    
+    // Add metadata if available
+    if (result.metadata) {
       const metadataContainer = document.createElement('div');
       metadataContainer.className = 'schedule-metadata';
       metadataContainer.innerHTML = `
-        <h3>Schedule Quality: ${Math.round(metadata.score * 100)}%</h3>
+        <h3>Schedule Quality: ${Math.round(result.metadata.score * 100)}%</h3>
         <div class="improvements">
-          ${metadata.improvements ? metadata.improvements.map(imp => `<p>• ${imp}</p>`).join('') : ''}
+          ${result.metadata.improvements ? result.metadata.improvements.map(imp => `<p>• ${imp}</p>`).join('') : ''}
         </div>
       `;
       scheduleContainer.appendChild(metadataContainer);
@@ -1494,33 +1485,25 @@ async function generateScheduleFromCredits() {
       body: JSON.stringify(payload)
     });
     
-    // Debug: Log the raw response
-    console.log("Response status:", response.status);
-    
     if (!response.ok) {
       const errorText = await response.text();
       console.error("API error response:", errorText);
       throw new Error(`API returned status: ${response.status}`);
     }
     
-    // Get the JSON data
     const result = await response.json();
     console.log("Schedule data received:", result);
     
-    // Check if we have the expected data structure
     if (!result.schedule || !Array.isArray(result.schedule)) {
       console.error("Invalid schedule format:", result);
       alert("Received invalid schedule data. Check console for details.");
-      hideLoadingIndicator();
       return;
     }
     
-    // Make sure schedule container exists
     const scheduleContainer = document.getElementById('schedule-container');
     if (!scheduleContainer) {
       console.error("Schedule container not found in DOM!");
       alert("Cannot display schedule: container element not found.");
-      hideLoadingIndicator();
       return;
     }
     
@@ -1536,18 +1519,16 @@ async function generateScheduleFromCredits() {
       metadataContainer.innerHTML = `
         <h3>Schedule Quality: ${Math.round(result.metadata.score * 100)}%</h3>
         <div class="improvements">
-          ${result.metadata.improvements.map(imp => `<p>• ${imp}</p>`).join('')}
+          ${result.metadata.improvements ? result.metadata.improvements.map(imp => `<p>• ${imp}</p>`).join('') : ''}
         </div>
       `;
       scheduleContainer.appendChild(metadataContainer);
     }
     
-    // Hide loading indicator
-    hideLoadingIndicator();
-    
   } catch (error) {
     console.error("Error generating schedule:", error);
     alert("Failed to generate schedule: " + error.message);
+  } finally {
     hideLoadingIndicator();
   }
 }
