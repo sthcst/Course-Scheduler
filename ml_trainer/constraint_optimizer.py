@@ -106,11 +106,10 @@ class ScheduleOptimizer:
         return courses
 
     def create_schedule(self, processed_data: Dict) -> Dict:
-        """Create a schedule distributing electives across semesters"""
+        """Create a schedule with both required and elective classes"""
         params = processed_data["parameters"]
         logger.info(f"Received scheduling parameters: {params}")
         
-        # Remove previous course type mapping code since we're getting it directly from data
         self._all_courses = self._convert_to_courses(processed_data["classes"])
         
         # Handle empty or missing firstYearLimits
@@ -119,16 +118,8 @@ class ScheduleOptimizer:
                 "fallWinterCredits": params["fallWinterCredits"],
                 "springCredits": params["springCredits"]
             }
-        else:
-            # Ensure both required keys exist with defaults
-            params["firstYearLimits"] = {
-                "fallWinterCredits": params["firstYearLimits"].get("fallWinterCredits", params["fallWinterCredits"]),
-                "springCredits": params["firstYearLimits"].get("springCredits", params["springCredits"])
-            }
-        
-        logger.info(f"Using first year limits: {params['firstYearLimits']}")
-        
-        # Initialize semesters with logging
+    
+        # Initialize semesters
         semesters = self._initialize_semesters(
             params["startSemester"],
             params["fallWinterCredits"],
@@ -137,36 +128,37 @@ class ScheduleOptimizer:
             params["firstYearLimits"]["springCredits"]
         )
         
-        logger.info("Initialized semesters with credit limits:")
-        for i, sem in enumerate(semesters):
-            logger.info(f"Semester {i+1}: {sem.type} {sem.year}, Credit limit: {sem.credit_limit}")
-        
         # Group courses by section
         sections = self._group_by_section(self._all_courses)
         
-        # Track chosen electives
-        chosen_electives = []
-        scheduled_semesters = []
+        # Track all courses to be scheduled
+        courses_to_schedule = []
         
-        # First, find all elective combinations
+        # Process each section
         for section_id, courses in sections.items():
-            if not any(c.is_elective for c in courses):
+            if section_id == "additional-section":
+                # Skip the additional section - these courses will be added as corequisites
                 continue
                 
-            credits_needed = next((c.credits_needed for c in courses if c.credits_needed), None)
-            if not credits_needed:
-                continue
-            
-            # Find valid combination
-            combination = self._find_best_elective_combination(courses, credits_needed)
-            if combination:
-                chosen_electives.extend(combination)
-                logger.info(f"Selected combination for section {section_id}: {[c.class_number for c in combination]}")
-
-        # Sort courses by prerequisites
-        sorted_courses = self._sort_by_prerequisites(chosen_electives)
+            if any(c.is_elective for c in courses):
+                # Handle elective sections
+                credits_needed = next((c.credits_needed for c in courses if c.credits_needed), None)
+                if credits_needed:
+                    combination = self._find_best_elective_combination(courses, credits_needed)
+                    if combination:
+                        courses_to_schedule.extend(combination)
+                        logger.info(f"Selected electives for section {section_id}: {[c.class_number for c in combination]}")
+            else:
+                # Add required courses
+                required_courses = [c for c in courses if not c.is_elective]
+                courses_to_schedule.extend(required_courses)
+                logger.info(f"Added required courses for section {section_id}: {[c.class_number for c in required_courses]}")
+    
+        # Sort all courses by prerequisites
+        sorted_courses = self._sort_by_prerequisites(courses_to_schedule)
         remaining_courses = sorted_courses.copy()
         current_semester_idx = 0
+        scheduled_semesters = []
         
         # Keep scheduling until all courses are placed
         while remaining_courses:
@@ -175,14 +167,14 @@ class ScheduleOptimizer:
                 last_sem = semesters[-1]
                 new_sem = self._create_next_semester(last_sem, params)
                 semesters.append(new_sem)
-                logger.info(f"Added new semester: {new_sem.type} {new_sem.year} with limit {new_sem.credit_limit}")
-            
+                
             semester = semesters[current_semester_idx]
             semester_courses = []
             current_credits = 0
             
             # Create a copy for iteration
             courses_to_try = remaining_courses.copy()
+            courses_scheduled_this_semester = False
             
             for course in courses_to_try:
                 if semester.type not in course.semesters_offered:
@@ -195,22 +187,23 @@ class ScheduleOptimizer:
                         added_courses = self._add_course_with_coreqs(course, remaining_courses)
                         semester_courses.extend(added_courses)
                         current_credits += course_credits
+                        courses_scheduled_this_semester = True
                         
-                        # Safely remove scheduled courses
+                        # Remove scheduled courses
                         for c in added_courses:
-                            try:
-                                if c in remaining_courses:  # Check if course is still in list
-                                    remaining_courses.remove(c)
-                                    logger.info(f"Removed {c.class_number} from remaining courses")
-                            except ValueError as e:
-                                logger.warning(f"Could not remove {c.class_number}: {str(e)}")
-                                continue
+                            if c in remaining_courses:
+                                remaining_courses.remove(c)
+                                logger.info(f"Scheduled {c.class_number} in {semester.type} {semester.year}")
                                 
-                        logger.info(f"Scheduled {course.class_number} (+{course_credits} cr) in {semester.type} {semester.year}")
                     except Exception as e:
                         logger.error(f"Error scheduling {course.class_number}: {str(e)}")
                         continue
-    
+                        
+                # Break if we've hit the credit limit
+                if current_credits >= semester.credit_limit:
+                    break
+            
+            # Add semester to schedule if courses were added
             if semester_courses:
                 scheduled_semesters.append({
                     "type": semester.type,
@@ -218,15 +211,26 @@ class ScheduleOptimizer:
                     "classes": [self._course_to_dict(c) for c in semester_courses],
                     "totalCredits": current_credits
                 })
-                
-            current_semester_idx += 1
+            
+            # Move to next semester if we scheduled courses or hit credit limit
+            if courses_scheduled_this_semester or current_credits >= semester.credit_limit:
+                current_semester_idx += 1
+            else:
+                # If no courses could be scheduled, try next semester
+                current_semester_idx += 1
+                if current_semester_idx >= len(semesters):
+                    logger.warning("Could not schedule all courses within available semesters")
+                    break
 
         return {
             "metadata": {
                 "approach": "testing-electives",
                 "startSemester": params["startSemester"],
                 "score": 1.0,
-                "improvements": ["Distributed electives across semesters respecting credit limits"]
+                "improvements": [
+                    "Scheduled both required and elective courses",
+                    "Distributed courses across semesters respecting credit limits"
+                ]
             },
             "schedule": scheduled_semesters
         }
@@ -269,43 +273,81 @@ class ScheduleOptimizer:
         return sections
 
     def _find_best_elective_combination(self, courses: List[Course], credits_needed: int) -> List[Course]:
-        """Find combination of courses that meets credit requirement"""
+        """Find optimal combination of elective courses that meets credit requirement exactly"""
         logger.info(f"Looking for combination totaling {credits_needed} credits from section {courses[0].section_id}")
         
+        # Get only elective courses
         elective_courses = [c for c in courses if c.is_elective]
-        chosen_courses = []
-        remaining_credits = credits_needed
         
-        # Sort courses by credits (try larger credit courses first)
-        sorted_courses = sorted(elective_courses, key=lambda x: x.credits, reverse=True)
+        # Track section fulfillment
+        section_id = courses[0].section_id
+        if section_id in self.satisfied_sections:
+            logger.info(f"Section {section_id} already satisfied")
+            return []
+            
+        best_combination = None
+        best_total = 0
         
-        for course in sorted_courses:
-            if remaining_credits <= 0:
+        # Try each elective as starting point
+        remaining_options = elective_courses.copy()
+        while remaining_options:
+            current_course = remaining_options.pop(0)
+            current_combo = []
+            current_total = 0
+            
+            # Start with this course and its corequisites
+            course_and_coreqs = self._get_course_with_coreqs(current_course, self._all_courses)
+            current_combo.extend(course_and_coreqs)
+            current_total = sum(c.credits for c in course_and_coreqs)
+            
+            # If we need more credits, try adding other courses
+            if current_total < credits_needed:
+                for additional in remaining_options:
+                    additional_credits = additional.credits
+                    # Add corequisites credits if any
+                    additional_and_coreqs = self._get_course_with_coreqs(additional, self._all_courses)
+                    additional_credits = sum(c.credits for c in additional_and_coreqs)
+                    
+                    if current_total + additional_credits <= credits_needed:
+                        current_combo.extend(additional_and_coreqs)
+                        current_total += additional_credits
+                        
+                        if current_total == credits_needed:
+                            best_combination = current_combo
+                            best_total = current_total
+                            break
+            elif current_total == credits_needed:
+                best_combination = current_combo
+                best_total = current_total
                 break
+            
+            # Update best if this combination is better
+            if current_total == credits_needed:
+                best_combination = current_combo
+                best_total = current_total
+                break
+            
+        if best_combination and best_total == credits_needed:
+            self.satisfied_sections.add(section_id)
+            logger.info(f"Found combination for section {section_id}: {[c.class_number for c in best_combination]} = {best_total} cr")
+            return best_combination
+            
+        logger.warning(f"Could not find exact credit match for section {section_id} requirement of {credits_needed} credits")
+        return None
+
+    def _get_course_with_coreqs(self, course: Course, available_courses: List[Course]) -> List[Course]:
+        """Get a course and all its corequisites"""
+        result = [course]
+        
+        # Add all corequisites
+        for coreq_id in course.corequisites:
+            if isinstance(coreq_id, dict):
+                coreq_id = coreq_id['id']
+            coreq = next((c for c in available_courses if c.id == coreq_id), None)
+            if coreq and coreq not in result:
+                result.append(coreq)
                 
-            # Calculate credits including corequisites
-            course_credits = course.credits
-            coreq_courses = []
-            
-            # Get corequisite courses and their credits
-            for coreq_id in course.corequisites:
-                coreq = next((c for c in self._all_courses if c.id == coreq_id), None)
-                if coreq:
-                    course_credits += coreq.credits
-                    coreq_courses.append(coreq)
-            
-            if remaining_credits >= course_credits:
-                chosen_courses.append(course)
-                chosen_courses.extend(coreq_courses)
-                remaining_credits -= course_credits
-                logger.info(f"Added {course.class_number} (+{course_credits} cr) to section. Remaining: {remaining_credits}")
-        
-        if remaining_credits > 0:
-            logger.warning(f"Could not fully satisfy section requirement. Short by {remaining_credits} credits")
-            return None
-        
-        logger.info(f"Found combination: {[c.class_number for c in chosen_courses]} = {sum(c.credits for c in chosen_courses)} cr")
-        return chosen_courses
+        return result
 
     def _course_to_dict(self, course: Course) -> Dict:
         return {
@@ -368,19 +410,67 @@ class ScheduleOptimizer:
         return new_semester
 
     def _get_total_credits(self, course: Course, available_courses: List[Course]) -> int:
-        """Calculate total credits including corequisites"""
+        """Calculate total credits including all corequisites"""
+        # Start with the course's credits
         total = course.credits
-        for coreq_id in course.corequisites:
-            coreq = next((c for c in available_courses if c.id == coreq_id), None)
-            if coreq:
-                total += coreq.credits
+        
+        # Track processed courses to avoid cycles
+        processed = {course.id}
+        
+        # Queue of courses to check for corequisites
+        to_check = [course]
+        
+        while to_check:
+            current = to_check.pop()
+            for coreq_id in current.corequisites:
+                # Skip if we've already counted this course
+                if coreq_id in processed:
+                    continue
+                    
+                coreq = next((c for c in available_courses if c.id == coreq_id), None)
+                if coreq:
+                    processed.add(coreq_id)
+                    total += coreq.credits
+                    to_check.append(coreq)
+        
         return total
 
     def _add_course_with_coreqs(self, course: Course, available_courses: List[Course]) -> List[Course]:
         """Add a course and its corequisites"""
+        # Start with the main course
         added = [course]
-        for coreq_id in course.corequisites:
+        
+        # Track all courses we need to add to maintain corequisite relationships
+        required_coreqs = set()
+        
+        # First pass: collect all required corequisites
+        to_check = [course]
+        while to_check:
+            current = to_check.pop()
+            for coreq_id in current.corequisites:
+                # Skip if we've already processed this corequisite
+                if coreq_id in required_coreqs:
+                    continue
+                    
+                # Find the corequisite course
+                coreq = next((c for c in available_courses if c.id == coreq_id), None)
+                if coreq:
+                    required_coreqs.add(coreq_id)
+                    to_check.append(coreq)
+                    
+                    # Also check this course's corequisites
+                    for nested_coreq_id in coreq.corequisites:
+                        if nested_coreq_id not in required_coreqs:
+                            nested_coreq = next((c for c in available_courses if c.id == nested_coreq_id), None)
+                            if nested_coreq:
+                                required_coreqs.add(nested_coreq_id)
+                                to_check.append(nested_coreq)
+        
+        # Second pass: add all required corequisites
+        for coreq_id in required_coreqs:
             coreq = next((c for c in available_courses if c.id == coreq_id), None)
-            if coreq:
+            if coreq and coreq not in added:
                 added.append(coreq)
+        
+        logger.info(f"Adding course {course.class_number} with corequisites: {[c.class_number for c in added[1:]]}")
         return added

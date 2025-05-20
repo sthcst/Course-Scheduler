@@ -1189,16 +1189,30 @@ async function generateScheduleFromCredits() {
     const payload = await buildSchedulePayload();
     console.log("Sending payload:", payload);
     
+    // Add timeout configuration
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
     const response = await fetch('/api/generate-schedule', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     if (!response.ok) {
       const errorText = await response.text();
       console.error("API error response:", errorText);
-      throw new Error(`API returned status: ${response.status}`);
+      
+      // Handle specific error cases
+      if (errorText.includes('timeout')) {
+        throw new Error("Schedule generation is taking longer than expected. Please try again with fewer courses or simpler requirements.");
+      } else if (response.status === 500) {
+        throw new Error("The schedule generator is currently unavailable. Please try again in a few minutes.");
+      }
+      throw new Error(`Server error: ${response.status}`);
     }
     
     const result = await response.json();
@@ -1479,16 +1493,30 @@ async function generateScheduleFromCredits() {
     const payload = await buildSchedulePayload();
     console.log("Sending payload:", payload);
     
+    // Add timeout configuration
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
     const response = await fetch('/api/generate-schedule', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     if (!response.ok) {
       const errorText = await response.text();
       console.error("API error response:", errorText);
-      throw new Error(`API returned status: ${response.status}`);
+      
+      // Handle specific error cases
+      if (errorText.includes('timeout')) {
+        throw new Error("Schedule generation is taking longer than expected. Please try again with fewer courses or simpler requirements.");
+      } else if (response.status === 500) {
+        throw new Error("The schedule generator is currently unavailable. Please try again in a few minutes.");
+      }
+      throw new Error(`Server error: ${response.status}`);
     }
     
     const result = await response.json();
