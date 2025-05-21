@@ -736,7 +736,7 @@
                     "section_name": "Elective Coursework",
                     "credits_required": 0,
                     "is_required": false,
-                    "credits_needed_to_take": 3,
+                    "credits_needed_to_take": 10,
                     "display_order": 0,
                     "classes": [
                         {
@@ -1552,6 +1552,11 @@
         "majorClassLimit": 4,
         "fallWinterCredits": 16,
         "springCredits": 10,
-        "approach": "credits-based"
+        "approach": "credits-based",
+        "limitFirstYear": true,
+        "firstYearLimits": {
+            "fallWinterCredits": 12,
+            "springCredits": 9
+        }
     }
 }

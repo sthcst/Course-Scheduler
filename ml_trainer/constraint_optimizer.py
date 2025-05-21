@@ -269,7 +269,8 @@ class ScheduleOptimizer:
         
         semesters = []
         for i in range(12):  # Generate 3 years worth of semesters
-            is_first_year = i < 4
+            # Change from i < 4 to i < 3 to correctly handle first 3 semesters
+            is_first_year = i < 3
             if sem_type == "Spring":
                 credit_limit = first_year_spring if is_first_year else regular_spring
             else:
