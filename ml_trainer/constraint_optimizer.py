@@ -107,59 +107,53 @@ class ScheduleOptimizer:
 
     def _sort_by_prerequisites(self, courses: List[Course]) -> List[Course]:
         """Sort courses so prerequisites come before their dependent courses"""
-        sorted_courses = []
-        dependency_graph = {}
-        course_map = {course.id: course for course in courses}
+        # Create a mapping of course IDs to their full prerequisite chains
+        prereq_chains = {}
         
-        # Build dependency graph
-        for course in courses:
-            if course.id not in dependency_graph:
-                dependency_graph[course.id] = set()
-            for prereq_id in course.prerequisites:
-                dependency_graph[course.id].add(prereq_id)
-    
-        # Find all prerequisite courses from original course list
-        prereq_ids = set()
-        for course in courses:
-            for prereq_id in course.prerequisites:
-                prereq_ids.add(prereq_id)
-    
-        # Get prereq courses that aren't in our course list
-        missing_prereqs = prereq_ids - set(course_map.keys())
-        if missing_prereqs:
-            logger.warning(f"Missing prerequisite courses: {missing_prereqs}")
-    
-        # Topological sort using Kahn's algorithm
-        # First, find courses with no prerequisites
-        in_degree = {course.id: len(dependency_graph[course.id]) for course in courses}
-        ready = [course.id for course in courses if in_degree[course.id] == 0]
-    
-        while ready:
-            course_id = ready.pop(0)
-            sorted_courses.append(course_map[course_id])
+        def get_all_prerequisites(course_id: int, seen=None) -> Set[int]:
+            if seen is None:
+                seen = set()
+            if course_id in seen:
+                return set()
+            seen.add(course_id)
             
-            # Remove this course from dependency graph
-            for other_course in courses:
-                if course_id in dependency_graph[other_course.id]:
-                    dependency_graph[other_course.id].remove(course_id)
-                    in_degree[other_course.id] -= 1
-                    if in_degree[other_course.id] == 0:
-                        ready.append(other_course.id)
-    
-        # Check for cycles
-        if len(sorted_courses) != len(courses):
-            logger.error("Prerequisite cycle detected")
-            # Add remaining courses in any order
-            sorted_ids = {c.id for c in sorted_courses}
-            remaining = [c for c in courses if c.id not in sorted_ids]
-            sorted_courses.extend(remaining)
-    
-        return sorted_courses
+            course = next((c for c in courses if c.id == course_id), None)
+            if not course:
+                return set()
+                
+            direct_prereqs = set(course.prerequisites)
+            all_prereqs = direct_prereqs.copy()
+            
+            for prereq_id in direct_prereqs:
+                all_prereqs.update(get_all_prerequisites(prereq_id, seen))
+                
+            return all_prereqs
+
+        # Build complete prerequisite chains for all courses    
+        for course in courses:
+            prereq_chains[course.id] = get_all_prerequisites(course.id)
+        
+        # Sort based on prerequisite chain length and course type
+        return sorted(courses, key=lambda c: (
+            len(prereq_chains[c.id]),
+            not self._is_religion_class(c),
+            c.id
+        ))
 
     def _can_schedule_in_semester(self, course: Course, scheduled_courses: List[Course]) -> bool:
         """Check if all prerequisites for a course have been scheduled"""
         scheduled_ids = {c.id for c in scheduled_courses}
         return all(prereq_id in scheduled_ids for prereq_id in course.prerequisites)
+
+    # Add a helper method to check religion classes
+    def _is_religion_class(self, course: Course) -> bool:
+        """Check if a course is a religion course"""
+        return course.course_type == "religion"
+
+    # Add a method to check if we can schedule a religion class in a semester
+    def _can_schedule_religion_in_semester(self, semester_courses: List[Course]) -> bool:
+        """Check if a religion class can be scheduled in the semester"""
+        return not any(self._is_religion_class(course) for course in semester_courses)
 
     def create_schedule(self, processed_data: Dict) -> Dict:
         """Create a schedule with both required and elective classes"""
@@ -249,12 +243,17 @@ class ScheduleOptimizer:
                 courses_to_try = remaining_courses.copy()
                 courses_scheduled_this_semester = False
                 
+                # Modify the course scheduling loop:
                 for course in courses_to_try:
                     if semester.type not in course.semesters_offered:
                         continue
                         
-                    # Check prerequisites are satisfied
-                    if not self._can_schedule_in_semester(course, all_scheduled_courses):
+                    # Check prerequisites are satisfied and scheduled in previous semesters
+                    if not self._prerequisites_satisfied_before_semester(course, all_scheduled_courses, current_semester_idx, scheduled_semesters):
+                        continue
+                    
+                    # Check religion class limitation
+                    if self._is_religion_class(course) and not self._can_schedule_religion_in_semester(semester_courses):
                         continue
                     
                     course_credits = self._get_total_credits(course, remaining_courses)
@@ -262,6 +261,12 @@ class ScheduleOptimizer:
                         try:
                             # Add course and its corequisites
                             added_courses = self._add_course_with_coreqs(course, remaining_courses)
+                            
+                            # For religion courses, verify no other religion courses in coreqs
+                            if self._is_religion_class(course) and any(self._is_religion_class(c) for c in added_courses[1:]):
+                                logger.warning(f"Skipping {course.class_number} - has religion course as corequisite")
+                                continue
+                                
                             semester_courses.extend(added_courses)
                             current_credits += course_credits
                             courses_scheduled_this_semester = True
@@ -525,3 +530,19 @@ class ScheduleOptimizer:
         
         logger.info(f"Adding course {course.class_number} with corequisites: {[c.class_number for c in added[1:]]}")
         return added
+
+    def _prerequisites_satisfied_before_semester(self, course: Course, all_scheduled_courses: List[Course], current_semester_idx: int, scheduled_semesters: List[Dict]) -> bool:
+        """Check if prerequisites are satisfied in previous semesters"""
+        if not course.prerequisites:
+            return True
+            
+        # Get all courses scheduled in previous semesters only
+        courses_in_previous_semesters = []
+        for i in range(current_semester_idx):
+            if i < len(scheduled_semesters):
+                semester = scheduled_semesters[i]
+                for course_dict in semester["classes"]:
+                    courses_in_previous_semesters.append(course_dict["id"])
+
+        # Check if all prerequisites are in previous semesters
+        return all(prereq_id in courses_in_previous_semesters for prereq_id in course.prerequisites)
