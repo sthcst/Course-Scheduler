@@ -158,8 +158,9 @@ class ScheduleOptimizer:
     def create_schedule(self, processed_data: Dict) -> Dict:
         """Create a schedule with both required and elective classes"""
         try:
-            # Reset satisfied sections at the start of each schedule creation
+            # Initialize tracking sets
             self.satisfied_sections = set()
+            scheduled_course_ids = set()
             
             params = processed_data["parameters"]
             logger.info(f"Received scheduling parameters: {params}")
@@ -227,6 +228,17 @@ class ScheduleOptimizer:
             # Track all scheduled courses across all semesters
             all_scheduled_courses = []
             
+            # Handle EIL courses first
+            courses_to_schedule, start_semester_idx = self._schedule_eil_courses(
+                courses_to_schedule, 
+                semesters,
+                scheduled_semesters,
+                scheduled_course_ids
+            )
+            
+            # Continue with regular scheduling starting after EIL courses
+            current_semester_idx = start_semester_idx
+            
             # Keep scheduling until all courses are placed
             while remaining_courses:
                 # Create new semester if needed
@@ -245,6 +257,10 @@ class ScheduleOptimizer:
                 
                 # Modify the course scheduling loop:
                 for course in courses_to_try:
+                    # Skip if already scheduled
+                    if course.id in scheduled_course_ids:
+                        continue
+                        
                     if semester.type not in course.semesters_offered:
                         continue
                         
@@ -262,7 +278,7 @@ class ScheduleOptimizer:
                             # Add course and its corequisites
                             added_courses = self._add_course_with_coreqs(course, remaining_courses)
                             
-                            # For religion courses, verify no other religion courses in coreqs
+                            # For religion courses, verify no other religion courses in corequisites
                             if self._is_religion_class(course) and any(self._is_religion_class(c) for c in added_courses[1:]):
                                 logger.warning(f"Skipping {course.class_number} - has religion course as corequisite")
                                 continue
@@ -531,8 +547,13 @@ class ScheduleOptimizer:
         logger.info(f"Adding course {course.class_number} with corequisites: {[c.class_number for c in added[1:]]}")
         return added
 
-    def _prerequisites_satisfied_before_semester(self, course: Course, all_scheduled_courses: List[Course], current_semester_idx: int, scheduled_semesters: List[Dict]) -> bool:
+    def _prerequisites_satisfied_before_semester(self, course: Course, all_scheduled_courses: List[Course], 
+                                          current_semester_idx: int, scheduled_semesters: List[Dict]) -> bool:
         """Check if prerequisites are satisfied in previous semesters"""
+        # EIL courses have no prerequisites between them
+        if self._is_eil_course(course):
+            return True
+            
         if not course.prerequisites:
             return True
             
@@ -546,3 +567,87 @@ class ScheduleOptimizer:
 
         # Check if all prerequisites are in previous semesters
         return all(prereq_id in courses_in_previous_semesters for prereq_id in course.prerequisites)
+
+    def _is_eil_course(self, course: Course) -> bool:
+        """Check if course is part of EIL level 1"""
+        eil_courses = {"STDEV 100R", "EIL 201", "EIL 313", "EIL 317", "EIL 320"}
+        return course.class_number in eil_courses
+
+    def _schedule_eil_courses(self, courses_to_schedule: List[Course], semesters: List[Semester], 
+                         scheduled_semesters: List[Dict], scheduled_course_ids: Set[int]) -> Tuple[List[Course], int]:
+        """
+        Schedule EIL courses following specific rules:
+        - STDEV 100R, EIL 313, EIL 317 must be in first semester if possible
+        - EIL 201 can move to second semester if needed
+        - EIL 320 must be in second semester
+        """
+        eil_courses = [c for c in courses_to_schedule if self._is_eil_course(c)]
+        if not eil_courses:
+            return courses_to_schedule, 0
+
+        # Remove EIL courses from main scheduling
+        remaining_courses = [c for c in courses_to_schedule if not self._is_eil_course(c)]
+        
+        # Sort EIL courses by priority
+        first_sem_required = []
+        first_sem_flexible = []
+        second_sem_required = []
+        
+        for course in eil_courses:
+            if course.class_number == "EIL 320":
+                second_sem_required.append(course)
+            elif course.class_number == "EIL 201":
+                first_sem_flexible.append(course)
+            else:
+                first_sem_required.append(course)
+
+        # Schedule first semester
+        first_semester = semesters[0]
+        current_credits = 0
+        first_sem_courses = []
+        
+        # First add required courses
+        for course in first_sem_required:
+            if current_credits + course.credits <= first_semester.credit_limit:
+                first_sem_courses.append(course)
+                current_credits += course.credits
+                scheduled_course_ids.add(course.id)
+        
+        # Try to add flexible course if space permits
+        for course in first_sem_flexible:
+            if current_credits + course.credits <= first_semester.credit_limit:
+                first_sem_courses.append(course)
+                current_credits += course.credits
+                scheduled_course_ids.add(course.id)
+            else:
+                second_sem_required.extend(first_sem_flexible)
+
+        if first_sem_courses:
+            scheduled_semesters.append({
+                "type": first_semester.type,
+                "year": first_semester.year,
+                "classes": [self._course_to_dict(c) for c in first_sem_courses],
+                "totalCredits": current_credits
+            })
+        
+        # Schedule second semester
+        if second_sem_required:
+            second_semester = semesters[1]
+            current_credits = 0
+            second_sem_courses = []
+            
+            for course in second_sem_required:
+                second_sem_courses.append(course)
+                current_credits += course.credits
+                scheduled_course_ids.add(course.id)
+                
+            scheduled_semesters.append({
+                "type": second_semester.type,
+                "year": second_semester.year,
+                "classes": [self._course_to_dict(c) for c in second_sem_courses],
+                "totalCredits": current_credits
+            })
+            
+            return remaining_courses, 2
+            
+        return remaining_courses, 1
