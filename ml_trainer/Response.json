@@ -1,9 +1,10 @@
 {
     "metadata": {
-        "approach": "testing-electives",
+        "approach": "testing-electives-maximized-credits",
         "improvements": [
             "Scheduled both required and elective courses",
-            "Distributed courses across semesters respecting credit limits"
+            "Distributed courses across semesters respecting credit limits",
+            "Attempted to maximize credits per semester"
         ],
         "score": 1,
         "startSemester": "Winter 2025"
@@ -101,88 +102,6 @@
         {
             "classes": [
                 {
-                    "class_name": "Holokai Foundations",
-                    "class_number": "STDEV 100R",
-                    "corequisites": [],
-                    "course_type": "eil/holokai",
-                    "credits": 1,
-                    "id": 60,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Listening/Speaking",
-                    "class_number": "EIL 313",
-                    "corequisites": [],
-                    "course_type": "eil/holokai",
-                    "credits": 4,
-                    "id": 63,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Reading/Writing",
-                    "class_number": "EIL 317",
-                    "corequisites": [],
-                    "course_type": "eil/holokai",
-                    "credits": 4,
-                    "id": 64,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "The Int'l Student in the University",
-                    "class_number": "EIL 201",
-                    "corequisites": [],
-                    "course_type": "eil/holokai",
-                    "credits": 2,
-                    "id": 62,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Academic English II",
-                    "class_number": "EIL 320",
-                    "corequisites": [],
-                    "course_type": "eil/holokai",
-                    "credits": 4,
-                    "id": 65,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                }
-            ],
-            "totalCredits": 15,
-            "type": "Fall",
-            "year": 2025
-        },
-        {
-            "classes": [
-                {
                     "class_name": "The Eternal Family",
                     "class_number": "REL 200",
                     "corequisites": [],
@@ -195,6 +114,19 @@
                         "Fall",
                         "Winter",
                         "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Introduction to Programming Fundamentals",
+                    "class_number": "CS 101",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 1,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall"
                     ]
                 },
                 {
@@ -240,26 +172,11 @@
                         "Fall",
                         "Winter"
                     ]
-                },
-                {
-                    "class_name": "Quantitative Reasoning",
-                    "class_number": "MATH 107",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 20,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
                 }
             ],
             "totalCredits": 14,
-            "type": "Winter",
-            "year": 2026
+            "type": "Fall",
+            "year": 2025
         },
         {
             "classes": [
@@ -270,6 +187,21 @@
                     "course_type": "religion",
                     "credits": 2,
                     "id": 47,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Quantitative Reasoning",
+                    "class_number": "MATH 107",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 20,
                     "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
@@ -307,10 +239,25 @@
                         "Winter",
                         "Spring"
                     ]
+                },
+                {
+                    "class_name": "New Venture Finance",
+                    "class_number": "ENTR 180",
+                    "corequisites": [],
+                    "course_type": "minor",
+                    "credits": 3,
+                    "id": 28,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
                 }
             ],
-            "totalCredits": 10,
-            "type": "Spring",
+            "totalCredits": 16,
+            "type": "Winter",
             "year": 2026
         },
         {
@@ -322,34 +269,6 @@
                     "course_type": "religion",
                     "credits": 2,
                     "id": 48,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Introduction to Programming Fundamentals",
-                    "class_number": "CS 101",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 1,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall"
-                    ]
-                },
-                {
-                    "class_name": "New Venture Finance",
-                    "class_number": "ENTR 180",
-                    "corequisites": [],
-                    "course_type": "minor",
-                    "credits": 3,
-                    "id": 28,
                     "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
@@ -374,22 +293,23 @@
                     ]
                 },
                 {
-                    "class_name": "Personal Financial Management",
-                    "class_number": "ENTR 318",
+                    "class_name": "Introduction to Pacific Studies",
+                    "class_number": "PAIS 105",
                     "corequisites": [],
                     "course_type": "minor",
                     "credits": 3,
-                    "id": 33,
-                    "is_elective": true,
+                    "id": 37,
+                    "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
-                        "Winter"
+                        "Winter",
+                        "Spring"
                     ]
                 }
             ],
-            "totalCredits": 14,
-            "type": "Fall",
+            "totalCredits": 8,
+            "type": "Spring",
             "year": 2026
         },
         {
@@ -410,30 +330,13 @@
                     ]
                 },
                 {
-                    "class_name": "Introduction to Pacific Studies",
-                    "class_number": "PAIS 105",
+                    "class_name": "Personal Financial Management",
+                    "class_number": "ENTR 318",
                     "corequisites": [],
                     "course_type": "minor",
                     "credits": 3,
-                    "id": 37,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Introduction to Chemistry Lab",
-                    "class_number": "CHEM 101L",
-                    "corequisites": [
-                        70
-                    ],
-                    "course_type": "major",
-                    "credits": 1,
-                    "id": 71,
-                    "is_elective": false,
+                    "id": 33,
+                    "is_elective": true,
                     "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
@@ -450,9 +353,23 @@
                     "credits": 3,
                     "id": 70,
                     "is_elective": true,
-                    "prerequisites": [
-                        77
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ]
+                },
+                {
+                    "class_name": "Introduction to Chemistry Lab",
+                    "class_number": "CHEM 101L",
+                    "corequisites": [
+                        70
                     ],
+                    "course_type": "major",
+                    "credits": 1,
+                    "id": 71,
+                    "is_elective": false,
+                    "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
                         "Winter"
@@ -493,8 +410,8 @@
                 }
             ],
             "totalCredits": 15,
-            "type": "Winter",
-            "year": 2027
+            "type": "Fall",
+            "year": 2026
         },
         {
             "classes": [
@@ -546,28 +463,6 @@
                         "Winter",
                         "Spring"
                     ]
-                }
-            ],
-            "totalCredits": 8,
-            "type": "Spring",
-            "year": 2027
-        },
-        {
-            "classes": [
-                {
-                    "class_name": "Family History (Genealogy)",
-                    "class_number": "REL 261",
-                    "corequisites": [],
-                    "course_type": "religion",
-                    "credits": 2,
-                    "id": 51,
-                    "is_elective": true,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
                 },
                 {
                     "class_name": "New Venture Creation",
@@ -597,6 +492,28 @@
                     "prerequisites": [
                         28
                     ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                }
+            ],
+            "totalCredits": 14,
+            "type": "Winter",
+            "year": 2027
+        },
+        {
+            "classes": [
+                {
+                    "class_name": "Family History (Genealogy)",
+                    "class_number": "REL 261",
+                    "corequisites": [],
+                    "course_type": "religion",
+                    "credits": 2,
+                    "id": 51,
+                    "is_elective": true,
+                    "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
                         "Winter",
@@ -638,8 +555,8 @@
                     ]
                 }
             ],
-            "totalCredits": 14,
-            "type": "Fall",
+            "totalCredits": 8,
+            "type": "Spring",
             "year": 2027
         },
         {
@@ -692,18 +609,19 @@
                     ]
                 },
                 {
-                    "class_name": "Computer Organization",
-                    "class_number": "CS 210",
+                    "class_name": "History and Ethics of Computing",
+                    "class_number": "HIST 470",
                     "corequisites": [],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 10,
+                    "id": 7,
                     "is_elective": false,
                     "prerequisites": [
-                        4
+                        27
                     ],
                     "semesters_offered": [
-                        "Winter"
+                        "Fall",
+                        "Spring"
                     ]
                 },
                 {
@@ -724,25 +642,24 @@
                 }
             ],
             "totalCredits": 14,
-            "type": "Winter",
-            "year": 2028
+            "type": "Fall",
+            "year": 2027
         },
         {
             "classes": [
                 {
-                    "class_name": "History and Ethics of Computing",
-                    "class_number": "HIST 470",
+                    "class_name": "Computer Organization",
+                    "class_number": "CS 210",
                     "corequisites": [],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 7,
+                    "id": 10,
                     "is_elective": false,
                     "prerequisites": [
-                        27
+                        4
                     ],
                     "semesters_offered": [
-                        "Fall",
-                        "Spring"
+                        "Winter"
                     ]
                 },
                 {
@@ -779,14 +696,7 @@
                         "Winter",
                         "Spring"
                     ]
-                }
-            ],
-            "totalCredits": 9,
-            "type": "Spring",
-            "year": 2028
-        },
-        {
-            "classes": [
+                },
                 {
                     "class_name": "New Venture Management",
                     "class_number": "ENTR 483",
@@ -804,7 +714,14 @@
                         "Winter",
                         "Spring"
                     ]
-                },
+                }
+            ],
+            "totalCredits": 12,
+            "type": "Winter",
+            "year": 2028
+        },
+        {
+            "classes": [
                 {
                     "class_name": "Web Applications Development",
                     "class_number": "CS 401",
@@ -822,7 +739,7 @@
                     ]
                 }
             ],
-            "totalCredits": 6,
+            "totalCredits": 3,
             "type": "Fall",
             "year": 2028
         },

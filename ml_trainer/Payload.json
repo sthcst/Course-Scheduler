@@ -373,9 +373,7 @@
                                 "Fall",
                                 "Winter"
                             ],
-                            "prerequisites": [
-                                77
-                            ],
+                            "prerequisites": [],
                             "corequisites": [
                                 71
                             ],
@@ -1481,23 +1479,6 @@
                     "section_name": "Required External Classes",
                     "classes": [
                         {
-                            "id": 77,
-                            "class_number": "MATH 110",
-                            "class_name": "College Algebra",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "credits": 3,
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": []
-                        },
-                        {
                             "id": 71,
                             "class_number": "CHEM 101L",
                             "class_name": "Introduction to Chemistry Lab",
@@ -1548,15 +1529,10 @@
         }
     ],
     "preferences": {
-        "startSemester": "Spring 2025",
+        "startSemester": "Winter 2025",
         "majorClassLimit": 4,
         "fallWinterCredits": 16,
         "springCredits": 10,
-        "approach": "credits-based",
-        "limitFirstYear": true,
-        "firstYearLimits": {
-            "fallWinterCredits": 12,
-            "springCredits": 9
-        }
+        "approach": "credits-based"
     }
 }
