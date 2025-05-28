@@ -329,55 +329,79 @@ function populateDropdowns(majors, minors, courses) {
   
   // Create custom dropdown for Major
   createCustomDropdown("majorSelect", "selectedMajor", majors, "Select a Major", option => {
-    // On selection handler
-    document.getElementById("majorHolokai").textContent = option.dataset.holokai || '';
-    selectedHolokai.major = option.dataset.holokai || null;
+    // Check if selection is incompatible with current minors
+    const newMajorHolokai = option.dataset.holokai || null;
+    let resetMinor1 = false;
+    let resetMinor2 = false;
     
-    // Enable minor dropdowns when a major is selected
-    if (option.dataset.value) {
-      enableCustomDropdown("minor1Select");
-      enableCustomDropdown("minor2Select");
-    } else {
-      // If major is deselected, disable minor dropdowns
-      disableCustomDropdown("minor1Select");
-      disableCustomDropdown("minor2Select");
+    // Check conflicts with existing minors
+    if (selectedHolokai.minor1 && selectedHolokai.minor1 === newMajorHolokai) {
+        console.log("Minor1 has same Holokai as newly selected Major");
+        resetMinor1 = true;
     }
     
-    // Reset minor selections
-    resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
-    resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
-    selectedHolokai.minor1 = null;
-    selectedHolokai.minor2 = null;
+    if (selectedHolokai.minor2 && selectedHolokai.minor2 === newMajorHolokai) {
+        console.log("Minor2 has same Holokai as newly selected Major");
+        resetMinor2 = true;
+    }
+    
+    // Update major Holokai
+    document.getElementById("majorHolokai").textContent = newMajorHolokai || '';
+    selectedHolokai.major = newMajorHolokai;
+    
+    // Enable/disable minor dropdowns based on major selection
+    if (option.dataset.value) {
+        enableCustomDropdown("minor1Select");
+        enableCustomDropdown("minor2Select");
+        
+        // Only reset conflicting minors
+        if (resetMinor1) {
+            resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
+            selectedHolokai.minor1 = null;
+        }
+        if (resetMinor2) {
+            resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
+            selectedHolokai.minor2 = null;
+        }
+    } else {
+        // If major is deselected, disable and reset minor dropdowns
+        disableCustomDropdown("minor1Select");
+        disableCustomDropdown("minor2Select");
+        resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
+        resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
+        selectedHolokai.minor1 = null;
+        selectedHolokai.minor2 = null;
+    }
     
     // Update minors with incompatible options
     updateCustomDropdownsWithIncompatible("minor1Select", "minor2Select", originalMinors);
     
     // Update Generate button state
     updateGenerateButtonState();
-  });
+}, option => false); // Major has no incompatibility function
   
   // Modified minor1 selection handler
   createCustomDropdown("minor1Select", "selectedMinor1", minors, "Select Your First Minor", option => {
-    // Check if selected option is incompatible with major
     if (option.classList.contains('incompatible')) {
-      alert("This minor is from the same Holokai section as your major. Please choose a different Holokai section.");
-      resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
-      return;
+        alert("This minor is from the same Holokai section as your major. Please choose a different Holokai section.");
+        resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
+        return;
     }
     
-    // Get the new Holokai type for minor1
     const newMinor1Holokai = option.dataset.holokai || null;
     
-    // Update UI and state
+    // Check if minor2 exists and has the same Holokai type as the new minor1
+    if (selectedHolokai.minor2 && selectedHolokai.minor2 === newMinor1Holokai) {
+        console.log("Minor2 has same Holokai as newly selected Minor1, resetting Minor2");
+        resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
+        selectedHolokai.minor2 = null;
+    } else {
+        console.log("Minor2 has different Holokai, keeping selection");
+    }
+    
+    // Update UI and state for minor1
     document.getElementById("minor1Holokai").textContent = newMinor1Holokai || '';
     selectedHolokai.minor1 = newMinor1Holokai;
-    
-    // Check if we need to reset minor2 (only if there's now a conflict)
-    if (selectedHolokai.minor2 && selectedHolokai.minor2 === newMinor1Holokai) {
-      console.log("Minor2 has same Holokai as newly selected Minor1, resetting Minor2");
-      resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
-      selectedHolokai.minor2 = null;
-    }
     
     // Always update minor2 dropdown to reflect the new incompatible options
     updateCustomDropdownWithIncompatible("minor2Select", originalMinors);
@@ -385,40 +409,36 @@ function populateDropdowns(majors, minors, courses) {
     // Update Generate button state
     updateGenerateButtonState();
   }, option => {
-    // Check if incompatible with major
     return selectedHolokai.major && option.holokai === selectedHolokai.major;
   });
   
   // Modified minor2 selection handler 
   createCustomDropdown("minor2Select", "selectedMinor2", minors, "Select Your Second Minor", option => {
-    // Check if selected option is incompatible
     if (option.classList.contains('incompatible')) {
-      alert("This minor is from the same Holokai section as your major or first minor. Please choose a different Holokai section.");
-      resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
-      return;
+        alert("This minor is from the same Holokai section as your major or first minor. Please choose a different Holokai section.");
+        resetCustomDropdown("minor2Select", "selectedMinor2", "minor2Holokai");
+        return;
     }
     
-    // Get the new Holokai type for minor2
     const newMinor2Holokai = option.dataset.holokai || null;
     
-    // Update UI and state
+    // Check if minor1 exists and has the same Holokai type as the new minor2
+    if (selectedHolokai.minor1 && selectedHolokai.minor1 === newMinor2Holokai) {
+        console.log("Minor1 has same Holokai as newly selected Minor2, resetting Minor1");
+        resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
+        selectedHolokai.minor1 = null;
+        updateCustomDropdownWithIncompatible("minor1Select", originalMinors);
+    } else {
+        console.log("Minor1 has different Holokai, keeping selection");
+    }
+    
+    // Update UI and state for minor2
     document.getElementById("minor2Holokai").textContent = newMinor2Holokai || '';
     selectedHolokai.minor2 = newMinor2Holokai;
-    
-    // Check if we need to reset minor1 (only if there's now a conflict)
-    if (selectedHolokai.minor1 && selectedHolokai.minor1 === newMinor2Holokai) {
-      console.log("Minor1 has same Holokai as newly selected Minor2, resetting Minor1");
-      resetCustomDropdown("minor1Select", "selectedMinor1", "minor1Holokai");
-      selectedHolokai.minor1 = null;
-      
-      // Update minor1 dropdown to reflect the new incompatible options
-      updateCustomDropdownWithIncompatible("minor1Select", originalMinors);
-    }
     
     // Update Generate button state
     updateGenerateButtonState();
   }, option => {
-    // Check if incompatible with major or minor1
     return (selectedHolokai.major && option.holokai === selectedHolokai.major) ||
            (selectedHolokai.minor1 && option.holokai === selectedHolokai.minor1);
   });
@@ -811,19 +831,19 @@ function renderSchedule(schedule) {
             displayedClassNumbers.add(cls.class_number);
             
             const classItem = document.createElement('li');
-            classItem.className = 'class-item';
-            
-            // Use course_type directly from the API response
-            const courseType = cls.course_type || 'unknown';
-            
-            classItem.innerHTML = `
-                <span class="class-tag ${courseType}">${courseType}</span>
-                <span class="class-number">${cls.class_number}</span>
-                <span class="class-name">${cls.class_name}</span>
-                <span class="class-credits">${cls.credits || 3} cr</span>
-            `;
-            
-            classesList.appendChild(classItem);
+    classItem.className = 'class-item';
+    
+    // Use course_type directly from the API response
+    const courseType = cls.course_type || 'unknown';
+    
+    classItem.innerHTML = `
+        <span class="class-tag ${courseType}">${courseType}</span>
+        <span class="class-number">${cls.class_number}</span>
+        <span class="class-name">${cls.class_name}</span>
+        <span class="class-credits">${cls.credits || 3} cr</span>
+    `;
+    
+    classesList.appendChild(classItem);
         });
         
         semesterDiv.appendChild(classesList);
@@ -963,45 +983,77 @@ function populateAllDropdowns(majors, minors, courses) {
   
   // Populate semester-based dropdowns
   createCustomDropdown("majorSelect-sem", "selectedMajor-sem", majors, "Select a Major", option => {
-    document.getElementById("majorHolokai-sem").textContent = option.dataset.holokai || '';
-    selectedHolokaiSemester.major = option.dataset.holokai || null;
+    const newMajorHolokai = option.dataset.holokai || null;
+    let resetMinor1 = false;
+    let resetMinor2 = false;
     
-    if (option.dataset.value) {
-      enableCustomDropdown("minor1Select-sem");
-      enableCustomDropdown("minor2Select-sem");
-    } else {
-      disableCustomDropdown("minor1Select-sem");
-      disableCustomDropdown("minor2Select-sem");
+    // Check conflicts with existing minors
+    if (selectedHolokaiSemester.minor1 && selectedHolokaiSemester.minor1 === newMajorHolokai) {
+        console.log("Minor1 has same Holokai as newly selected Major (semester)");
+        resetMinor1 = true;
     }
     
-    resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
-    resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
-    selectedHolokaiSemester.minor1 = null;
-    selectedHolokaiSemester.minor2 = null;
+    if (selectedHolokaiSemester.minor2 && selectedHolokaiSemester.minor2 === newMajorHolokai) {
+        console.log("Minor2 has same Holokai as newly selected Major (semester)");
+        resetMinor2 = true;
+    }
+    
+    // Update major Holokai
+    document.getElementById("majorHolokai-sem").textContent = newMajorHolokai || '';
+    selectedHolokaiSemester.major = newMajorHolokai;
+    
+    if (option.dataset.value) {
+        enableCustomDropdown("minor1Select-sem");
+        enableCustomDropdown("minor2Select-sem");
+        
+        // Only reset conflicting minors
+        if (resetMinor1) {
+            resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
+            selectedHolokaiSemester.minor1 = null;
+        }
+        if (resetMinor2) {
+            resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
+            selectedHolokaiSemester.minor2 = null;
+        }
+    } else {
+        // If major is deselected, disable and reset minor dropdowns
+        disableCustomDropdown("minor1Select-sem");
+        disableCustomDropdown("minor2Select-sem");
+        resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
+        resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
+        selectedHolokaiSemester.minor1 = null;
+        selectedHolokaiSemester.minor2 = null;
+    }
     
     // Pass selectedHolokaiSemester explicitly
     updateCustomDropdownsWithIncompatible("minor1Select-sem", "minor2Select-sem", minors, selectedHolokaiSemester);
     updateGenerateButtonState('sem');
-  });
+}, option => false);
   
   // Add minor1 dropdown for semester-based menu
   createCustomDropdown("minor1Select-sem", "selectedMinor1-sem", minors, "Select Your First Minor", option => {
     if (option.classList.contains('incompatible')) {
-      alert("This minor is from the same Holokai section as your major. Please choose a different Holokai section.");
-      resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
-      return;
+        alert("This minor is from the same Holokai section as your major. Please choose a different Holokai section.");
+        resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
+        return;
     }
     
     const newMinor1Holokai = option.dataset.holokai || null;
+    
+    // Check if minor2 exists and has the same Holokai type as the new minor1
+    if (selectedHolokaiSemester.minor2 && selectedHolokaiSemester.minor2 === newMinor1Holokai) {
+        console.log("Minor2 has same Holokai as newly selected Minor1, resetting Minor2");
+        resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
+        selectedHolokaiSemester.minor2 = null;
+    } else {
+        console.log("Minor2 has different Holokai, keeping selection");
+    }
+    
+    // Update UI and state for minor1
     document.getElementById("minor1Holokai-sem").textContent = newMinor1Holokai || '';
     selectedHolokaiSemester.minor1 = newMinor1Holokai;
     
-    if (selectedHolokaiSemester.minor2 && selectedHolokaiSemester.minor2 === newMinor1Holokai) {
-      resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
-      selectedHolokaiSemester.minor2 = null;
-    }
-    
-    // Pass selectedHolokaiSemester explicitly
+    // Always update minor2 dropdown to reflect the new incompatible options
     updateCustomDropdownWithIncompatible("minor2Select-sem", minors, selectedHolokaiSemester);
     updateGenerateButtonState('sem');
   }, option => {
@@ -1012,22 +1064,29 @@ function populateAllDropdowns(majors, minors, courses) {
   // Add minor2 dropdown for semester-based menu
   createCustomDropdown("minor2Select-sem", "selectedMinor2-sem", minors, "Select Your Second Minor", option => {
     if (option.classList.contains('incompatible')) {
-      alert("This minor is from the same Holokai section as your major or first minor. Please choose a different Holokai section.");
-      resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
-      return;
+        alert("This minor is from the same Holokai section as your major or first minor. Please choose a different Holokai section.");
+        resetCustomDropdown("minor2Select-sem", "selectedMinor2-sem", "minor2Holokai-sem");
+        return;
     }
     
     const newMinor2Holokai = option.dataset.holokai || null;
+    
+    // Check if minor1 exists and has the same Holokai type as the new minor2
+    if (selectedHolokaiSemester.minor1 && selectedHolokaiSemester.minor1 === newMinor2Holokai) {
+        console.log("Minor1 has same Holokai as newly selected Minor2, resetting Minor1");
+        resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
+        selectedHolokaiSemester.minor1 = null;
+        // Pass selectedHolokaiSemester explicitly
+        updateCustomDropdownWithIncompatible("minor1Select-sem", minors, selectedHolokaiSemester);
+    } else {
+        console.log("Minor1 has different Holokai, keeping selection");
+    }
+    
+    // Update UI and state for minor2
     document.getElementById("minor2Holokai-sem").textContent = newMinor2Holokai || '';
     selectedHolokaiSemester.minor2 = newMinor2Holokai;
     
-    if (selectedHolokaiSemester.minor1 && selectedHolokaiSemester.minor1 === newMinor2Holokai) {
-      resetCustomDropdown("minor1Select-sem", "selectedMinor1-sem", "minor1Holokai-sem");
-      selectedHolokaiSemester.minor1 = null;
-      // Pass selectedHolokaiSemester explicitly
-      updateCustomDropdownWithIncompatible("minor1Select-sem", minors, selectedHolokaiSemester);
-    }
-    
+    // Update Generate button state
     updateGenerateButtonState('sem');
   }, option => {
     // Use the semester-based Holokai object for incompatibility check
