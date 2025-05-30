@@ -552,44 +552,49 @@ class ScheduleOptimizer:
         
         return total
 
-    def _add_course_with_coreqs(self, course: Course, available_courses: List[Course]) -> List[Course]:
-        """Add a course and its corequisites"""
+    def _add_course_with_coreqs(self, course: Course, remaining_courses: List[Course]) -> List[Course]:
+        """Add a course and its corequisites, ensuring one-way corequisites are scheduled together"""
         # Start with the main course
         added = [course]
-        
-        # Track all courses we need to add to maintain corequisite relationships
         required_coreqs = set()
-        
-        # First pass: collect all required corequisites
         to_check = [course]
+        
         while to_check:
             current = to_check.pop()
             for coreq_id in current.corequisites:
-                # Skip if we've already processed this corequisite
+                # Handle dictionary-style corequisite references
+                if isinstance(coreq_id, dict):
+                    coreq_id = coreq_id['id']
+                
                 if coreq_id in required_coreqs:
                     continue
-                    
-                # Find the corequisite course
-                coreq = next((c for c in available_courses if c.id == coreq_id), None)
+                
+                # First try to find in remaining_courses
+                coreq = next((c for c in remaining_courses if c.id == coreq_id), None)
+                
+                # If not found, look in all courses
+                if not coreq:
+                    coreq = next((c for c in self._all_courses if c.id == coreq_id), None)
+                
                 if coreq:
                     required_coreqs.add(coreq_id)
                     to_check.append(coreq)
                     
-                    # Also check this course's corequisites
-                    for nested_coreq_id in coreq.corequisites:
-                        if nested_coreq_id not in required_coreqs:
-                            nested_coreq = next((c for c in available_courses if c.id == nested_coreq_id), None)
-                            if nested_coreq:
-                                required_coreqs.add(nested_coreq_id)
-                                to_check.append(nested_coreq)
-        
-        # Second pass: add all required corequisites
+                    # If this is a system course being pulled in by a non-system course,
+                    # update its course_type to match the parent
+                    if coreq.course_type == "system" and course.course_type != "system":
+                        logger.info(f"Updating {coreq.class_number} type from system to {course.course_type}")
+                        coreq.course_type = course.course_type
+    
+        # Add all required corequisites
         for coreq_id in required_coreqs:
-            coreq = next((c for c in available_courses if c.id == coreq_id), None)
+            # Check both remaining_courses and all_courses
+            coreq = (next((c for c in remaining_courses if c.id == coreq_id), None) or 
+                    next((c for c in self._all_courses if c.id == coreq_id), None))
             if coreq and coreq not in added:
                 added.append(coreq)
-        
-        logger.info(f"Adding course {course.class_number} with corequisites: {[c.class_number for c in added[1:]]}")
+                logger.info(f"Adding corequisite {coreq.class_number} with {course.class_number}")
+    
         return added
 
     def _prerequisites_satisfied_before_semester(self, course: Course, all_scheduled_courses: List[Course], 

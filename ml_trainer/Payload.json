@@ -1,18 +1,422 @@
 {
     "courseData": [
         {
-            "id": 22,
-            "course_name": "Social Work",
+            "id": 1,
+            "course_name": "Computer Science",
             "course_type": "major",
-            "holokai": "Professional Studies",
+            "holokai": "Math & Sciences",
             "sections": [
                 {
-                    "id": 91,
-                    "section_name": "Core Classes",
+                    "id": 1,
+                    "section_name": "CS/IT Foundation Requirements",
                     "credits_required": 0,
                     "is_required": true,
                     "credits_needed_to_take": null,
                     "display_order": 1,
+                    "classes": [
+                        {
+                            "id": 1,
+                            "class_name": "Introduction to Programming Fundamentals",
+                            "class_number": "CS 101",
+                            "semesters_offered": [
+                                "Fall"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 2,
+                            "class_name": "Information Technology Essentials",
+                            "class_number": "IT 124",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 3,
+                            "class_name": "Web Design",
+                            "class_number": "CS 140",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 4,
+                            "class_name": "Introduction to Object-Oriented Programming",
+                            "class_number": "CS 202",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                1
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 5,
+                            "class_name": "Database Applications",
+                            "class_number": "CS 250",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 6,
+                            "class_name": "Systems Engineering",
+                            "class_number": "CS 311",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                4,
+                                5
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 7,
+                            "class_name": "History and Ethics of Computing",
+                            "class_number": "HIST 470",
+                            "semesters_offered": [
+                                "Fall",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                27
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        }
+                    ]
+                },
+                {
+                    "id": 5,
+                    "section_name": "Computer Science Core Requirments",
+                    "credits_required": 0,
+                    "is_required": true,
+                    "credits_needed_to_take": null,
+                    "display_order": 2,
+                    "classes": [
+                        {
+                            "id": 8,
+                            "class_name": "Foundations of Discrete Mathematics",
+                            "class_number": "CS 205",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter"
+                            ],
+                            "prerequisites": [
+                                1
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 9,
+                            "class_name": "Discrete Mathematics II",
+                            "class_number": "CS 206",
+                            "semesters_offered": [
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                4,
+                                8
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 10,
+                            "class_name": "Computer Organization",
+                            "class_number": "CS 210",
+                            "semesters_offered": [
+                                "Winter"
+                            ],
+                            "prerequisites": [
+                                4
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 11,
+                            "class_name": "Advanced Object-Oriented Programming",
+                            "class_number": "CS 300",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter"
+                            ],
+                            "prerequisites": [
+                                4
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 12,
+                            "class_name": "Algorithms and Complexity",
+                            "class_number": "CS 301",
+                            "semesters_offered": [
+                                "Winter"
+                            ],
+                            "prerequisites": [
+                                9,
+                                11
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 13,
+                            "class_name": "Introduction to Computational Theory",
+                            "class_number": "CS 320",
+                            "semesters_offered": [
+                                "Winter"
+                            ],
+                            "prerequisites": [
+                                9
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 14,
+                            "class_name": "Web Applications Development",
+                            "class_number": "CS 401",
+                            "semesters_offered": [
+                                "Fall"
+                            ],
+                            "prerequisites": [
+                                5,
+                                11
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 15,
+                            "class_name": "Operating Systems Design",
+                            "class_number": "CS 415",
+                            "semesters_offered": [
+                                "Fall"
+                            ],
+                            "prerequisites": [
+                                10,
+                                12
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 16,
+                            "class_name": "Programming Languages",
+                            "class_number": "CS 420",
+                            "semesters_offered": [
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                12,
+                                13
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        }
+                    ]
+                },
+                {
+                    "id": 7,
+                    "section_name": "Science Requirment",
+                    "credits_required": 0,
+                    "is_required": false,
+                    "credits_needed_to_take": 4,
+                    "display_order": 3,
+                    "classes": [
+                        {
+                            "id": 70,
+                            "class_name": "Introduction to General Chemistry",
+                            "class_number": "CHEM 101",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [
+                                71
+                            ],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": true,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 72,
+                            "class_name": "Biology I - Cell and Molecular Biology",
+                            "class_number": "BIOL 112",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [
+                                73
+                            ],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": true,
+                            "elective_group": null
+                        }
+                    ]
+                },
+                {
+                    "id": 6,
+                    "section_name": "Math Requirement",
+                    "credits_required": 0,
+                    "is_required": true,
+                    "credits_needed_to_take": null,
+                    "display_order": 4,
                     "classes": [
                         {
                             "id": 20,
@@ -34,6 +438,58 @@
                             "is_elective": false,
                             "elective_group": null
                         },
+                        {
+                            "id": 21,
+                            "class_name": "Principles of Statistics",
+                            "class_number": "MATH 121",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                20
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 22,
+                            "class_name": "Calculus I",
+                            "class_number": "MATH 212",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 5,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        }
+                    ]
+                },
+                {
+                    "id": 8,
+                    "section_name": "English Requirment",
+                    "credits_required": 0,
+                    "is_required": true,
+                    "credits_needed_to_take": null,
+                    "display_order": 5,
+                    "classes": [
                         {
                             "id": 26,
                             "class_name": "College Writing, Reading, and Research",
@@ -79,446 +535,71 @@
                     ]
                 },
                 {
-                    "id": 105,
-                    "section_name": "Required Courses for Admission to the Major",
-                    "credits_required": 0,
-                    "is_required": true,
-                    "credits_needed_to_take": null,
-                    "display_order": 2,
-                    "classes": [
-                        {
-                            "id": 386,
-                            "class_name": "Introduction to Social Welfare and Social Work",
-                            "class_number": "SOCW 160",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        }
-                    ]
-                },
-                {
-                    "id": 106,
-                    "section_name": "Required Social Work Foundation Courses",
-                    "credits_required": 0,
-                    "is_required": true,
-                    "credits_needed_to_take": null,
-                    "display_order": 3,
-                    "classes": [
-                        {
-                            "id": 388,
-                            "class_name": "Human Behavior in the Social Environment",
-                            "class_number": "SOCW 357",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                386
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 389,
-                            "class_name": "Social Welfare Policy",
-                            "class_number": "SOCW 366",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                386
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 390,
-                            "class_name": "Social Work Values and Ethics",
-                            "class_number": "SOCW 371",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                386
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 391,
-                            "class_name": "Anti-Racism, Diversity, Equity and Inclusion",
-                            "class_number": "SOCW 372",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                386
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 393,
-                            "class_name": "Social Research Methods and Applied Statistics",
-                            "class_number": "SOCW 486",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": true,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        }
-                    ]
-                },
-                {
-                    "id": 107,
-                    "section_name": "Required Social Work Practice Courses",
-                    "credits_required": 0,
-                    "is_required": true,
-                    "credits_needed_to_take": null,
-                    "display_order": 4,
-                    "classes": [
-                        {
-                            "id": 394,
-                            "class_name": "Social Work Practice with Individuals",
-                            "class_number": "SOCW 362",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                386
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 395,
-                            "class_name": "Social Work Practice with Families and Groups",
-                            "class_number": "SOCW 364",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                394
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 397,
-                            "class_name": "Social Work Practice with Organizations and Communities",
-                            "class_number": "SOCW 462",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                394
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        }
-                    ]
-                },
-                {
-                    "id": 108,
-                    "section_name": "Elective Social Work Exploration Courses:",
+                    "id": 23,
+                    "section_name": "Special Topics Requirement",
                     "credits_required": 0,
                     "is_required": false,
-                    "credits_needed_to_take": 5,
-                    "display_order": 5,
-                    "classes": [
-                        {
-                            "id": 398,
-                            "class_name": "Social Welfare in Asia and the Pacific",
-                            "class_number": "SOCW 368",
-                            "semesters_offered": [
-                                "Winter"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 400,
-                            "class_name": "Child Welfare",
-                            "class_number": "SOCW 463",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter"
-                            ],
-                            "prerequisites": [
-                                394
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 402,
-                            "class_name": "Community Mental Health",
-                            "class_number": "SOCW 468",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter"
-                            ],
-                            "prerequisites": [
-                                386
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 403,
-                            "class_name": "Aging: A Global Concern",
-                            "class_number": "SOCW 469",
-                            "semesters_offered": [
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 404,
-                            "class_name": "Assessment and Treatment of Substance Abuse",
-                            "class_number": "SOCW 470",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 405,
-                            "class_name": "Health and Social Work",
-                            "class_number": "SOCW 471",
-                            "semesters_offered": [
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 407,
-                            "class_name": "School Social Work",
-                            "class_number": "SOCW 474",
-                            "semesters_offered": [
-                                "Fall"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 408,
-                            "class_name": "Special Topics in Social Work (repeatable)",
-                            "class_number": "SOCW 390R",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        }
-                    ]
-                },
-                {
-                    "id": 109,
-                    "section_name": "Required Field Practicum Preparation (Semester Prior to Field Practicum)",
-                    "credits_required": 0,
-                    "is_required": true,
-                    "credits_needed_to_take": null,
+                    "credits_needed_to_take": 6,
                     "display_order": 6,
                     "classes": [
                         {
-                            "id": 410,
-                            "class_name": "Practicum Preparation Seminar",
-                            "class_number": "SOCW 490",
+                            "id": 17,
+                            "class_name": "Advanced Topics in Computer Science",
+                            "class_number": "CS 490R",
                             "semesters_offered": [
-                                "Fall",
-                                "Winter"
+                                "Fall"
                             ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 1,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        }
-                    ]
-                },
-                {
-                    "id": 110,
-                    "section_name": "Required Field Practicum - Department Approval Required",
-                    "credits_required": 0,
-                    "is_required": true,
-                    "credits_needed_to_take": null,
-                    "display_order": 7,
-                    "classes": [
-                        {
-                            "id": 411,
-                            "class_name": "Field Practicum",
-                            "class_number": "SOCW 491R",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter"
+                            "prerequisites": [
+                                12
                             ],
-                            "prerequisites": [],
                             "corequisites": [],
                             "days_offered": [],
                             "times_offered": [],
                             "is_senior_class": true,
-                            "restrictions": null,
-                            "credits": 12,
+                            "restrictions": "",
+                            "credits": 3,
                             "description": null,
-                            "is_elective": false,
+                            "is_elective": true,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 67,
+                            "class_name": "Advanced Topics in Computer Science",
+                            "class_number": "CS 490 R III",
+                            "semesters_offered": [
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                12
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": true,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": true,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 714,
+                            "class_name": "Advanced Topics in Computer Science",
+                            "class_number": "CS 490R II",
+                            "semesters_offered": [
+                                "Winter"
+                            ],
+                            "prerequisites": [
+                                12
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": true,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": true,
                             "elective_group": null
                         }
                     ]
@@ -571,6 +652,24 @@
                     "credits_needed_to_take": 12,
                     "display_order": 2,
                     "classes": [
+                        {
+                            "id": 1,
+                            "class_name": "Introduction to Programming Fundamentals",
+                            "class_number": "CS 101",
+                            "semesters_offered": [
+                                "Fall"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": true,
+                            "elective_group": null
+                        },
                         {
                             "id": 108,
                             "class_name": "Documentary Film",
@@ -677,23 +776,42 @@
             ]
         },
         {
-            "id": 83,
-            "course_name": "Mathematics",
+            "id": 32,
+            "course_name": "Accounting",
             "course_type": "minor",
-            "holokai": "Math & Sciences",
+            "holokai": "Professional Studies",
             "sections": [
                 {
-                    "id": 310,
-                    "section_name": "Required Coursework",
+                    "id": 163,
+                    "section_name": "Required",
                     "credits_required": 0,
                     "is_required": true,
                     "credits_needed_to_take": null,
                     "display_order": 1,
                     "classes": [
                         {
-                            "id": 22,
-                            "class_name": "Calculus I",
-                            "class_number": "MATH 212",
+                            "id": 68,
+                            "class_name": "Introduction to Financial Computing",
+                            "class_number": "ACCT 186",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 81,
+                            "class_name": "Introduction to Financial Accounting",
+                            "class_number": "ACCT 201",
                             "semesters_offered": [
                                 "Fall",
                                 "Winter",
@@ -705,28 +823,74 @@
                             "times_offered": [],
                             "is_senior_class": false,
                             "restrictions": null,
-                            "credits": 5,
+                            "credits": 3,
                             "description": null,
                             "is_elective": false,
                             "elective_group": null
                         },
                         {
-                            "id": 346,
-                            "class_name": "Calculus II",
-                            "class_number": "MATH 213",
+                            "id": 82,
+                            "class_name": "Introduction to Managerial Accounting",
+                            "class_number": "ACCT 203",
                             "semesters_offered": [
                                 "Fall",
-                                "Winter"
+                                "Winter",
+                                "Spring"
                             ],
                             "prerequisites": [
-                                22
+                                68,
+                                81
                             ],
                             "corequisites": [],
                             "days_offered": [],
                             "times_offered": [],
                             "is_senior_class": false,
                             "restrictions": null,
-                            "credits": 5,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 93,
+                            "class_name": "Intermediate Accounting I",
+                            "class_number": "ACCT 301",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter"
+                            ],
+                            "prerequisites": [
+                                81,
+                                82,
+                                83
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 94,
+                            "class_name": "Intermediate Accounting II",
+                            "class_number": "ACCT 302",
+                            "semesters_offered": [
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                93
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
                             "description": null,
                             "is_elective": false,
                             "elective_group": null
@@ -734,45 +898,67 @@
                     ]
                 },
                 {
-                    "id": 311,
-                    "section_name": "Elective Coursework",
+                    "id": 164,
+                    "section_name": "Electives",
                     "credits_required": 0,
                     "is_required": false,
-                    "credits_needed_to_take": 9,
+                    "credits_needed_to_take": 1,
                     "display_order": 2,
                     "classes": [
                         {
-                            "id": 8,
-                            "class_name": "Foundations of Discrete Mathematics",
-                            "class_number": "CS 205",
+                            "id": 95,
+                            "class_name": "Managerial Accounting",
+                            "class_number": "ACCT 312",
+                            "semesters_offered": [
+                                "Fall",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                81,
+                                82,
+                                21,
+                                83
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": true,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 96,
+                            "class_name": "Federal Taxation I",
+                            "class_number": "ACCT 321",
+                            "semesters_offered": [
+                                "Winter"
+                            ],
+                            "prerequisites": [
+                                93
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": true,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 97,
+                            "class_name": "Accounting Information Systems",
+                            "class_number": "ACCT 356",
                             "semesters_offered": [
                                 "Fall",
                                 "Winter"
                             ],
                             "prerequisites": [
-                                1
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 21,
-                            "class_name": "Principles of Statistics",
-                            "class_number": "MATH 121",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                20
+                                93
                             ],
                             "corequisites": [],
                             "days_offered": [],
@@ -785,210 +971,22 @@
                             "elective_group": null
                         },
                         {
-                            "id": 347,
-                            "class_name": "Foundations of Mathematics",
-                            "class_number": "MATH 301",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                22
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 348,
-                            "class_name": "Multivariable Calculus",
-                            "class_number": "MATH 314",
+                            "id": 98,
+                            "class_name": "Auditing",
+                            "class_number": "ACCT 365",
                             "semesters_offered": [
                                 "Winter",
                                 "Spring"
                             ],
                             "prerequisites": [
-                                346
+                                94,
+                                97
                             ],
                             "corequisites": [],
                             "days_offered": [],
                             "times_offered": [],
                             "is_senior_class": false,
                             "restrictions": null,
-                            "credits": 5,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 349,
-                            "class_name": "Differential Equations",
-                            "class_number": "MATH 334",
-                            "semesters_offered": [
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                348
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 350,
-                            "class_name": "Elementary Linear Algebra",
-                            "class_number": "MATH 343",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                22
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 355,
-                            "class_name": "Introduction to Numerical Methods",
-                            "class_number": "MATH 311",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                346
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 356,
-                            "class_name": "Introduction to Complex Variables",
-                            "class_number": "MATH 332",
-                            "semesters_offered": [
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                348
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 357,
-                            "class_name": "Mathematical Statistics",
-                            "class_number": "MATH 421",
-                            "semesters_offered": [
-                                "Fall"
-                            ],
-                            "prerequisites": [
-                                348
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 358,
-                            "class_name": "Introduction to Analysis I",
-                            "class_number": "MATH 441",
-                            "semesters_offered": [
-                                "Fall"
-                            ],
-                            "prerequisites": [
-                                348,
-                                347
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 360,
-                            "class_name": "Abstract Algebra I",
-                            "class_number": "MATH 471",
-                            "semesters_offered": [
-                                "Fall"
-                            ],
-                            "prerequisites": [
-                                347
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 591,
-                            "class_name": "Foundations of Geometry",
-                            "class_number": "MATH 302",
-                            "semesters_offered": [
-                                "Fall"
-                            ],
-                            "prerequisites": [
-                                22
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
                             "credits": 3,
                             "description": null,
                             "is_elective": true,
@@ -1297,13 +1295,13 @@
             ]
         },
         {
-            "id": 5,
-            "course_name": "EIL Level 1",
+            "id": 7,
+            "course_name": "FLUENT",
             "course_type": "eil/holokai",
             "holokai": null,
             "sections": [
                 {
-                    "id": 17,
+                    "id": 21,
                     "section_name": "Holokai Student Development",
                     "credits_required": 0,
                     "is_required": true,
@@ -1331,96 +1329,6 @@
                             "elective_group": null
                         }
                     ]
-                },
-                {
-                    "id": 18,
-                    "section_name": "EIL Section",
-                    "credits_required": 0,
-                    "is_required": true,
-                    "credits_needed_to_take": null,
-                    "display_order": 0,
-                    "classes": [
-                        {
-                            "id": 62,
-                            "class_name": "The Int'l Student in the University",
-                            "class_number": "EIL 201",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 2,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 63,
-                            "class_name": "Listening/Speaking",
-                            "class_number": "EIL 313",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 4,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 64,
-                            "class_name": "Reading/Writing",
-                            "class_number": "EIL 317",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 4,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 65,
-                            "class_name": "Academic English II",
-                            "class_number": "EIL 320",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 4,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        }
-                    ]
                 }
             ]
         },
@@ -1433,6 +1341,51 @@
                     "id": "additional-section",
                     "section_name": "Required External Classes",
                     "classes": [
+                        {
+                            "id": 71,
+                            "class_number": "CHEM 101L",
+                            "class_name": "Introduction to Chemistry Lab",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter"
+                            ],
+                            "credits": 1,
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "prerequisites": [],
+                            "corequisites": [
+                                {
+                                    "id": 70,
+                                    "class_number": "CHEM 101",
+                                    "class_name": "Introduction to General Chemistry"
+                                }
+                            ],
+                            "days_offered": [],
+                            "times_offered": []
+                        },
+                        {
+                            "id": 73,
+                            "class_number": "BIOL 112L",
+                            "class_name": "Biology I - Cell and Molecular Biology Lab",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "credits": 1,
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "prerequisites": [],
+                            "corequisites": [
+                                {
+                                    "id": 72,
+                                    "class_number": "BIOL 112",
+                                    "class_name": "Biology I - Cell and Molecular Biology"
+                                }
+                            ],
+                            "days_offered": [],
+                            "times_offered": []
+                        },
                         {
                             "id": 102,
                             "class_number": "ANTH 105",
@@ -1451,16 +1404,24 @@
                             "times_offered": []
                         },
                         {
-                            "id": 1,
-                            "class_number": "CS 101",
-                            "class_name": "Introduction to Programming Fundamentals",
+                            "id": 83,
+                            "class_number": "ECON 200",
+                            "class_name": "Principles of Microeconomics",
                             "semesters_offered": [
-                                "Fall"
+                                "Fall",
+                                "Winter",
+                                "Spring"
                             ],
                             "credits": 3,
                             "is_senior_class": false,
-                            "restrictions": "",
-                            "prerequisites": [],
+                            "restrictions": null,
+                            "prerequisites": [
+                                {
+                                    "id": 68,
+                                    "class_number": "ACCT 186",
+                                    "class_name": "Introduction to Financial Computing"
+                                }
+                            ],
                             "corequisites": [],
                             "days_offered": [],
                             "times_offered": []
@@ -1471,15 +1432,10 @@
         }
     ],
     "preferences": {
-        "startSemester": "Spring 2025",
+        "startSemester": "Winter 2025",
         "majorClassLimit": 4,
-        "fallWinterCredits": 18,
-        "springCredits": 12,
-        "approach": "credits-based",
-        "limitFirstYear": true,
-        "firstYearLimits": {
-            "fallWinterCredits": 12,
-            "springCredits": 9
-        }
+        "fallWinterCredits": 16,
+        "springCredits": 10,
+        "approach": "credits-based"
     }
 }
