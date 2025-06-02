@@ -831,19 +831,28 @@ function renderSchedule(schedule) {
             displayedClassNumbers.add(cls.class_number);
             
             const classItem = document.createElement('li');
-    classItem.className = 'class-item';
-    
-    // Use course_type directly from the API response
-    const courseType = cls.course_type || 'unknown';
-    
-    classItem.innerHTML = `
-        <span class="class-tag ${courseType}">${courseType}</span>
-        <span class="class-number">${cls.class_number}</span>
-        <span class="class-name">${cls.class_name}</span>
-        <span class="class-credits">${cls.credits || 3} cr</span>
-    `;
-    
-    classesList.appendChild(classItem);
+            classItem.className = 'class-item';
+            
+            // Add click handler for showing class details
+            classItem.addEventListener('click', () => {
+                showClassDetails(cls);
+            });
+
+            // Parse course type to handle combined types
+            let courseType = cls.course_type || 'unknown';
+            if (courseType.includes('/')) {
+                // If course type contains a slash, use either part for styling
+                courseType = courseType.split('/')[0]; // Use 'eil' from 'eil/holokai'
+            }
+            
+            classItem.innerHTML = `
+                <span class="class-tag ${courseType}">${courseType}</span>
+                <span class="class-number">${cls.class_number}</span>
+                <span class="class-name">${cls.class_name}</span>
+                <span class="class-credits">${cls.credits || 3} cr</span>
+            `;
+            
+            classesList.appendChild(classItem);
         });
         
         semesterDiv.appendChild(classesList);
@@ -1705,5 +1714,83 @@ async function buildSchedulePayload() {
     courseData: courseData,
     preferences: preferences
   };
+}
+
+// Add this new function for showing class details
+function showClassDetails(classData) {
+    // Remove any existing popups
+    const existingPopup = document.querySelector('.class-details-popup');
+    const existingOverlay = document.querySelector('.popup-overlay');
+    if (existingPopup) existingPopup.remove();
+    if (existingOverlay) existingOverlay.remove();
+
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'popup-overlay';
+    document.body.appendChild(overlay);
+
+    // Create popup
+    const popup = document.createElement('div');
+    popup.className = 'class-details-popup';
+
+    // Helper function to get class name from ID or object
+    const getClassName = (item) => {
+        if (typeof item === 'object') {
+            return item.class_number || 'Unknown';
+        }
+        // If it's an ID, look it up in the classesById map
+        return classesById[item]?.class_number || 'Unknown';
+    };
+
+    // Format prerequisites and corequisites with names
+    const prerequisites = Array.isArray(classData.prerequisites) && classData.prerequisites.length > 0
+        ? classData.prerequisites.map(p => getClassName(p)).join(', ')
+        : 'None';
+    
+    const corequisites = Array.isArray(classData.corequisites) && classData.corequisites.length > 0
+        ? classData.corequisites.map(c => getClassName(c)).join(', ')
+        : 'None';
+
+    popup.innerHTML = `
+        <button class="close-button">&times;</button>
+        <h2>${classData.class_number} - ${classData.class_name}</h2>
+        
+        <div class="details-section">
+            <h3>Description</h3>
+            <p>${classData.description || 'No description available.'}</p>
+        </div>
+        
+        <div class="details-section">
+            <h3>Credit Hours</h3>
+            <p>${classData.credits || 3} credits</p>
+        </div>
+        
+        <div class="details-section">
+            <h3>Prerequisites</h3>
+            <p>${prerequisites}</p>
+        </div>
+        
+        <div class="details-section">
+            <h3>Corequisites</h3>
+            <p>${corequisites}</p>
+        </div>
+    `;
+
+    // Add to document
+    document.body.appendChild(popup);
+
+    // Add close handlers
+    const closePopup = () => {
+        popup.remove();
+        overlay.remove();
+    };
+
+    popup.querySelector('.close-button').addEventListener('click', closePopup);
+    overlay.addEventListener('click', closePopup);
+
+    // Stop click event from bubbling to overlay when clicking popup
+    popup.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
 }
 

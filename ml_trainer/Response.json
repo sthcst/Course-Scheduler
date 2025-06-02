@@ -43,93 +43,12 @@
                     ]
                 },
                 {
-                    "class_name": "Information Technology Essentials",
-                    "class_number": "IT 124",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 2,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Web Design",
-                    "class_number": "CS 140",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 3,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Database Applications",
-                    "class_number": "CS 250",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 5,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
-                    ]
-                },
-                {
                     "class_name": "Quantitative Reasoning",
                     "class_number": "MATH 107",
                     "corequisites": [],
                     "course_type": "major",
                     "credits": 3,
                     "id": 20,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                }
-            ],
-            "totalCredits": 15,
-            "type": "Winter",
-            "year": 2025
-        },
-        {
-            "classes": [
-                {
-                    "class_name": "Foundations of the Restoration",
-                    "class_number": "REL 225",
-                    "corequisites": [],
-                    "course_type": "religion",
-                    "credits": 2,
-                    "id": 47,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Calculus I",
-                    "class_number": "MATH 212",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 5,
-                    "id": 22,
                     "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
@@ -152,9 +71,124 @@
                         "Winter",
                         "Spring"
                     ]
+                },
+                {
+                    "class_name": "Introduction to Pacific Studies",
+                    "class_number": "PAIS 105",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 37,
+                    "is_elective": true,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Introduction to Financial Computing",
+                    "class_number": "ACCT 186",
+                    "corequisites": [],
+                    "course_type": "minor",
+                    "credits": 3,
+                    "id": 68,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ]
+                },
+                {
+                    "class_name": "Critical Inquiry and Engagement",
+                    "class_number": "HUM 100R",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 1,
+                    "id": 106,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
                 }
             ],
-            "totalCredits": 10,
+            "totalCredits": 16,
+            "type": "Winter",
+            "year": 2025
+        },
+        {
+            "classes": [
+                {
+                    "class_name": "Foundations of the Restoration",
+                    "class_number": "REL 225",
+                    "corequisites": [],
+                    "course_type": "religion",
+                    "credits": 2,
+                    "id": 47,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Biology I - Cell and Molecular Biology",
+                    "class_number": "BIOL 112",
+                    "corequisites": [
+                        73
+                    ],
+                    "course_type": "minor",
+                    "credits": 3,
+                    "id": 72,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Biology I - Cell and Molecular Biology Lab",
+                    "class_number": "BIOL 112L",
+                    "corequisites": [
+                        72
+                    ],
+                    "course_type": "minor",
+                    "credits": 1,
+                    "id": 73,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Introduction to Financial Accounting",
+                    "class_number": "ACCT 201",
+                    "corequisites": [],
+                    "course_type": "minor",
+                    "credits": 3,
+                    "id": 81,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                }
+            ],
+            "totalCredits": 8,
             "type": "Spring",
             "year": 2025
         },
@@ -176,25 +210,27 @@
                     ]
                 },
                 {
-                    "class_name": "Introduction to Programming Fundamentals",
-                    "class_number": "CS 101",
+                    "class_name": "Introduction to Cultural Anthropology",
+                    "class_number": "ANTH 105",
                     "corequisites": [],
-                    "course_type": "minor",
+                    "course_type": "major",
                     "credits": 3,
-                    "id": 1,
-                    "is_elective": true,
+                    "id": 102,
+                    "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
-                        "Fall"
+                        "Fall",
+                        "Winter",
+                        "Spring"
                     ]
                 },
                 {
-                    "class_name": "Introduction to Financial Computing",
-                    "class_number": "ACCT 186",
+                    "class_name": "Language in Culture and Society: A survey of the role of language in life",
+                    "class_number": "ANTH 270",
                     "corequisites": [],
-                    "course_type": "minor",
+                    "course_type": "major",
                     "credits": 3,
-                    "id": 68,
+                    "id": 103,
                     "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
@@ -203,30 +239,14 @@
                     ]
                 },
                 {
-                    "class_name": "Introduction to General Chemistry",
-                    "class_number": "CHEM 101",
+                    "class_name": "Ethnographic Methods",
+                    "class_number": "ANTH 322",
                     "corequisites": [
-                        71
+                        102
                     ],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 70,
-                    "is_elective": true,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
-                    ]
-                },
-                {
-                    "class_name": "Introduction to Chemistry Lab",
-                    "class_number": "CHEM 101L",
-                    "corequisites": [
-                        70
-                    ],
-                    "course_type": "major",
-                    "credits": 1,
-                    "id": 71,
+                    "id": 105,
                     "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
@@ -235,12 +255,12 @@
                     ]
                 },
                 {
-                    "class_name": "Introduction to Financial Accounting",
-                    "class_number": "ACCT 201",
+                    "class_name": "Introduction to Cultural Anthropology",
+                    "class_number": "ANTH 105",
                     "corequisites": [],
-                    "course_type": "minor",
+                    "course_type": "major",
                     "credits": 3,
-                    "id": 81,
+                    "id": 102,
                     "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
@@ -250,7 +270,7 @@
                     ]
                 }
             ],
-            "totalCredits": 15,
+            "totalCredits": 14,
             "type": "Fall",
             "year": 2025
         },
@@ -272,10 +292,25 @@
                     ]
                 },
                 {
+                    "class_name": "Anthropology Theory",
+                    "class_number": "ANTH 310",
+                    "corequisites": [
+                        102
+                    ],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 104,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Winter"
+                    ]
+                },
+                {
                     "class_name": "Introduction to Cultural Anthropology",
                     "class_number": "ANTH 105",
                     "corequisites": [],
-                    "course_type": "system",
+                    "course_type": "major",
                     "credits": 3,
                     "id": 102,
                     "is_elective": false,
@@ -287,51 +322,38 @@
                     ]
                 },
                 {
-                    "class_name": "World Cinema",
-                    "class_number": "FILM 300",
+                    "class_name": "Topics for Advanced Writing and Analysis",
+                    "class_number": "ENGL 315",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 27,
+                    "is_elective": false,
+                    "prerequisites": [
+                        26
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Introduction to Managerial Accounting",
+                    "class_number": "ACCT 203",
                     "corequisites": [],
                     "course_type": "minor",
                     "credits": 3,
-                    "id": 194,
-                    "is_elective": true,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Introduction to Object-Oriented Programming",
-                    "class_number": "CS 202",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 4,
+                    "id": 82,
                     "is_elective": false,
                     "prerequisites": [
-                        1
+                        68,
+                        81
                     ],
                     "semesters_offered": [
                         "Fall",
                         "Winter",
                         "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Foundations of Discrete Mathematics",
-                    "class_number": "CS 205",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 8,
-                    "is_elective": false,
-                    "prerequisites": [
-                        1
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
                     ]
                 }
             ],
@@ -357,16 +379,29 @@
                     ]
                 },
                 {
-                    "class_name": "Principles of Statistics",
-                    "class_number": "MATH 121",
+                    "class_name": "Documentary Film",
+                    "class_number": "FILM 420",
+                    "corequisites": [
+                        102
+                    ],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 108,
+                    "is_elective": true,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Introduction to Cultural Anthropology",
+                    "class_number": "ANTH 105",
                     "corequisites": [],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 21,
+                    "id": 102,
                     "is_elective": false,
-                    "prerequisites": [
-                        20
-                    ],
+                    "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
                         "Winter",
@@ -396,67 +431,29 @@
                     ]
                 },
                 {
-                    "class_name": "Topics for Advanced Writing and Analysis",
-                    "class_number": "ENGL 315",
+                    "class_name": "Museum Studies",
+                    "class_number": "ANTH 360",
+                    "corequisites": [
+                        102
+                    ],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 107,
+                    "is_elective": true,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall"
+                    ]
+                },
+                {
+                    "class_name": "Introduction to Cultural Anthropology",
+                    "class_number": "ANTH 105",
                     "corequisites": [],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 27,
+                    "id": 102,
                     "is_elective": false,
-                    "prerequisites": [
-                        26
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Introduction to Film",
-                    "class_number": "FILM 102",
-                    "corequisites": [],
-                    "course_type": "minor",
-                    "credits": 3,
-                    "id": 193,
-                    "is_elective": false,
-                    "prerequisites": [
-                        26
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Advanced Object-Oriented Programming",
-                    "class_number": "CS 300",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 11,
-                    "is_elective": false,
-                    "prerequisites": [
-                        4
-                    ],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter"
-                    ]
-                },
-                {
-                    "class_name": "Introduction to Managerial Accounting",
-                    "class_number": "ACCT 203",
-                    "corequisites": [],
-                    "course_type": "minor",
-                    "credits": 3,
-                    "id": 82,
-                    "is_elective": false,
-                    "prerequisites": [
-                        68,
-                        81
-                    ],
+                    "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
                         "Winter",
@@ -464,7 +461,7 @@
                     ]
                 }
             ],
-            "totalCredits": 14,
+            "totalCredits": 5,
             "type": "Fall",
             "year": 2026
         },
@@ -484,34 +481,39 @@
                         "Winter",
                         "Spring"
                     ]
-                },
+                }
+            ],
+            "totalCredits": 2,
+            "type": "Winter",
+            "year": 2027
+        },
+        {
+            "classes": [
                 {
-                    "class_name": "Computer Organization",
-                    "class_number": "CS 210",
-                    "corequisites": [],
+                    "class_name": "Archaeology and Oceania",
+                    "class_number": "ANTH 385",
+                    "corequisites": [
+                        37,
+                        102
+                    ],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 10,
-                    "is_elective": false,
-                    "prerequisites": [
-                        4
-                    ],
+                    "id": 168,
+                    "is_elective": true,
+                    "prerequisites": [],
                     "semesters_offered": [
-                        "Winter"
+                        "Spring"
                     ]
                 },
                 {
-                    "class_name": "Systems Engineering",
-                    "class_number": "CS 311",
+                    "class_name": "Introduction to Pacific Studies",
+                    "class_number": "PAIS 105",
                     "corequisites": [],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 6,
-                    "is_elective": false,
-                    "prerequisites": [
-                        4,
-                        5
-                    ],
+                    "id": 37,
+                    "is_elective": true,
+                    "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
                         "Winter",
@@ -519,186 +521,56 @@
                     ]
                 },
                 {
-                    "class_name": "Discrete Mathematics II",
-                    "class_number": "CS 206",
+                    "class_name": "Introduction to Cultural Anthropology",
+                    "class_number": "ANTH 105",
                     "corequisites": [],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 9,
+                    "id": 102,
                     "is_elective": false,
-                    "prerequisites": [
-                        4,
-                        8
-                    ],
+                    "prerequisites": [],
                     "semesters_offered": [
+                        "Fall",
                         "Winter",
                         "Spring"
                     ]
-                }
-            ],
-            "totalCredits": 11,
-            "type": "Winter",
-            "year": 2027
-        },
-        {
-            "classes": [
+                },
                 {
-                    "class_name": "History and Ethics of Computing",
-                    "class_number": "HIST 470",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 7,
-                    "is_elective": false,
-                    "prerequisites": [
-                        27
+                    "class_name": "Pacific Natural History Laboratory",
+                    "class_number": "BIOL 204L",
+                    "corequisites": [
+                        112
                     ],
+                    "course_type": "major",
+                    "credits": 2,
+                    "id": 211,
+                    "is_elective": false,
+                    "prerequisites": [],
                     "semesters_offered": [
-                        "Fall",
                         "Spring"
-                    ]
-                }
-            ],
-            "totalCredits": 6,
-            "type": "Spring",
-            "year": 2027
-        },
-        {
-            "classes": [
-                {
-                    "class_name": "Web Applications Development",
-                    "class_number": "CS 401",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 14,
-                    "is_elective": false,
-                    "prerequisites": [
-                        5,
-                        11
-                    ],
-                    "semesters_offered": [
-                        "Fall"
-                    ]
-                }
-            ],
-            "totalCredits": 3,
-            "type": "Fall",
-            "year": 2027
-        },
-        {
-            "classes": [
-                {
-                    "class_name": "Introduction to Computational Theory",
-                    "class_number": "CS 320",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 13,
-                    "is_elective": false,
-                    "prerequisites": [
-                        9
-                    ],
-                    "semesters_offered": [
-                        "Winter"
                     ]
                 },
                 {
-                    "class_name": "Algorithms and Complexity",
-                    "class_number": "CS 301",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 12,
-                    "is_elective": false,
-                    "prerequisites": [
-                        9,
-                        11
+                    "class_name": "Pacific Natural History",
+                    "class_number": "BIOL 204",
+                    "corequisites": [
+                        211
                     ],
-                    "semesters_offered": [
-                        "Winter"
-                    ]
-                }
-            ],
-            "totalCredits": 6,
-            "type": "Winter",
-            "year": 2028
-        },
-        {
-            "classes": [
-                {
-                    "class_name": "Advanced Topics in Computer Science",
-                    "class_number": "CS 490 R III",
-                    "corequisites": [],
                     "course_type": "major",
-                    "credits": 3,
-                    "id": 67,
+                    "credits": 2,
+                    "id": 112,
                     "is_elective": true,
                     "prerequisites": [
-                        12
-                    ],
-                    "semesters_offered": [
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Programming Languages",
-                    "class_number": "CS 420",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 16,
-                    "is_elective": false,
-                    "prerequisites": [
-                        12,
-                        13
+                        74
                     ],
                     "semesters_offered": [
                         "Spring"
                     ]
                 }
             ],
-            "totalCredits": 9,
+            "totalCredits": 10,
             "type": "Spring",
-            "year": 2028
-        },
-        {
-            "classes": [
-                {
-                    "class_name": "Advanced Topics in Computer Science",
-                    "class_number": "CS 490R",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 17,
-                    "is_elective": true,
-                    "prerequisites": [
-                        12
-                    ],
-                    "semesters_offered": [
-                        "Fall"
-                    ]
-                },
-                {
-                    "class_name": "Operating Systems Design",
-                    "class_number": "CS 415",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 15,
-                    "is_elective": false,
-                    "prerequisites": [
-                        10,
-                        12
-                    ],
-                    "semesters_offered": [
-                        "Fall"
-                    ]
-                }
-            ],
-            "totalCredits": 6,
-            "type": "Fall",
-            "year": 2028
+            "year": 2027
         }
     ]
 }
