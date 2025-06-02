@@ -95,23 +95,68 @@ body {
     box-sizing: border-box;
 }
 
-/* Floating menu bar */
+/* Floating menu bar - increase top padding for more vertical space */
 .floating-bar {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
     background: white;
-    border-radius: 24px !important; /* Reduced from 30px */
+    border-radius: 24px !important; 
     box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-    padding: 15px 12px 38px; /* Reduced from 20px 15px 50px */
+    padding: 60px 12px 38px; /* Increased top padding from 45px to 60px */
     position: relative;
     width: 100%;
     box-sizing: border-box;
-    margin-bottom: 40px; /* Reduced from 50px */
+    margin-bottom: 40px;
     margin-top: 0;
-    transform: scale(0.95); /* Add slight scaling */
+    transform: scale(0.95);
     transform-origin: top center;
+}
+
+/* Position back button in the top left corner */
+.back-button-container {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 5;
+    margin-bottom: 0;
+    width: auto;
+    height: auto;
+}
+
+.back-button {
+    background: transparent;
+    border: none;
+    color: #666;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+}
+
+.back-button:hover {
+    color: #9e1b34;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Hide the text, show only the arrow */
+.back-button span {
+    display: none;
+}
+
+/* Make the arrow larger and bolder */
+.back-button::before {
+    content: "←";
+    display: block;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1;
 }
 
 /* Input group styling */
@@ -131,6 +176,7 @@ body {
     color: black;
     box-sizing: border-box;
     margin-bottom: 8px; /* Reduced from 10px */
+    margin-top: 0; /* Reset any top margin */
 }
 
 /* Add some bottom margin to the last row of dropdowns */
@@ -139,6 +185,31 @@ body {
 #minor1-search-group:nth-last-child(-n+4):not(:last-child),
 #minor2-search-group:nth-last-child(-n+4):not(:last-child) {
     margin-bottom: 15px; /* Increased from 8px */
+}
+
+/* Semester-based menu layout with 3 items per row */
+#semesters-based-menu .input-group,
+#semesters-based-menu #major-search-group-sem, 
+#semesters-based-menu #minor1-search-group-sem,
+#semesters-based-menu #minor2-search-group-sem {
+  flex: 1 1 calc(33.33% - 8px);
+  max-width: calc(33.33% - 8px);
+}
+
+/* Keep the checkbox group at the bottom and full width */
+#semesters-based-menu .checkbox-group {
+  flex-basis: 100%;
+  margin-top: 15px;
+}
+
+/* Ensure the input groups have consistent height */
+#semesters-based-menu .input-group {
+  min-height: 70px;
+}
+
+/* Add a bit more vertical spacing between the rows */
+#semesters-based-menu .input-group:nth-child(-n+4) {
+  margin-bottom: 12px;
 }
 
 /* Label styling */
@@ -159,6 +230,32 @@ body {
     overflow: visible;
     font-size: 12px; /* Reduced from 16px */
     font-weight: 500;
+}
+
+/* Checkbox styling */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-basis: 100%;
+  margin: 15px auto;
+  max-width: 250px;
+  text-align: center;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
 }
 
 /* Button styling */
@@ -203,6 +300,27 @@ button.disabled {
     transform: translateX(-50%) translateY(-3px);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
     background-color: #8a0d29;
+}
+
+/* Ensure both Calculate Schedule buttons have consistent styling */
+#calculate-schedule-sem {
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 24px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 20;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 24px;
+  transition: all 0.3s ease;
+}
+
+#calculate-schedule-sem:hover {
+  transform: translateX(-50%) translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  background-color: #8a0d29;
 }
 
 /* Hidden class */
@@ -274,13 +392,13 @@ button.disabled {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
-  transition: all 0.3s ease;
 }
 
-.semester-card:hover {
+/* Removed hover effect for semester-card */
+/*.semester-card:hover {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   transform: translateY(-3px);
-}
+}*/
 
 .semester-header {
   margin: 0 0 10px 0;
@@ -304,6 +422,14 @@ button.disabled {
   flex-direction: column;
   position: relative;
   gap: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.class-item:hover {
+  background-color: #f5f5f5;
+  transform: translateX(5px);
+  
 }
 
 .class-item:last-child {
@@ -426,7 +552,7 @@ button.disabled {
   background-color: #c0c0c0; /* silver */
 }
 
-.class-tag.english, .type-english, .class-tag.holokai, .class-tag.eil, .type-holokai, .type-eil {
+.class-tag.english, .class-tag.holokai, .class-tag.eil, .type-holokai, .type-eil {
   background-color: #90ee90; /* light green */
 }
 
@@ -799,19 +925,19 @@ select:focus {
 }
 
 .arts-humanities {
-    background-color: #87CEFA; /* Light blue */
+    background-color: #e63946; /* Red (changed from Light blue) */
 }
 
 .professional-studies {
-    background-color: #fe668c; /* Light purple */
+    background-color: #c0c0c0; /* Silver (changed from Light purple) */
 }
 
 .math-sciences {
-    background-color: #85fb41; /* Light green */
+    background-color: #ffd700; /* Gold (changed from Light green) */
 }
 
 .no-holokai {
-    background-color: #f0f0f0; /* Light gray */
+    background-color: #000000; /* Light gray (unchanged) */
 }
 
 /* Custom dropdown styling */
@@ -1075,6 +1201,230 @@ button.disabled:hover::after {
     height: 60px; /* Reduced from 75px */
 }
 
+/* Updated First Year Credits popup styles */
+.credits-popup.simple-popup {
+  position: absolute;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  width: 350px;  /* Increased from 280px */
+  min-width: 350px; /* Ensure minimum width */
+  max-width: 95vw;
+}
+
+/* Header with title and close button */
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.popup-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* Style the close button */
+.close-popup {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #666;
+  transition: background-color 0.2s;
+}
+
+.close-popup:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+/* Target specifically the input groups inside the credits popup */
+.credits-popup .input-group {
+  width: 100%;
+  margin-bottom: 15px;
+  max-width: 100%; /* Override the max-width from general input-group styles */
+  flex: 1 1 100%;
+}
+
+/* Style the labels */
+.credits-popup .input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  min-height: auto;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* Style the select dropdowns */
+.credits-popup .input-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  height: 38px;
+  font-size: 14px;
+  display: block;
+}
+
+/* Style the save button */
+.credits-popup .popup-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.credits-popup .popup-buttons button {
+  padding: 8px 20px;
+  background: #9e1b34;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Updated popup styles */
+.credits-popup.simple-popup {
+  position: absolute;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  width: 350px;  /* Increased from 280px */
+  min-width: 350px; /* Ensure minimum width */
+  max-width: 95vw;
+}
+
+/* Target specifically the input groups inside the credits popup */
+.credits-popup .input-group {
+  width: 100%;
+  margin-bottom: 15px;
+  max-width: 100%; /* Override the max-width from general input-group styles */
+  flex: 1 1 100%;
+}
+
+/* Style the labels */
+.credits-popup .input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  min-height: auto;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* Style the select dropdowns */
+.credits-popup .input-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  height: 38px;
+  font-size: 14px;
+  display: block;
+}
+
+/* Style the save button */
+.credits-popup .popup-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.credits-popup .popup-buttons button {
+  padding: 8px 20px;
+  background: #9e1b34;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Loading indicator styles */
+.loading-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+}
+
+.loading-indicator.hidden {
+  display: none;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Loading overlay styles */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #9e1b34;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+.loading-text {
+    color: #333;
+    font-size: 18px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* RESPONSIVE STYLES */
 
 /* Tablet screens (<= 900px) */
@@ -1232,51 +1582,243 @@ button.disabled:hover::after {
     }
 }
 
-/* Add these styles at the end of your CSS file */
+/* Welcome screen styles */
+#welcome-screen {
+  width: 100%;
+  max-width: 100%;
+}
 
-/* Checkbox styling */
-.checkbox-group {
+#welcome-screen .floating-bar {
+  width: 100%;
+  max-width: 100%;
+  transform: none;
+}
+
+.welcome-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex-basis: 100%;
-  margin: 25px auto 10px; /* Increased top margin from 10px to 25px */
-  max-width: 250px;
+  justify-content: center;
+  width: 100%;
+  padding: 30px 20px;
   text-align: center;
 }
 
-.checkbox-group label {
+.path-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.container .floating-bar {
+  width: 100%;
+  max-width: 100%;
+}
+
+.welcome-title {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.welcome-text {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.path-options {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.path-button {
+  padding: 16px 24px;
+  background-color: #9e1b34;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  justify-content: center; /* Added to center the checkbox and label text */
+  justify-content: center;
+  gap: 10px;
+}
+
+.path-button:hover {
+  background-color: #8a0d29;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(158, 27, 52, 0.2);
+}
+
+.back-button-container {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 5;
+  margin-bottom: 0;
+}
+
+.back-button {
+  background: transparent;
+  border: none;
+  color: #000000;
+  padding: 5px 12px;
+  font-size: 20px;
   cursor: pointer;
-  font-weight: 500;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  border-radius: 18px;
+  justify-content: flex-start;
+  gap: 5px;
+  width: auto;
 }
 
-.checkbox-group input[type="checkbox"] {
-  margin-right: 8px;
-  width: 16px;
-  height: 16px;
+.back-button:hover {
+  color: #9e1b34;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.path-info {
-  font-size: 11px;
-  color: #666;
-  margin-top: 4px;
-  text-align: center; /* Ensure description is centered */
+
+
+.back-button::before {
+  content: "←";
+  display: inline-block;
+  
+  font-size: 25px;
 }
 
-/* Styling for semesters after the 10th */
-.semester-card.over-limit {
-  border-left: 4px solid #ba0c2f;
-  background-color: rgba(186, 12, 47, 0.05);
+/* First year credits popup */
+.credits-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 90%;
+  max-width: 400px;
 }
 
-.over-limit-warning {
-  color: #ba0c2f;
-  font-size: 12px;
-  margin-top: 8px;
-  font-weight: 500;
-  padding: 4px;
-  border-top: 1px dashed #ba0c2f;
+.popup-title {
+  font-size: 18px;
+  margin-bottom: 15px;
+  text-align: center;
 }
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.class-details-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    width: 90%;
+    max-width: 500px;
+}
+
+.class-details-popup .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.class-details-popup h2 {
+    margin: 0 30px 20px 0; /* Add right margin to prevent overlap with close button */
+    color: #333;
+    word-wrap: break-word; /* Allow long titles to wrap */
+}
+
+.details-section {
+    margin-bottom: 15px;
+}
+
+.details-section h3 {
+    color: #666;
+    font-size: 0.9em;
+    margin: 0 0 5px 0;
+}
+
+.details-section p {
+    margin: 0;
+    color: #333;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.class-details-popup .close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 8px;
+    line-height: 1;
+    width: 40px; /* Set fixed width */
+    height: 40px; /* Set fixed height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+/* Add hover effect for better UX */
+.class-details-popup .close-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+
+
+
+

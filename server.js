@@ -2,6 +2,7 @@ require('dotenv').config(); // Load environment variables from .env
 
 const express = require('express');
 const path = require('path');
+const axios = require('axios'); // Add this at the top with other imports
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -39,6 +40,152 @@ app.get('*', (req, res) => {
         res.sendFile(path.join(__dirname, 'public', fileName));
     } else {
         res.status(404).send('Page not found');
+    }
+});
+
+// Add these routes specifically for the ML service
+app.get('/api/classes/for-courses', async (req, res) => {
+    try {
+        const courseIds = req.query.ids.split(',').map(id => parseInt(id, 10));
+        
+        // Validate course IDs
+        if (!courseIds.every(id => !isNaN(id))) {
+            return res.status(400).json({ error: 'Invalid course IDs' });
+        }
+        
+        // Build query to get classes for these courses
+        const { rows } = await pool.query(`
+            SELECT DISTINCT c.*
+            FROM classes c
+            JOIN classes_in_course cic ON c.id = cic.class_id
+            WHERE cic.course_id = ANY($1::int[])
+        `, [courseIds]);
+        
+        res.json(rows);
+    } catch (error) {
+        console.error('Error fetching classes for courses:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Update this proxy route in your server.js
+app.post('/api/generate-schedule', async (req, res) => {
+    try {
+        // Try multiple possible URLs in order
+        const possibleUrls = [
+            'http://ml_service:5000/generate-schedule',  // Docker service name (fixed the hyphen)
+            'http://localhost:5001/generate-schedule',   // Local development (fixed the hyphen)
+            process.env.ML_SERVICE_URL                   // From environment variable if set
+        ].filter(Boolean); // Remove null/undefined entries
+        
+        let lastError = null;
+        
+        for (const url of possibleUrls) {
+            try {
+                console.log(`Trying ML service at: ${url}`);
+                const response = await axios.post(
+                    url,
+                    req.body,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        timeout: 10000 // Increased timeout to 10 seconds
+                    }
+                );
+                
+                console.log(`Successfully connected to ML service at: ${url}`);
+                return res.json(response.data);
+            } catch (error) {
+                console.log(`Failed to connect to ${url}: ${error.message}`);
+                lastError = error;
+            }
+        }
+        
+        // If we get here, all URLs failed
+        throw lastError || new Error("Failed to connect to any ML service URL");
+    } catch (error) {
+        console.error('Error proxying request to ML service:', error);
+        res.status(error.response?.status || 500).json({
+            error: 'Failed to connect to ML service',
+            details: error.message
+        });
+    }
+});
+
+// Add a test endpoint to verify ML service connectivity
+app.get('/api/ml-status', async (req, res) => {
+    try {
+        // Try multiple possible URLs in order
+        const possibleUrls = [
+            'http://ml_service:5000/ping',  // Docker service name
+            'http://localhost:5001/ping',   // Local development
+            process.env.ML_SERVICE_URL ? `${process.env.ML_SERVICE_URL}/ping` : null
+        ].filter(Boolean);
+        
+        let lastError = null;
+        
+        for (const url of possibleUrls) {
+            try {
+                console.log(`Testing ML service connection at: ${url}`);
+                const response = await axios.get(url, { timeout: 5000 });
+                
+                console.log(`ML service is online at: ${url}`);
+                return res.json({
+                    status: 'connected',
+                    url: url,
+                    response: response.data
+                });
+            } catch (error) {
+                console.log(`Failed to connect to ${url}: ${error.message}`);
+                lastError = error;
+            }
+        }
+        
+        // If we get here, all URLs failed
+        throw lastError || new Error("Failed to connect to any ML service URL");
+    } catch (error) {
+        console.error('Error checking ML service status:', error);
+        res.status(500).json({
+            status: 'disconnected',
+            error: error.message
+        });
+    }
+});
+
+// Add endpoint for schedule evaluation
+app.post('/api/evaluate-schedule', async (req, res) => {
+    try {
+        // Similar URL structure as generate-schedule
+        const possibleUrls = [
+            'http://ml_service:5000/evaluate',
+            'http://localhost:5001/evaluate',
+            process.env.ML_SERVICE_URL ? `${process.env.ML_SERVICE_URL}/evaluate` : null
+        ].filter(Boolean);
+        
+        // Same implementation pattern as generate-schedule
+        let lastError = null;
+        
+        for (const url of possibleUrls) {
+            try {
+                const response = await axios.post(url, req.body, {
+                    headers: { 'Content-Type': 'application/json' },
+                    timeout: 10000
+                });
+                
+                return res.json(response.data);
+            } catch (error) {
+                lastError = error;
+            }
+        }
+        
+        throw lastError || new Error("Failed to connect to any ML service URL");
+    } catch (error) {
+        console.error('Error evaluating schedule:', error);
+        res.status(error.response?.status || 500).json({
+            error: 'Failed to evaluate schedule',
+            details: error.message
+        });
     }
 });
 
