@@ -1,4 +1,27 @@
 window.addEventListener('DOMContentLoaded', async () => {
+    // Example function that renders course sections and classes
+    function renderCourseSections(courseData) {
+        const courseSections = document.getElementById('course-sections');
+        courseSections.innerHTML = '';
+
+        courseData.sections.forEach(section => {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.innerHTML = `<h3>${section.section_name}</h3>`;
+
+            section.classes.forEach(cls => {
+                const classDiv = document.createElement('div');
+                // Add credits beside the course name here
+                classDiv.innerHTML = `
+                    <span>${cls.class_name} (${cls.class_number})</span>
+                    <span style="margin-left: 10px; color: #888;">Credits: ${cls.credits}</span>
+                `;
+                sectionDiv.appendChild(classDiv);
+            });
+
+            courseSections.appendChild(sectionDiv);
+        });
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const courseId = urlParams.get('course_id');
     const courseInfoDiv = document.getElementById('course-info');
@@ -12,7 +35,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const editCourseModal = document.getElementById('edit-course-modal');
     const editCourseForm = document.getElementById('edit-course-form');
     const editCourseButton = document.getElementById('edit-course-button');
-    const editSectionModal = document.getElementById('edit-section-modal');
+    const editSectionModal = document = document.getElementById('edit-section-modal');
     const editSectionForm = document.getElementById('edit-section-form');
     const editSectionTypeSelect = document.getElementById('edit-section-type');
     const editElectiveOptions = document.getElementById('edit-elective-options');
@@ -257,17 +280,17 @@ window.addEventListener('DOMContentLoaded', async () => {
         
         // Update the HTML to include credits and holokai
         courseInfoDiv.innerHTML = `
-            <h2>${data.course_name}</h2>
-            <h3>${data.course_type || 'N/A'} <span class="course-credits">•   ${totalCredits} Credits</span></h3>
-            ${data.course_type && (data.course_type.toLowerCase() === 'major' || data.course_type.toLowerCase() === 'minor') ? 
-                `<h4>Holokai Section: ${data.holokai || 'None'}</h4>` : ''}
-            <div class="editanddelete">
-                <img id="edit-course-button" src="./assets/whiteedit.png" alt="Edit course">
-                <img id="download-course-button" src="./assets/downloadcourse.png" alt="Download course">
-                <img id="delete-course-button" src="./assets/whitedelete.png" alt="Delete course">
-                <img id="copy-course-button" src="./assets/copy-button.png" alt="Duplicate course">
-            </div>
-        `;
+        <h2>${data.course_name} <span class="course-credits">•   ${totalCredits} Credits</span></h2>
+        <h3>${data.course_type || 'N/A'}</h3>
+        ${data.course_type && (data.course_type.toLowerCase() === 'major' || data.course_type.toLowerCase() === 'minor') ? 
+            `<h4>Holokai Section: ${data.holokai || 'None'}</h4>` : ''}
+        <div class="editanddelete">
+            <img id="edit-course-button" src="./assets/whiteedit.png" alt="Edit course">
+            <img id="download-course-button" src="./assets/downloadcourse.png" alt="Download course">
+            <img id="delete-course-button" src="./assets/whitedelete.png" alt="Delete course">
+            <img id="copy-course-button" src="./assets/copy-button.png" alt="Duplicate course">
+        </div>
+    `;
 
         // Add this right after setting courseInfoDiv.innerHTML
         const editButton = document.getElementById('edit-course-button');
@@ -392,7 +415,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                     sectionDiv.innerHTML = `
                         <div class="drag-handle"></div>
                         <div class="section-header">
-                            <!-- Your existing header content -->
                             <div class="section-info-container">
                                 <h3 class="section-title">
                                     ${section.section_name}
@@ -409,7 +431,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                             
 
                         </div>
-                        <!-- Rest of your section content -->
                         <ul class="classes-list" id="section-${section.id}-classes"></ul>
                         <div class="section-footer">
                             <div class="section-controls">
@@ -434,18 +455,21 @@ window.addEventListener('DOMContentLoaded', async () => {
                         section.classes.forEach(cls => {
                             const li = document.createElement('li');
                             li.innerHTML = `
-                                ${cls.class_number}: ${cls.class_name}
-                                <div class="class-actions">
-                                    <img class="update-class-button" 
-                                        src="./assets/editclassbutton.png" 
-                                        alt="Edit class"
-                                        data-class-id="${cls.id}" 
-                                        data-section-id="${section.id}">
-                                    <img class="delete-class-button" 
-                                        src="./assets/removebutton.png" 
-                                        alt="Remove class"
-                                        data-class-id="${cls.id}"
-                                        data-section-id="${section.id}">
+                                <span>${cls.class_number}: ${cls.class_name}</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="color: #888; font-size: 0.9em;">(${cls.credits || 0} Credits)</span>
+                                    <div class="class-actions">
+                                        <img class="update-class-button"
+                                            src="./assets/editclassbutton.png"
+                                            alt="Edit class"
+                                            data-class-id="${cls.id}"
+                                            data-section-id="${section.id}">
+                                        <img class="delete-class-button"
+                                            src="./assets/removebutton.png"
+                                            alt="Remove class"
+                                            data-class-id="${cls.id}"
+                                            data-section-id="${section.id}">
+                                    </div>
                                 </div>
                             `;
                             sectionClassesList.appendChild(li);
