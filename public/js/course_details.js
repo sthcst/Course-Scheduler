@@ -456,9 +456,9 @@ window.addEventListener('DOMContentLoaded', async () => {
                             const li = document.createElement('li');
                             li.innerHTML = `
                                 <span>${cls.class_number}: ${cls.class_name}</span>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="color: #888; font-size: 0.9em;">(${cls.credits || 0} Credits)</span>
-                                    <div class="class-actions">
+                                <div class="class-right-content">
+                                    <span class="class-credits-display">${cls.credits || 0} cr</span>
+                                    <div class="class-actions-buttons">
                                         <img class="update-class-button"
                                             src="./assets/editclassbutton.png"
                                             alt="Edit class"
