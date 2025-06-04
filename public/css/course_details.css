@@ -714,6 +714,13 @@ body {
     transform: translate(-50%, -50%) scale(0.8); /* Shrink slightly as it fades */
 }
 
+.lab-credit-tooltip {
+    font-style: italic;
+    color: #555;
+    cursor: help;
+    text-decoration: dotted underline;
+}
+
 .classes-list.show-actions .class-actions-buttons {
     opacity: 1;
     visibility: visible;

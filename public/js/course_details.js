@@ -413,38 +413,41 @@ window.addEventListener('DOMContentLoaded', async () => {
                     
                     // Add the drag handle
                     sectionDiv.innerHTML = `
-                        <div class="drag-handle"></div>
-                        <div class="section-header">
-                            <div class="section-info-container">
-                                <h3 class="section-title">
-                                    ${section.section_name}
-                                    <img class="section-icon" src="./assets/editclassbutton.png" alt="Edit section" data-section="${section.id}">
-                                </h3>
-                                <div class="section-info">
-                                    ${section.is_required ? 'Required' : `Take a total of ${section.credits_needed_to_take} credits`}
+                    <div class="drag-handle"></div>
+                    <div class="section-header">
+                        <div class="section-info-container">
+                            <h3 class="section-title">
+                                ${section.section_name}
+                                <img class="section-icon" src="./assets/editclassbutton.png" alt="Edit section" data-section="${section.id}">
+                            </h3>
+                            <div class="section-info">
+                                ${section.is_required ? 'Required' : `Take a total of ${section.credits_needed_to_take} credits`}
+                            </div>
+                            ${data.course_name && data.course_name.toLowerCase().includes('computer science') ? `
+                                <div class="extra-credit-explanation">
+                                    * +1 credit for related lab/field experience
                                 </div>
-                            </div>
-                            <div class="section-header-actions">
-                                <button class="delete-section-button" data-section="${section.id}">Delete This Section</button>
-                                <img class="toggle-actions-button" src="./assets/editclassbutton.png" alt="Toggle actions" data-section="${section.id}">
-                            </div>
-                            
-
+                            ` : ''}
                         </div>
-                        <ul class="classes-list" id="section-${section.id}-classes"></ul>
-                        <div class="section-footer">
-                            <div class="section-controls">
-                                <div class="custom-button add-existing-class-button" data-section="${section.id}">
-                                    <img src="./assets/addexistingclassbutton.png" alt="Add existing">
-                                    <span>Add Existing Class</span>
-                                </div>
-                                <div class="custom-button add-new-class-button" data-section="${section.id}">
-                                    <img src="./assets/addnewclassbutton.png" alt="Add new">
-                                    <span>Add New Class</span>
-                                </div>
+                        <div class="section-heade   r-actions">
+                            <button class="delete-section-button" data-section="${section.id}">Delete This Section</button>
+                            <img class="toggle-actions-button" src="./assets/editclassbutton.png" alt="Toggle actions" data-section="${section.id}">
+                        </div>
+                    </div>
+                    <ul class="classes-list" id="section-${section.id}-classes"></ul>
+                    <div class="section-footer">
+                        <div class="section-controls">
+                            <div class="custom-button add-existing-class-button" data-section="${section.id}">
+                                <img src="./assets/addexistingclassbutton.png" alt="Add existing">
+                                <span>Add Existing Class</span>
+                            </div>
+                            <div class="custom-button add-new-class-button" data-section="${section.id}">
+                                <img src="./assets/addnewclassbutton.png" alt="Add new">
+                                <span>Add New Class</span>
                             </div>
                         </div>
-                    `;
+                    </div>
+                `;
                     
                     courseSectionsDiv.appendChild(sectionDiv);
                     
@@ -452,28 +455,42 @@ window.addEventListener('DOMContentLoaded', async () => {
                     // Your existing code for displaying classes
                     const sectionClassesList = document.getElementById(`section-${section.id}-classes`);
                     if (section.classes && section.classes.length > 0) {
-                        section.classes.forEach(cls => {
-                            const li = document.createElement('li');
-                            li.innerHTML = `
-                                <span>${cls.class_number}: ${cls.class_name}</span>
-                                <div class="class-right-content">
-                                    <span class="class-credits-display">${cls.credits || 0} cr</span>
-                                    <div class="class-actions-buttons">
-                                        <img class="update-class-button"
-                                            src="./assets/editclassbutton.png"
-                                            alt="Edit class"
-                                            data-class-id="${cls.id}"
-                                            data-section-id="${section.id}">
-                                        <img class="delete-class-button"
-                                            src="./assets/removebutton.png"
-                                            alt="Remove class"
-                                            data-class-id="${cls.id}"
-                                            data-section-id="${section.id}">
+                        if (section.classes && section.classes.length > 0) {
+                            section.classes.forEach(cls => {
+                                const li = document.createElement('li');
+                        
+                                let extraCredit = '';
+                                if (
+                                    data.course_name &&
+                                    data.course_name.toLowerCase().includes('computer science') &&
+                                    (cls.class_number.startsWith('BIOL') || cls.class_number.startsWith('CHEM'))
+                                ) {
+                                    extraCredit = ' + 1 *';
+                                }
+                        
+                                li.innerHTML = `
+                                    <span>${cls.class_number}: ${cls.class_name}</span>
+                                    <div class="class-right-content">
+                                        <span class="class-credits-display">${cls.credits || 0} cr${extraCredit}</span>
+                                        <div class="class-actions-buttons">
+                                            <img class="update-class-button"
+                                                src="./assets/editclassbutton.png"
+                                                alt="Edit class"
+                                                data-class-id="${cls.id}"
+                                                data-section-id="${section.id}">
+                                            <img class="delete-class-button"
+                                                src="./assets/removebutton.png"
+                                                alt="Remove class"
+                                                data-class-id="${cls.id}"
+                                                data-section-id="${section.id}">
+                                        </div>
                                     </div>
-                                </div>
-                            `;
-                            sectionClassesList.appendChild(li);
-                        });
+                                `;
+                                sectionClassesList.appendChild(li);
+                            });
+                        } else {
+                            sectionClassesList.innerHTML = '<li>No classes in this section</li>';
+                        }
                     } else {
                         sectionClassesList.innerHTML = '<li>No classes in this section</li>';
                     }
