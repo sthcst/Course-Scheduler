@@ -335,8 +335,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                 this.classList.toggle('active');
             });
         }
-
-        // Add this right after creating the editButton event listener
         const deleteButton = document.getElementById('delete-course-button');
         if (deleteButton) {
             deleteButton.addEventListener('click', async () => {
@@ -360,9 +358,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                 }
             });
         }
-
-        // Add this right after your deleteButton event listener setup in the displayCourse function
-
         const copyButton = document.getElementById('copy-course-button');
         if (copyButton) {
             copyButton.addEventListener('click', async () => {
@@ -457,8 +452,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                     const sectionClassesList = document.getElementById(`section-${section.id}-classes`);
                     if (section.classes && section.classes.length > 0) {
                         section.classes.forEach(cls => {
-                            // --- START OF MODIFIED LOGIC FOR INDIVIDUAL CLASS CREDITS ---
-                            let creditsDisplay = `(${cls.credits || 0} cr.)`; // Default display
+                            let creditsDisplay = `${cls.credits || 0} cr.`; // Default display
 
                             // Check if it's the Computer Science Major, AND the "Science Requirements" section
                             if (isComputerScienceMajor && section.section_name === "Science Requirements") {
@@ -468,8 +462,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                                     creditsDisplay = `(${baseCredits}+1 cr.)`;
                                 }
                             }
-                            // --- END OF MODIFIED LOGIC FOR INDIVIDUAL CLASS CREDITS ---
-
                             const li = document.createElement('li');
                             li.innerHTML = `
                                 <span>${cls.class_number}: ${cls.class_name}</span>
