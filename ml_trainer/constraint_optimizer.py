@@ -31,8 +31,30 @@ class Semester:
     def total_credits(self) -> int:
         return sum(c.credits for c in self.classes)
 
-logging.basicConfig(level=logging.INFO)
+class SchedulingLogFilter(logging.Filter):
+    def filter(self, record):
+        if not isinstance(record.msg, str):
+            return True
+            
+        # Convert message to string if it's a dict
+        message = str(record.msg)
+        
+        # Check for both the exact message and JSON-like content
+        if ('Generated schedule response' in message or
+            '"metadata":' in message or
+            "'metadata':" in message or
+            message.startswith('{') and ('schedule' in message or 'metadata' in message)):
+            return False
+            
+        return True
+
+# Configure logging with the enhanced filter
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
+
+# Apply filter to root logger to catch all logging
+logging.getLogger().addFilter(SchedulingLogFilter())
+logger.addFilter(SchedulingLogFilter())
 
 class ScheduleOptimizer:
     def __init__(self):
@@ -99,10 +121,9 @@ class ScheduleOptimizer:
                 is_elective=data.get("is_elective", False),
                 section_id=data["section_id"],
                 credits_needed=data.get("credits_needed"),
-                course_type=data.get("course_type", "")  # Get course_type directly from data
+                course_type=data.get("course_type", "")
             )
             courses.append(course)
-            logger.info(f"Created course {course.class_number} with type {course.course_type}")
         return courses
 
     def _sort_by_prerequisites(self, courses: List[Course]) -> List[Course]:
@@ -163,7 +184,8 @@ class ScheduleOptimizer:
             scheduled_course_ids = set()
             
             params = processed_data["parameters"]
-            logger.info(f"Received scheduling parameters: {params}")
+            # Remove this log
+            # logger.info(f"Received scheduling parameters: {params}")
             
             self._all_courses = self._convert_to_courses(processed_data["classes"])
             
@@ -195,13 +217,13 @@ class ScheduleOptimizer:
                     continue
                     
                 if any(c.is_elective for c in courses):
-                    # Handle elective sections
                     credits_needed = next((c.credits_needed for c in courses if c.credits_needed), None)
                     if credits_needed:
                         try:
                             combination = self._find_best_elective_combination(courses, credits_needed)
                             if combination:
                                 courses_to_schedule.extend(combination)
+                                # Keep this log as it's useful for tracking elective combinations
                                 logger.info(f"Selected electives for section {section_id}: {[c.class_number for c in combination]}")
                         except ValueError as e:
                             logger.error(f"Failed to satisfy section {section_id}: {str(e)}")
@@ -214,11 +236,11 @@ class ScheduleOptimizer:
                             }
                         }
                 else:
-                    # Add required courses
                     required_courses = [c for c in courses if not c.is_elective]
                     courses_to_schedule.extend(required_courses)
-                    logger.info(f"Added required courses for section {section_id}: {[c.class_number for c in required_courses]}")
-        
+                    # Remove this log
+                    # logger.info(f"Added required courses for section {section_id}: {[c.class_number for c in required_courses]}")
+
             # Split courses into EIL and regular courses
             eil_courses = [c for c in courses_to_schedule if self._is_eil_course(c)]
             regular_courses = [c for c in courses_to_schedule if not self._is_eil_course(c)]
@@ -338,8 +360,9 @@ class ScheduleOptimizer:
                                 if c in remaining_courses:
                                     remaining_courses.remove(c)
                                     scheduled_course_ids.add(c.id)
-                                    logger.info(f"Scheduled {c.class_number} in {semester.type} {semester.year}")
-                                    
+                                    # Remove this log
+                                    # logger.info(f"Scheduled {c.class_number} in {semester.type} {semester.year}")
+
                         except Exception as e:
                             logger.error(f"Error scheduling {course.class_number}: {str(e)}")
                             continue
@@ -588,11 +611,11 @@ class ScheduleOptimizer:
     
         # Add all required corequisites
         for coreq_id in required_coreqs:
-            # Check both remaining_courses and all_courses
             coreq = (next((c for c in remaining_courses if c.id == coreq_id), None) or 
                     next((c for c in self._all_courses if c.id == coreq_id), None))
             if coreq and coreq not in added:
                 added.append(coreq)
+                # Keep corequisite combination logs as they're useful for debugging
                 logger.info(f"Adding corequisite {coreq.class_number} with {course.class_number}")
     
         return added
