@@ -396,10 +396,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
         // Clear the sections div
         courseSectionsDiv.innerHTML = '';
-        
-        // --- START OF NEW LOGIC (for overall course check) ---
-        const isComputerScienceMajor = (data.course_name === "Computer Science" && data.course_type.toLowerCase() === 'major');
-        // --- END OF NEW LOGIC ---
+
+        const isComputerScienceMajor = (data.course_name === "Computer Science" && data.course_type.toLowerCase() === 'major');     
 
         if (data.sections && Array.isArray(data.sections) && data.sections.length > 0) {
             data.sections.forEach((section, index) => {
@@ -728,14 +726,11 @@ window.addEventListener('DOMContentLoaded', async () => {
         const searchInput = searchModal.querySelector('.class-search-input');
         const searchResults = searchModal.querySelector('.search-results');
         const query = searchInput.value.trim();
-        
         console.log('Performing search with query:', query); // Debug log
-        
         if (!query) {
             searchResults.innerHTML = '';
             return;
         }
-
         try {
             const response = await fetch(`/api/classes/search?query=${encodeURIComponent(query)}`);
             console.log('Search response:', response); // Debug log
