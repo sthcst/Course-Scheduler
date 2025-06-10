@@ -587,7 +587,7 @@ class ScheduleOptimizer:
             for coreq_id in current.corequisites:
                 # Handle dictionary-style corequisite references
                 if isinstance(coreq_id, dict):
-                    coreq_id = coreq_id['id']
+                    coreq_id = coreq['id']
                 
                 if coreq_id in required_coreqs:
                     continue
@@ -724,3 +724,59 @@ class ScheduleOptimizer:
             return remaining_courses, 2
             
         return remaining_courses, 1
+
+    def _get_prerequisite_chain(self, course: Course, all_courses: List[Course], seen=None) -> List[List[str]]:
+        """Get complete prerequisite chains for a course"""
+        if seen is None:
+            seen = set()
+        
+        if course.id in seen:
+            return []
+            
+        seen.add(course.id)
+        
+        # If no prerequisites, return empty list
+        if not course.prerequisites:
+            return [[course.class_number]]
+            
+        all_chains = []
+        for prereq_id in course.prerequisites:
+            prereq_course = next((c for c in all_courses if c.id == prereq_id), None)
+            if prereq_course:
+                # Get chains for this prerequisite
+                prereq_chains = self._get_prerequisite_chain(prereq_course, all_courses, seen.copy())
+                # Add current course to each chain
+                for chain in prereq_chains:
+                    all_chains.append(chain + [course.class_number])
+                    
+        return all_chains
+
+    def _get_all_chains(self, courses: List[Course]) -> Dict[str, Dict]:
+        """Get all prerequisite and corequisite chains"""
+        chains = {}
+        processed = set()
+        
+        for course in courses:
+            # Skip if already part of another chain
+            if course.class_number in processed:
+                continue
+                
+            if course.prerequisites or course.corequisites:
+                prereq_chains = self._get_prerequisite_chain(course, courses)
+                coreq_chain = [c.class_number for c in self._get_course_with_coreqs(course, courses)]
+                
+                # Only keep longest chain for each end course
+                longest_chains = []
+                for chain in prereq_chains:
+                    if len(chain) > 1:  # Only include chains with 2+ courses
+                        # Mark all courses in chain as processed
+                        processed.update(chain)
+                        longest_chains.append(chain)
+                
+                if longest_chains or len(coreq_chain) > 1:
+                    chains[course.class_number] = {
+                        "prerequisites": longest_chains,
+                        "corequisites": coreq_chain if len(coreq_chain) > 1 else []
+                    }
+        
+        return chains
