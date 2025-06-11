@@ -127,9 +127,11 @@ class ScheduleOptimizer:
         return courses
 
     def _sort_by_prerequisites(self, courses: List[Course]) -> List[Course]:
-        """Sort courses so prerequisites come before their dependent courses"""
-        # Create a mapping of course IDs to their full prerequisite chains
+        """Sort courses optimizing for earliest possible graduation"""
+        # Create mappings for prerequisite chains and dependent courses
         prereq_chains = {}
+        dependent_courses = {}
+        chain_depths = {}
         
         def get_all_prerequisites(course_id: int, seen=None) -> Set[int]:
             if seen is None:
@@ -149,16 +151,48 @@ class ScheduleOptimizer:
                 all_prereqs.update(get_all_prerequisites(prereq_id, seen))
                 
             return all_prereqs
-
-        # Build complete prerequisite chains for all courses    
-        for course in courses:
-            prereq_chains[course.id] = get_all_prerequisites(course.id)
         
-        # Sort based on prerequisite chain length and course type
+        def get_chain_depth(course_id: int, seen=None) -> int:
+            """Calculate the depth of the prerequisite chain"""
+            if seen is None:
+                seen = set()
+            if course_id in seen:
+                return 0
+            seen.add(course_id)
+            
+            course = next((c for c in courses if c.id == course_id), None)
+            if not course or not course.prerequisites:
+                return 0
+                
+            return 1 + max([get_chain_depth(prereq_id, seen.copy()) for prereq_id in course.prerequisites], default=0)
+
+        # Build prerequisite chains and calculate dependent courses
+        for course in courses:
+            # Calculate chain depth (longest path from any root to this course)
+            chain_depths[course.id] = get_chain_depth(course.id)
+            
+            # Get all prerequisites
+            prereq_chains[course.id] = get_all_prerequisites(course.id)
+            
+            # Initialize dependency counter
+            dependent_courses[course.id] = 0
+        
+        # Count dependencies in a second pass
+        for course in courses:
+            for prereq_id in prereq_chains[course.id]:
+                dependent_courses[prereq_id] = dependent_courses.get(prereq_id, 0) + 1
+        
+        # Calculate semester flexibility (fewer offerings = less flexible)
+        offering_flexibility = {c.id: len(c.semesters_offered) for c in courses}
+        
+        # Sort courses based on multiple criteria to optimize graduation time
         return sorted(courses, key=lambda c: (
-            len(prereq_chains[c.id]),
-            not self._is_religion_class(c),
-            c.id
+            -chain_depths[c.id],            # Deep prerequisite chains first
+            -dependent_courses[c.id],       # Courses that unlock more dependencies
+            offering_flexibility[c.id],     # Less flexible courses scheduled earlier
+            # Religion courses get slight early priority by having lower secondary sort value
+            0 if self._is_religion_class(c) else 1,  # Religion courses sorted earlier
+            c.id                            # Stable sort
         ))
 
     def _can_schedule_in_semester(self, course: Course, scheduled_courses: List[Course]) -> bool:
@@ -171,10 +205,15 @@ class ScheduleOptimizer:
         """Check if a course is a religion course"""
         return course.course_type == "religion"
 
+    def _is_religion_class_dict(self, course_dict: Dict) -> bool:
+        """Check if a course dictionary represents a religion course"""
+        return course_dict.get("course_type") == "religion"
+
     # Add a method to check if we can schedule a religion class in a semester
     def _can_schedule_religion_in_semester(self, semester_courses: List[Course]) -> bool:
-        """Check if a religion class can be scheduled in the semester"""
-        return not any(self._is_religion_class(course) for course in semester_courses)
+        """Check if a religion class can be scheduled in the semester (max 1 per semester)"""
+        religion_count = sum(1 for course in semester_courses if self._is_religion_class(course))
+        return religion_count == 0  # Can only schedule if no religion courses are already scheduled
 
     def create_schedule(self, processed_data: Dict) -> Dict:
         """Create a schedule with integrated EIL and regular courses"""
@@ -316,9 +355,13 @@ class ScheduleOptimizer:
                             all_scheduled_courses.append(course)
                             courses_scheduled_this_semester = True
             
-                # SECOND PRIORITY: Schedule regular courses in remaining space
-                courses_to_try = remaining_courses.copy()
-                for course in courses_to_try:
+                # SECOND PRIORITY: Schedule regular courses in remaining space with optimization
+                course_priorities = []
+
+                # Check if we should force religion course scheduling
+                force_religion_scheduling = self._should_force_religion_scheduling(remaining_courses, scheduled_semesters)
+
+                for course in remaining_courses:
                     # Skip if already scheduled
                     if course.id in scheduled_course_ids:
                         continue
@@ -329,13 +372,61 @@ class ScheduleOptimizer:
                         
                     # Check prerequisites are satisfied in previous semesters
                     if not self._prerequisites_satisfied_before_semester(course, all_scheduled_courses, 
-                                                                      current_semester_idx, scheduled_semesters):
+                                                                     current_semester_idx, scheduled_semesters):
                         continue
+
+                    # Check religion class limitation - only one per semester
+                    if self._is_religion_class(course):
+                        # Count existing religion courses in this semester
+                        religion_courses_in_semester = sum(1 for c in semester_courses if self._is_religion_class(c))
+                        if religion_courses_in_semester >= 1:
+                            continue  # Skip this religion course if we already have one
+                        
+                        # Also check if any corequisites are religion courses
+                        added_courses_preview = self._add_course_with_coreqs(course, remaining_courses)
+                        religion_in_coreqs = sum(1 for c in added_courses_preview if self._is_religion_class(c))
+                        if religion_in_coreqs > 1:  # More than just the main course
+                            continue  # Skip if corequisites include other religion courses
+
+                    # Calculate priority score for this course
+                    priority = 0
+
+                    # 1. Highest priority for courses that unlock the most other courses
+                    unlocks_count = sum(1 for c in remaining_courses if course.id in c.prerequisites)
+                    priority += unlocks_count * 10  # Heavy weight for dependency unlocking
+
+                    # 2. High priority for courses in long prerequisite chains
+                    chain_length = len([c for c in all_scheduled_courses if c.id in course.prerequisites])
+                    priority += chain_length * 5
+
+                    # 3. High priority for courses with limited semester offerings
+                    flexibility_penalty = (3 - min(len(course.semesters_offered), 3)) * 8
+                    priority += flexibility_penalty
+
+                    # 4. Enhanced religion course distribution logic - prioritize early scheduling
+                    if self._is_religion_class(course):
+                        if force_religion_scheduling:
+                            # Very high priority when forcing
+                            priority += 15  # Higher than before to ensure scheduling
+                        else:
+                            # Always give religion courses moderate priority to schedule them early
+                            priority += 6  # Consistent moderate boost regardless of distribution
+                    else:
+                        # Small boost for non-religion courses when not forcing religion scheduling
+                        if not force_religion_scheduling:
+                            priority += 0.5
+
+                    # 5. Bonus for completing degree requirements early
+                    if course.course_type in ["major", "core"]:
+                        priority += 2
                     
-                    # Check religion class limitation
-                    if self._is_religion_class(course) and not self._can_schedule_religion_in_semester(semester_courses):
-                        continue
-                    
+                    course_priorities.append((course, priority))
+
+                # Sort courses by priority (highest first)
+                course_priorities.sort(key=lambda x: x[1], reverse=True)
+
+                # Try scheduling courses in priority order
+                for course, _ in course_priorities:
                     # Check if there's enough space for the course and its corequisites
                     course_credits = self._get_total_credits(course, remaining_courses)
                     if current_credits + course_credits <= semester.credit_limit:
@@ -343,11 +434,17 @@ class ScheduleOptimizer:
                             # Add course and its corequisites
                             added_courses = self._add_course_with_coreqs(course, remaining_courses)
                             
-                            # For religion courses, verify no other religion courses in corequisites
-                            if self._is_religion_class(course) and any(self._is_religion_class(c) for c in added_courses[1:]):
-                                logger.warning(f"Skipping {course.class_number} - has religion course as corequisite")
-                                continue
+                            # Enhanced religion course validation
+                            if self._is_religion_class(course):
+                                # Count religion courses already in semester
+                                existing_religion = sum(1 for c in semester_courses if self._is_religion_class(c))
+                                # Count religion courses in what we're about to add
+                                new_religion = sum(1 for c in added_courses if self._is_religion_class(c))
                                 
+                                if existing_religion + new_religion > 1:
+                                    # Skip silently - this is expected behavior
+                                    continue
+                            
                             semester_courses.extend(added_courses)
                             current_credits += course_credits
                             courses_scheduled_this_semester = True
@@ -360,13 +457,10 @@ class ScheduleOptimizer:
                                 if c in remaining_courses:
                                     remaining_courses.remove(c)
                                     scheduled_course_ids.add(c.id)
-                                    # Remove this log
-                                    # logger.info(f"Scheduled {c.class_number} in {semester.type} {semester.year}")
-
                         except Exception as e:
                             logger.error(f"Error scheduling {course.class_number}: {str(e)}")
                             continue
-                            
+                
                 # Add semester to schedule if courses were added
                 if semester_courses:
                     scheduled_semesters.append({
@@ -510,7 +604,7 @@ class ScheduleOptimizer:
         # Add all corequisites
         for coreq_id in course.corequisites:
             if isinstance(coreq_id, dict):
-                coreq_id = coreq_id['id']
+                coreq_id = coreq['id']
             coreq = next((c for c in available_courses if c.id == coreq_id), None)
             if coreq and coreq not in result:
                 result.append(coreq)
@@ -765,7 +859,7 @@ class ScheduleOptimizer:
                 prereq_chains = self._get_prerequisite_chain(course, courses)
                 coreq_chain = [c.class_number for c in self._get_course_with_coreqs(course, courses)]
                 
-                # Only keep longest chain for each end course
+                # Only keep longest chain for each end course 
                 longest_chains = []
                 for chain in prereq_chains:
                     if len(chain) > 1:  # Only include chains with 2+ courses
@@ -780,3 +874,24 @@ class ScheduleOptimizer:
                     }
         
         return chains
+
+    def _should_force_religion_scheduling(self, remaining_courses: List[Course], 
+                                    scheduled_semesters: List[Dict]) -> bool:
+        """Check if we should force religion course scheduling to avoid end-stacking"""
+        religion_courses_left = sum(1 for c in remaining_courses if self._is_religion_class(c))
+        
+        # If we have no religion courses left, don't force
+        if religion_courses_left == 0:
+            return False
+        
+        # Force religion scheduling much earlier - after semester 3
+        if len(scheduled_semesters) > 3 and religion_courses_left > 0:
+            return True
+            
+        # If we have many religion courses left relative to remaining courses, force scheduling
+        if len(remaining_courses) > 0:
+            religion_ratio = religion_courses_left / len(remaining_courses)
+            if religion_ratio > 0.3:  # Lower threshold - force when 30% are religion courses
+                return True
+            
+        return False
