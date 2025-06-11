@@ -24,6 +24,7 @@ class ScheduleDataProcessor:
         logger.info(f"First year limits: {json.dumps(first_year_limits, indent=2)}")
         logger.info(f"Regular Fall/Winter credits: {preferences.get('fallWinterCredits')}")
         logger.info(f"Regular Spring credits: {preferences.get('springCredits')}")
+        logger.info(f"Major class limit per semester: {preferences.get('majorClassLimit', 3)}")
         
         course_data = payload.get("courseData", [])
         
@@ -68,6 +69,7 @@ class ScheduleDataProcessor:
             "startSemester": start_semester,
             "fallWinterCredits": preferences.get("fallWinterCredits", 15),
             "springCredits": preferences.get("springCredits", 10),
+            "majorClassLimit": preferences.get("majorClassLimit", 3),
             "firstYearLimits": first_year_limits,
             "limitFirstYear": preferences.get("limitFirstYear", False)
         }

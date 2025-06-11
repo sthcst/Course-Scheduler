@@ -1153,11 +1153,13 @@ async function generateScheduleFromSemesters(event) {
     // Get other settings
     const startSemester = document.getElementById("start-semester-sem").value;
     const targetSemesters = parseInt(document.getElementById("total-semesters").value);
+    const majorClassLimit = parseInt(document.getElementById("major-class-limit-sem").value, 10); // ADD THIS LINE
     
     // Prepare preferences object
     const preferences = {
       startSemester,
       targetSemesters,
+      majorClassLimit, // ADD THIS LINE
       approach: "semesters-based"
     };
     

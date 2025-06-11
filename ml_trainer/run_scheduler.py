@@ -106,4 +106,4 @@ def run_scheduler(input_path: str, output_path: str = None):
     return updated_payload
 
 if __name__ == "__main__":
-    run_scheduler("Payload.json", "Payload.json")
+    run_scheduler("Payload.json", "ScriptResponse.json")

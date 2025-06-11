@@ -220,6 +220,36 @@ class ScheduleOptimizer:
         religion_count = sum(1 for course in semester_courses if self._is_religion_class(course))
         return religion_count == 0  # Can only schedule if no religion courses are already scheduled
 
+    def _is_major_course(self, course: Course) -> bool:
+        """Check if a course is a major course"""
+        return course.course_type == "major"
+
+    def _is_major_course_dict(self, course_dict: Dict) -> bool:
+        """Check if a course dictionary represents a major course"""
+        return course_dict.get("course_type") == "major"
+
+    def _count_major_courses_in_semester(self, semester_courses: List[Course]) -> int:
+        """Count the number of major courses in a semester"""
+        return sum(1 for course in semester_courses if self._is_major_course(course))
+
+    def _count_major_courses_in_semester_dict(self, semester_courses: List[Dict]) -> int:
+        """Count the number of major courses in a semester from course dictionaries"""
+        return sum(1 for course in semester_courses if self._is_major_course_dict(course))
+
+    def _can_add_major_course_to_semester(self, course: Course, semester_courses: List[Course], 
+                                         major_class_limit: int) -> bool:
+        """Check if a major course can be added to a semester without exceeding the limit"""
+        if not self._is_major_course(course):
+            return True  # Non-major courses are not limited
+        
+        current_major_count = self._count_major_courses_in_semester(semester_courses)
+        
+        # Check if adding this course would exceed the limit
+        courses_to_add = self._get_course_with_coreqs(course, self._all_courses)
+        major_courses_to_add = sum(1 for c in courses_to_add if self._is_major_course(c))
+        
+        return current_major_count + major_courses_to_add <= major_class_limit
+
     def create_schedule(self, processed_data: Dict) -> Dict:
         """Create a schedule with integrated EIL and regular courses"""
         try:
@@ -439,6 +469,11 @@ class ScheduleOptimizer:
                     # Check if there's enough space for the course and its corequisites
                     course_credits = self._get_total_credits(course, remaining_courses)
                     if current_credits + course_credits <= semester.credit_limit:
+                        # Check major class limit before scheduling
+                        major_class_limit = params.get("majorClassLimit", 3)
+                        if not self._can_add_major_course_to_semester(course, semester_courses, major_class_limit):
+                            continue  # Skip this major course if it would exceed the limit
+                        
                         try:
                             # Add course and its corequisites
                             added_courses = self._add_course_with_coreqs(course, remaining_courses)
@@ -460,6 +495,11 @@ class ScheduleOptimizer:
                             
                             # Add to overall scheduled courses
                             all_scheduled_courses.extend(added_courses)
+                            
+                            # Log major course scheduling for debugging
+                            if self._is_major_course(course):
+                                major_count = self._count_major_courses_in_semester(semester_courses)
+                                logger.info(f"Scheduled major course {course.class_number} in {semester.type} {semester.year} (major count: {major_count}/{major_class_limit})")
                             
                             # Remove scheduled courses
                             for c in added_courses:
@@ -1158,6 +1198,13 @@ class ScheduleOptimizer:
         credit_limit = self._get_credit_limit_for_semester_dict(semester, params)
         if semester["totalCredits"] + course["credits"] > credit_limit:
             return False
+        
+        # Check major class limit
+        if self._is_major_course_dict(course):
+            major_class_limit = params.get("majorClassLimit", 3)
+            current_major_count = self._count_major_courses_in_semester_dict(semester["classes"])
+            if current_major_count >= major_class_limit:
+                return False
         
         return True
 
