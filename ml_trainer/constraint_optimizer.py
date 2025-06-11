@@ -181,17 +181,17 @@ class ScheduleOptimizer:
         for course in courses:
             for prereq_id in prereq_chains[course.id]:
                 dependent_courses[prereq_id] = dependent_courses.get(prereq_id, 0) + 1
-        
+    
         # Calculate semester flexibility (fewer offerings = less flexible)
         offering_flexibility = {c.id: len(c.semesters_offered) for c in courses}
         
         # Sort courses based on multiple criteria to optimize graduation time
         return sorted(courses, key=lambda c: (
+            # Religion courses get highest priority - sort them first
+            0 if self._is_religion_class(c) else 1,
             -chain_depths[c.id],            # Deep prerequisite chains first
             -dependent_courses[c.id],       # Courses that unlock more dependencies
             offering_flexibility[c.id],     # Less flexible courses scheduled earlier
-            # Religion courses get slight early priority by having lower secondary sort value
-            0 if self._is_religion_class(c) else 1,  # Religion courses sorted earlier
             c.id                            # Stable sort
         ))
 
@@ -208,6 +208,11 @@ class ScheduleOptimizer:
     def _is_religion_class_dict(self, course_dict: Dict) -> bool:
         """Check if a course dictionary represents a religion course"""
         return course_dict.get("course_type") == "religion"
+
+    def _is_eil_course(self, course: Course) -> bool:
+        """Check if a course is an EIL course"""
+        eil_courses = {"STDEV 100R", "EIL 201", "EIL 313", "EIL 317", "EIL 320"}
+        return course.class_number in eil_courses
 
     # Add a method to check if we can schedule a religion class in a semester
     def _can_schedule_religion_in_semester(self, semester_courses: List[Course]) -> bool:
@@ -391,34 +396,38 @@ class ScheduleOptimizer:
                     # Calculate priority score for this course
                     priority = 0
 
-                    # 1. Highest priority for courses that unlock the most other courses
+                    # 1. HIGHEST priority for courses that unlock the most other courses
+                    # Look at ALL remaining courses, not just those that can be scheduled this semester
                     unlocks_count = sum(1 for c in remaining_courses if course.id in c.prerequisites)
-                    priority += unlocks_count * 10  # Heavy weight for dependency unlocking
+                    priority += unlocks_count * 20  # Increased weight significantly
 
-                    # 2. High priority for courses in long prerequisite chains
+                    # 2. Additional priority boost for courses with NO prerequisites (foundation courses)
+                    if not course.prerequisites:
+                        # Foundation courses that unlock others get massive priority
+                        if unlocks_count > 0:
+                            priority += 50  # Very high priority for foundation courses
+                        else:
+                            priority += 5   # Still good priority for standalone foundation courses
+
+                    # 3. High priority for courses in long prerequisite chains
                     chain_length = len([c for c in all_scheduled_courses if c.id in course.prerequisites])
                     priority += chain_length * 5
 
-                    # 3. High priority for courses with limited semester offerings
+                    # 4. High priority for courses with limited semester offerings
                     flexibility_penalty = (3 - min(len(course.semesters_offered), 3)) * 8
                     priority += flexibility_penalty
 
-                    # 4. Enhanced religion course distribution logic - prioritize early scheduling
+                    # 5. Enhanced religion course distribution logic - prioritize early scheduling
                     if self._is_religion_class(course):
-                        if force_religion_scheduling:
-                            # Very high priority when forcing
-                            priority += 15  # Higher than before to ensure scheduling
-                        else:
-                            # Always give religion courses moderate priority to schedule them early
-                            priority += 6  # Consistent moderate boost regardless of distribution
+                        # Always give religion courses high priority to schedule them early
+                        priority += 15  # High priority to ensure early scheduling
                     else:
-                        # Small boost for non-religion courses when not forcing religion scheduling
-                        if not force_religion_scheduling:
-                            priority += 0.5
+                        # Small boost for non-religion courses
+                        priority += 0.5
 
-                    # 5. Bonus for completing degree requirements early
+                    # 6. Bonus for completing degree requirements early
                     if course.course_type in ["major", "core"]:
-                        priority += 2
+                        priority += 3
                     
                     course_priorities.append((course, priority))
 
@@ -484,6 +493,9 @@ class ScheduleOptimizer:
                 if not (remaining_courses or first_sem_required or first_sem_flexible or second_sem_required):
                     break
 
+            # Optimize final semesters to eliminate unnecessary semesters by strategically swapping religion courses
+            scheduled_semesters = self._optimize_final_semesters(scheduled_semesters, params)
+
             return {
                 "metadata": {
                     "approach": "integrated-scheduling",
@@ -492,7 +504,8 @@ class ScheduleOptimizer:
                     "improvements": [
                         "Integrated EIL and regular course scheduling",
                         "Maximized semester utilization",
-                        "Maintained all course scheduling rules and constraints"
+                        "Maintained all course scheduling rules and constraints",
+                        "Optimized schedule to eliminate unnecessary semesters"
                     ]
                 },
                 "schedule": scheduled_semesters
@@ -517,8 +530,8 @@ class ScheduleOptimizer:
         year = int(year)
         
         semesters = []
-        for i in range(12):  # Generate 3 years worth of semesters
-            # Change from i < 4 to i < 3 to correctly handle first 3 semesters
+        for i in range(15):  # Generate more semesters to ensure we don't run out
+            # First 3 semesters are first year
             is_first_year = i < 3
             if sem_type == "Spring":
                 credit_limit = first_year_spring if is_first_year else regular_spring
@@ -527,14 +540,16 @@ class ScheduleOptimizer:
                 
             semesters.append(Semester(sem_type, year, credit_limit))
             
-            # Update semester type and year
+            # Update semester type and year in chronological order
             if sem_type == "Fall":
                 sem_type = "Winter"
-                year += 1
+                year += 1  # Winter is next year from Fall
             elif sem_type == "Winter":
                 sem_type = "Spring"
-            else:
+                # Spring is same year as Winter
+            else:  # Spring
                 sem_type = "Fall"
+                # Fall is same year as Spring
                 
         return semesters
 
@@ -735,10 +750,75 @@ class ScheduleOptimizer:
         # Check if all prerequisites are in previous semesters
         return all(prereq_id in courses_in_previous_semesters for prereq_id in course.prerequisites)
 
-    def _is_eil_course(self, course: Course) -> bool:
-        """Check if course is part of EIL level 1"""
-        eil_courses = {"STDEV 100R", "EIL 201", "EIL 313", "EIL 317", "EIL 320"}
-        return course.class_number in eil_courses
+    def _get_semester_chronological_order(self, start_semester: str) -> List[Tuple[str, int]]:
+        """Generate chronological order of semesters starting from start semester"""
+        start_type, start_year = start_semester.split()
+        start_year = int(start_year)
+        
+        semester_sequence = []
+        current_type = start_type
+        current_year = start_year
+        
+        # Generate sequence for several years
+        for _ in range(20):  # Generate enough semesters
+            semester_sequence.append((current_type, current_year))
+            
+            # Update to next semester in chronological order
+            if current_type == "Fall":
+                current_type = "Winter"
+                current_year += 1
+            elif current_type == "Winter":
+                current_type = "Spring"
+            else:  # Spring
+                current_type = "Fall"
+                
+        return semester_sequence
+    
+    def _is_semester_before(self, semester1: Dict, semester2: Dict, start_semester: str) -> bool:
+        """Check if semester1 comes chronologically before semester2"""
+        semester_sequence = self._get_semester_chronological_order(start_semester)
+        
+        sem1_tuple = (semester1["type"], semester1["year"])
+        sem2_tuple = (semester2["type"], semester2["year"])
+        
+        try:
+            index1 = semester_sequence.index(sem1_tuple)
+            index2 = semester_sequence.index(sem2_tuple)
+            return index1 < index2
+        except ValueError:
+            # If semester not found in sequence, assume false
+            return False
+
+    def _prerequisites_satisfied_in_semester_dict(self, course: Dict, scheduled_semesters: List[Dict], 
+                                                 semester_idx: int) -> bool:
+        """Check if prerequisites are satisfied for a course in a specific semester"""
+        if not course.get("prerequisites"):
+            return True
+        
+        # Get all courses scheduled before this semester
+        scheduled_before = []
+        for i in range(semester_idx):
+            for c in scheduled_semesters[i]["classes"]:
+                scheduled_before.append(c["id"])
+        
+        return all(prereq_id in scheduled_before for prereq_id in course["prerequisites"])
+
+    def _can_move_course_to_later_semester(self, course: Dict, from_semester_idx: int, 
+                                         to_semester_idx: int, scheduled_semesters: List[Dict]) -> bool:
+        """Check if moving a course to a later semester would violate prerequisites for other courses"""
+        course_id = course["id"]
+        
+        # Check all courses in semesters between from_semester and to_semester (inclusive of to_semester)
+        for i in range(from_semester_idx + 1, len(scheduled_semesters)):
+            semester = scheduled_semesters[i]
+            for other_course in semester["classes"]:
+                # If any course has this course as a prerequisite, we can't move it later
+                if course_id in other_course.get("prerequisites", []):
+                    # But if we're moving it to before that course, it's still valid
+                    if i > to_semester_idx:
+                        return False
+        
+        return True
 
     def _schedule_eil_courses(self, courses_to_schedule: List[Course], semesters: List[Semester], 
                          scheduled_semesters: List[Dict], scheduled_course_ids: Set[int]) -> Tuple[List[Course], int]:
@@ -884,14 +964,329 @@ class ScheduleOptimizer:
         if religion_courses_left == 0:
             return False
         
-        # Force religion scheduling much earlier - after semester 3
-        if len(scheduled_semesters) > 3 and religion_courses_left > 0:
+        # Force religion scheduling immediately if we have any religion courses left
+        # Remove the semester restriction - can start from semester 1
+        if religion_courses_left > 0:
             return True
             
-        # If we have many religion courses left relative to remaining courses, force scheduling
-        if len(remaining_courses) > 0:
-            religion_ratio = religion_courses_left / len(remaining_courses)
-            if religion_ratio > 0.3:  # Lower threshold - force when 30% are religion courses
-                return True
-            
         return False
+
+    def _optimize_final_semesters(self, scheduled_semesters: List[Dict], params: Dict) -> List[Dict]:
+        """Optimize final semesters to eliminate unnecessary semesters by strategically swapping religion courses"""
+        if len(scheduled_semesters) < 2:
+            return scheduled_semesters
+        
+        optimized = True
+        max_iterations = 3  # Prevent infinite loops
+        iterations = 0
+        
+        while optimized and iterations < max_iterations:
+            optimized = False
+            iterations += 1
+            
+            # Check each semester starting from the end
+            for last_idx in range(len(scheduled_semesters) - 1, 0, -1):
+                last_semester = scheduled_semesters[last_idx]
+                
+                # Be more aggressive about eliminating final semesters
+                # Especially target single religion courses or very light semesters
+                should_eliminate = (
+                    # Single course semesters (especially religion courses)
+                    len(last_semester["classes"]) == 1 or
+                    # Very light credit loads
+                    last_semester["totalCredits"] <= 4 or
+                    # Semesters with only religion courses
+                    all(self._is_religion_class_dict(c) for c in last_semester["classes"]) or
+                    # Small semesters that can likely be redistributed
+                    (len(last_semester["classes"]) <= 2 and last_semester["totalCredits"] <= 6)
+                )
+                
+                if should_eliminate:
+                    # If this semester can potentially be eliminated, try to redistribute its courses
+                    if self._can_eliminate_semester(last_semester, scheduled_semesters, last_idx, params):
+                        if self._redistribute_semester_courses(scheduled_semesters, last_idx, params):
+                            logger.info(f"Successfully eliminated {last_semester['type']} {last_semester['year']} with {last_semester['totalCredits']} credits - graduated earlier!")
+                            optimized = True
+                            break
+
+        return scheduled_semesters
+
+    def _can_eliminate_semester(self, semester: Dict, scheduled_semesters: List[Dict], 
+                          semester_idx: int, params: Dict) -> bool:
+        """Check if a semester can potentially be eliminated by redistributing its courses"""
+        # Be more lenient for elimination - allow larger semesters to be eliminated if they're at the end
+        if len(semester["classes"]) > 4 or semester["totalCredits"] > 12:
+            return False
+        
+        # Check if we have enough space in previous semesters to accommodate these courses
+        total_credits_needed = semester["totalCredits"]
+        available_space = 0
+        
+        # Calculate available space in previous semesters
+        for i in range(semester_idx):
+            prev_semester = scheduled_semesters[i]
+            credit_limit = self._get_credit_limit_for_semester_dict(prev_semester, params)
+            available_space += max(0, credit_limit - prev_semester["totalCredits"])
+
+        # Also check if we can swap religion courses to make space
+        if available_space < total_credits_needed:
+            # Count religion courses that could potentially be swapped
+            religion_courses_to_move = [c for c in semester["classes"] if self._is_religion_class_dict(c)]
+            if religion_courses_to_move:
+                # If we have religion courses, we might be able to swap them
+                return True
+
+        return available_space >= total_credits_needed
+
+    def _redistribute_semester_courses(self, scheduled_semesters: List[Dict], 
+                                     target_idx: int, params: Dict) -> bool:
+        """Redistribute courses from target semester to earlier semesters"""
+        target_semester = scheduled_semesters[target_idx]
+        courses_to_redistribute = target_semester["classes"].copy()
+        
+        # Prioritize religion courses for swapping first
+        religion_courses = [c for c in courses_to_redistribute if self._is_religion_class_dict(c)]
+        non_religion_courses = [c for c in courses_to_redistribute if not self._is_religion_class_dict(c)]
+        
+        # Try religion courses first (easier to swap)
+        for course in religion_courses:
+            placed = False
+            
+            # Try placing in each earlier semester
+            for i in range(target_idx):
+                semester = scheduled_semesters[i]
+                
+                # Check if we can add this course to this semester
+                if self._can_add_course_to_semester(course, semester, scheduled_semesters, i, params):
+                    if self._swap_religion_course(course, semester, scheduled_semesters, i):
+                        placed = True
+                        courses_to_redistribute.remove(course)
+                        break
+            
+            # If we couldn't place this religion course, try harder with more flexible swapping
+            if not placed:
+                if self._force_religion_course_placement(course, scheduled_semesters, target_idx, params):
+                    placed = True
+                    courses_to_redistribute.remove(course)
+            
+            if not placed:
+                return False
+        
+        # Then try non-religion courses
+        for course in non_religion_courses:
+            placed = False
+            
+            # Try placing in each earlier semester
+            for i in range(target_idx):
+                semester = scheduled_semesters[i]
+                
+                # Check if we can add this course to this semester
+                if self._can_add_course_to_semester(course, semester, scheduled_semesters, i, params):
+                    # Non-religion course - just add if there's space
+                    credit_limit = self._get_credit_limit_for_semester_dict(semester, params)
+                    if semester["totalCredits"] + course["credits"] <= credit_limit:
+                        semester["classes"].append(course)
+                        semester["totalCredits"] += course["credits"]
+                        placed = True
+                        break
+            
+            # If we couldn't place this course, redistribution failed
+            if not placed:
+                return False
+
+        # If we got here, all courses were successfully redistributed
+        scheduled_semesters.pop(target_idx)
+        return True
+
+    def _force_religion_course_placement(self, religion_course: Dict, scheduled_semesters: List[Dict], 
+                                       target_idx: int, params: Dict) -> bool:
+        """Force placement of a religion course by finding the best swap opportunity"""
+        # Look for the semester with the most available space that has a religion course
+        best_semester_idx = -1
+        best_available_space = -1
+        
+        for i in range(target_idx):
+            semester = scheduled_semesters[i]
+            
+            # Check if religion course can be offered in this semester
+            if semester["type"] not in religion_course["semesters_offered"]:
+                continue
+            
+            # Check if this semester has a religion course we can swap
+            semester_religion = [c for c in semester["classes"] if self._is_religion_class_dict(c)]
+            if not semester_religion:
+                continue
+                
+            # Calculate available space after potential swap
+            credit_limit = self._get_credit_limit_for_semester_dict(semester, params)
+            current_religion = semester_religion[0]
+            net_change = religion_course["credits"] - current_religion["credits"]
+            available_space = credit_limit - semester["totalCredits"] - net_change
+            
+            if available_space >= 0 and available_space > best_available_space:
+                best_available_space = available_space
+                best_semester_idx = i
+        
+        # Perform the swap if we found a suitable semester
+        if best_semester_idx >= 0:
+            return self._swap_religion_course(religion_course, scheduled_semesters[best_semester_idx], 
+                                            scheduled_semesters, best_semester_idx)
+        
+        return False
+
+    def _get_credit_limit_for_semester_dict(self, semester: Dict, params: Dict) -> int:
+        """Get credit limit for a semester dictionary"""
+        # Use default limits if params not provided
+        if semester["type"] == "Spring":
+            return params.get("springCredits", 10)
+        else:
+            return params.get("fallWinterCredits", 16)
+
+    def _can_add_course_to_semester(self, course: Dict, semester: Dict, 
+                                   scheduled_semesters: List[Dict], semester_idx: int, 
+                                   params: Dict) -> bool:
+        """Check if a course can be added to a specific semester"""
+        # Check semester offering
+        if semester["type"] not in course["semesters_offered"]:
+            return False
+        
+        # Check prerequisites
+        if not self._prerequisites_satisfied_in_semester_dict(course, scheduled_semesters, semester_idx):
+            return False
+        
+        # Check credit limit
+        credit_limit = self._get_credit_limit_for_semester_dict(semester, params)
+        if semester["totalCredits"] + course["credits"] > credit_limit:
+            return False
+        
+        return True
+
+    def _swap_religion_course(self, new_religion_course: Dict, target_semester: Dict, 
+                             scheduled_semesters: List[Dict], target_idx: int) -> bool:
+        """Swap a religion course with a simple non-religion course to optimize graduation time"""
+        
+        # Strategy: Find a simple non-religion course (no prerequisites, not EIL) that can move
+        # to the target semester, allowing the religion course to take its place
+        
+        # Look through earlier semesters for swappable courses
+        for earlier_idx in range(target_idx):
+            earlier_semester = scheduled_semesters[earlier_idx]
+            
+            # Check if this earlier semester already has a religion course
+            earlier_religion = [c for c in earlier_semester["classes"] if self._is_religion_class_dict(c)]
+            if earlier_religion:
+                continue  # Skip semesters that already have religion courses
+            
+            # Find suitable courses that could move to target semester
+            for course in earlier_semester["classes"][:]:  # Copy list to avoid modification issues
+                if self._is_religion_class_dict(course):
+                    continue  # Skip religion courses
+                
+                # Skip EIL courses - they should not be moved
+                if self._is_eil_course_dict(course):
+                    continue
+                
+                # Skip courses with prerequisites - they're part of important chains
+                if course.get("prerequisites") and len(course["prerequisites"]) > 0:
+                    continue
+                
+                # Skip courses that are prerequisites for other courses (hub courses)
+                # Check if this course is a prerequisite for any other course in the schedule
+                is_prerequisite_for_others = False
+                for sem in scheduled_semesters:
+                    for other_course in sem["classes"]:
+                        if course["id"] in other_course.get("prerequisites", []):
+                            is_prerequisite_for_others = True
+                            break
+                    if is_prerequisite_for_others:
+                        break
+                
+                if is_prerequisite_for_others:
+                    continue  # Skip hub courses that other courses depend on
+                
+                # Check if this course can be offered in target semester
+                if target_semester["type"] not in course["semesters_offered"]:
+                    continue
+                
+                # Check if moving this course would violate prerequisites for other courses
+                if not self._can_move_course_to_later_semester(course, earlier_idx, target_idx, scheduled_semesters):
+                    continue
+
+                # Calculate total credits including corequisites for both courses
+                new_religion_total_credits = self._get_course_total_credits_dict(new_religion_course, scheduled_semesters)
+                course_total_credits = self._get_course_total_credits_dict(course, scheduled_semesters)
+                
+                # Check if both moves are feasible credit-wise
+                earlier_credit_limit = self._get_credit_limit_for_semester_dict(earlier_semester, {})
+                target_credit_limit = self._get_credit_limit_for_semester_dict(target_semester, {})
+                
+                earlier_new_total = earlier_semester["totalCredits"] - course_total_credits + new_religion_total_credits
+                target_new_total = target_semester["totalCredits"] + course_total_credits - new_religion_total_credits
+                
+                if (earlier_new_total <= earlier_credit_limit and 
+                    target_new_total <= target_credit_limit):
+                    
+                    # Perform the swap
+                    # Remove courses from their current semesters
+                    earlier_semester["classes"] = [c for c in earlier_semester["classes"] 
+                                                 if c["id"] != course["id"]]
+                    target_semester["classes"] = [c for c in target_semester["classes"] 
+                                                if c["id"] != new_religion_course["id"]]
+                    
+                    # Add courses to their new semesters
+                    earlier_semester["classes"].append(new_religion_course)
+                    target_semester["classes"].append(course)
+                    
+                    # Update credit totals
+                    earlier_semester["totalCredits"] = earlier_new_total
+                    target_semester["totalCredits"] = target_new_total
+                    
+                    logger.info(f"Swapped religion course {new_religion_course['class_number']} with simple course {course['class_number']}")
+                    return True
+        
+        # If no swap was possible, try just adding the religion course if there's space
+        target_credit_limit = self._get_credit_limit_for_semester_dict(target_semester, {})
+        new_religion_total_credits = self._get_course_total_credits_dict(new_religion_course, scheduled_semesters)
+        
+        if target_semester["totalCredits"] + new_religion_total_credits <= target_credit_limit:
+            # Check if target semester already has a religion course
+            target_religion = [c for c in target_semester["classes"] if self._is_religion_class_dict(c)]
+            if not target_religion:
+                target_semester["classes"].append(new_religion_course)
+                target_semester["totalCredits"] += new_religion_total_credits
+                return True
+        
+        return False
+
+    def _get_course_total_credits_dict(self, course_dict: Dict, scheduled_semesters: List[Dict]) -> int:
+        """Calculate total credits for a course including its corequisites from dictionary"""
+        total_credits = course_dict["credits"]
+        
+        # Add corequisite credits if any
+        if course_dict.get("corequisites"):
+            for coreq_id in course_dict["corequisites"]:
+                # Find the corequisite in the scheduled semesters
+                for semester in scheduled_semesters:
+                    for c in semester["classes"]:
+                        if c["id"] == coreq_id:
+                            total_credits += c["credits"]
+                            break
+        
+        return total_credits
+
+    def _can_move_course_to_later_semester(self, course: Dict, from_semester_idx: int, 
+                                         to_semester_idx: int, scheduled_semesters: List[Dict]) -> bool:
+        """Check if moving a course to a later semester would violate prerequisites for other courses"""
+        course_id = course["id"]
+        
+        # Check all courses in semesters between from_semester and to_semester (inclusive of to_semester)
+        for i in range(from_semester_idx + 1, len(scheduled_semesters)):
+            semester = scheduled_semesters[i]
+            for other_course in semester["classes"]:
+                # If any course has this course as a prerequisite, we can't move it later
+                if course_id in other_course.get("prerequisites", []):
+                    # But if we're moving it to before that course, it's still valid
+                    if i > to_semester_idx:
+                        return False
+        
+        return True

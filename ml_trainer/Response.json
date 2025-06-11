@@ -4,14 +4,75 @@
         "improvements": [
             "Integrated EIL and regular course scheduling",
             "Maximized semester utilization",
-            "Maintained all course scheduling rules and constraints"
+            "Maintained all course scheduling rules and constraints",
+            "Optimized schedule to eliminate unnecessary semesters"
         ],
         "score": 1,
-        "startSemester": "Spring 2025"
+        "startSemester": "Winter 2025"
     },
     "schedule": [
         {
             "classes": [
+                {
+                    "class_name": "Holokai Foundations",
+                    "class_number": "STDEV 100R",
+                    "corequisites": [],
+                    "course_type": "eil/holokai",
+                    "credits": 1,
+                    "id": 60,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Listening/Speaking",
+                    "class_number": "EIL 313",
+                    "corequisites": [],
+                    "course_type": "eil/holokai",
+                    "credits": 4,
+                    "id": 63,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Reading/Writing",
+                    "class_number": "EIL 317",
+                    "corequisites": [],
+                    "course_type": "eil/holokai",
+                    "credits": 4,
+                    "id": 64,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "The Int'l Student in the University",
+                    "class_number": "EIL 201",
+                    "corequisites": [],
+                    "course_type": "eil/holokai",
+                    "credits": 2,
+                    "id": 62,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
                 {
                     "class_name": "Introduction to Pacific Studies",
                     "class_number": "PAIS 105",
@@ -19,6 +80,42 @@
                     "course_type": "minor",
                     "credits": 3,
                     "id": 37,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Database Applications",
+                    "class_number": "CS 250",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 5,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
+                    ]
+                }
+            ],
+            "totalCredits": 17,
+            "type": "Winter",
+            "year": 2025
+        },
+        {
+            "classes": [
+                {
+                    "class_name": "Academic English II",
+                    "class_number": "EIL 320",
+                    "corequisites": [],
+                    "course_type": "eil/holokai",
+                    "credits": 4,
+                    "id": 65,
                     "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
@@ -56,9 +153,24 @@
                         "Winter",
                         "Spring"
                     ]
+                },
+                {
+                    "class_name": "The Eternal Family",
+                    "class_number": "REL 200",
+                    "corequisites": [],
+                    "course_type": "religion",
+                    "credits": 2,
+                    "id": 46,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
                 }
             ],
-            "totalCredits": 9,
+            "totalCredits": 12,
             "type": "Spring",
             "year": 2025
         },
@@ -78,17 +190,20 @@
                     ]
                 },
                 {
-                    "class_name": "Database Applications",
-                    "class_number": "CS 250",
+                    "class_name": "Topics for Advanced Writing and Analysis",
+                    "class_number": "ENGL 315",
                     "corequisites": [],
                     "course_type": "major",
                     "credits": 3,
-                    "id": 5,
+                    "id": 27,
                     "is_elective": false,
-                    "prerequisites": [],
+                    "prerequisites": [
+                        26
+                    ],
                     "semesters_offered": [
                         "Fall",
-                        "Winter"
+                        "Winter",
+                        "Spring"
                     ]
                 },
                 {
@@ -126,24 +241,39 @@
                     ]
                 },
                 {
-                    "class_name": "Topics for Advanced Writing and Analysis",
-                    "class_number": "ENGL 315",
+                    "class_name": "Pacific Social Development",
+                    "class_number": "PAIS 220",
                     "corequisites": [],
-                    "course_type": "major",
+                    "course_type": "minor",
                     "credits": 3,
-                    "id": 27,
-                    "is_elective": false,
+                    "id": 40,
+                    "is_elective": true,
                     "prerequisites": [
-                        26
+                        37
                     ],
                     "semesters_offered": [
                         "Fall",
-                        "Winter",
-                        "Spring"
+                        "Winter"
+                    ]
+                },
+                {
+                    "class_name": "Peace and Conflict in the Pacific",
+                    "class_number": "PAIS 320",
+                    "corequisites": [],
+                    "course_type": "minor",
+                    "credits": 3,
+                    "id": 43,
+                    "is_elective": true,
+                    "prerequisites": [
+                        37
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter"
                     ]
                 }
             ],
-            "totalCredits": 15,
+            "totalCredits": 18,
             "type": "Fall",
             "year": 2025
         },
@@ -183,21 +313,6 @@
                     ]
                 },
                 {
-                    "class_name": "Calculus I",
-                    "class_number": "MATH 212",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 5,
-                    "id": 22,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
                     "class_name": "Quantitative Reasoning",
                     "class_number": "MATH 107",
                     "corequisites": [],
@@ -213,12 +328,12 @@
                     ]
                 },
                 {
-                    "class_name": "The Eternal Family",
-                    "class_number": "REL 200",
+                    "class_name": "Calculus I",
+                    "class_number": "MATH 212",
                     "corequisites": [],
-                    "course_type": "religion",
-                    "credits": 2,
-                    "id": 46,
+                    "course_type": "major",
+                    "credits": 5,
+                    "id": 22,
                     "is_elective": false,
                     "prerequisites": [],
                     "semesters_offered": [
@@ -226,9 +341,27 @@
                         "Winter",
                         "Spring"
                     ]
+                },
+                {
+                    "class_name": "New Venture Management",
+                    "class_number": "ENTR 483",
+                    "corequisites": [],
+                    "course_type": "minor",
+                    "credits": 3,
+                    "id": 32,
+                    "is_elective": false,
+                    "prerequisites": [
+                        30,
+                        31
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
                 }
             ],
-            "totalCredits": 16,
+            "totalCredits": 17,
             "type": "Winter",
             "year": 2026
         },
@@ -252,20 +385,18 @@
                     ]
                 },
                 {
-                    "class_name": "New Venture Management",
-                    "class_number": "ENTR 483",
+                    "class_name": "History and Ethics of Computing",
+                    "class_number": "HIST 470",
                     "corequisites": [],
-                    "course_type": "minor",
+                    "course_type": "major",
                     "credits": 3,
-                    "id": 32,
+                    "id": 7,
                     "is_elective": false,
                     "prerequisites": [
-                        30,
-                        31
+                        27
                     ],
                     "semesters_offered": [
                         "Fall",
-                        "Winter",
                         "Spring"
                     ]
                 },
@@ -286,9 +417,24 @@
                         "Winter",
                         "Spring"
                     ]
+                },
+                {
+                    "class_name": "Foundations of the Restoration",
+                    "class_number": "REL 225",
+                    "corequisites": [],
+                    "course_type": "religion",
+                    "credits": 2,
+                    "id": 47,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
                 }
             ],
-            "totalCredits": 9,
+            "totalCredits": 11,
             "type": "Spring",
             "year": 2026
         },
@@ -326,55 +472,70 @@
                     ]
                 },
                 {
-                    "class_name": "History and Ethics of Computing",
-                    "class_number": "HIST 470",
+                    "class_name": "Jesus Christ and the Everlasting Gospel",
+                    "class_number": "REL 250",
                     "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 7,
+                    "course_type": "religion",
+                    "credits": 2,
+                    "id": 48,
                     "is_elective": false,
-                    "prerequisites": [
-                        27
-                    ],
+                    "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
+                        "Winter",
                         "Spring"
                     ]
                 },
                 {
-                    "class_name": "Pacific Social Development",
-                    "class_number": "PAIS 220",
+                    "class_name": "Personal Financial Management",
+                    "class_number": "ENTR 318",
                     "corequisites": [],
                     "course_type": "minor",
                     "credits": 3,
-                    "id": 40,
+                    "id": 33,
                     "is_elective": true,
-                    "prerequisites": [
-                        37
-                    ],
+                    "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
                         "Winter"
                     ]
                 },
                 {
-                    "class_name": "Peace and Conflict in the Pacific",
-                    "class_number": "PAIS 320",
+                    "class_name": "Principles of Statistics",
+                    "class_number": "MATH 121",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 21,
+                    "is_elective": false,
+                    "prerequisites": [
+                        20
+                    ],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Recognizing Place, Purpose, and Positionality on Native Land",
+                    "class_number": "PAIS 200",
                     "corequisites": [],
                     "course_type": "minor",
                     "credits": 3,
-                    "id": 43,
-                    "is_elective": true,
+                    "id": 38,
+                    "is_elective": false,
                     "prerequisites": [
                         37
                     ],
                     "semesters_offered": [
                         "Fall",
-                        "Winter"
+                        "Winter",
+                        "Spring"
                     ]
                 }
             ],
-            "totalCredits": 16,
+            "totalCredits": 18,
             "type": "Fall",
             "year": 2026
         },
@@ -427,16 +588,14 @@
                     ]
                 },
                 {
-                    "class_name": "Principles of Statistics",
-                    "class_number": "MATH 121",
+                    "class_name": "The Teachings and Doctrine of the Book of Mormon",
+                    "class_number": "REL 275",
                     "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 21,
+                    "course_type": "religion",
+                    "credits": 2,
+                    "id": 49,
                     "is_elective": false,
-                    "prerequisites": [
-                        20
-                    ],
+                    "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
                         "Winter",
@@ -444,13 +603,13 @@
                     ]
                 },
                 {
-                    "class_name": "Recognizing Place, Purpose, and Positionality on Native Land",
-                    "class_number": "PAIS 200",
+                    "class_name": "Indigenous Pacific Research Methodology",
+                    "class_number": "PAIS 201",
                     "corequisites": [],
                     "course_type": "minor",
                     "credits": 3,
-                    "id": 38,
-                    "is_elective": false,
+                    "id": 39,
+                    "is_elective": true,
                     "prerequisites": [
                         37
                     ],
@@ -459,9 +618,24 @@
                         "Winter",
                         "Spring"
                     ]
+                },
+                {
+                    "class_name": "Information Technology Essentials",
+                    "class_number": "IT 124",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 2,
+                    "is_elective": false,
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
                 }
             ],
-            "totalCredits": 15,
+            "totalCredits": 17,
             "type": "Winter",
             "year": 2027
         },
@@ -499,16 +673,29 @@
                     ]
                 },
                 {
-                    "class_name": "Indigenous Pacific Research Methodology",
-                    "class_number": "PAIS 201",
+                    "class_name": "Intro to The Church of Jesus Christ of Latter-day Saints",
+                    "class_number": "REL 100",
                     "corequisites": [],
-                    "course_type": "minor",
-                    "credits": 3,
-                    "id": 39,
+                    "course_type": "religion",
+                    "credits": 2,
+                    "id": 50,
                     "is_elective": true,
-                    "prerequisites": [
-                        37
-                    ],
+                    "prerequisites": [],
+                    "semesters_offered": [
+                        "Fall",
+                        "Winter",
+                        "Spring"
+                    ]
+                },
+                {
+                    "class_name": "Web Design",
+                    "class_number": "CS 140",
+                    "corequisites": [],
+                    "course_type": "major",
+                    "credits": 3,
+                    "id": 3,
+                    "is_elective": false,
+                    "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
                         "Winter",
@@ -516,7 +703,7 @@
                     ]
                 }
             ],
-            "totalCredits": 9,
+            "totalCredits": 11,
             "type": "Spring",
             "year": 2027
         },
@@ -532,21 +719,6 @@
                     "is_elective": false,
                     "prerequisites": [
                         10,
-                        12
-                    ],
-                    "semesters_offered": [
-                        "Fall"
-                    ]
-                },
-                {
-                    "class_name": "Advanced Topics in Computer Science",
-                    "class_number": "CS 490R",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 17,
-                    "is_elective": true,
-                    "prerequisites": [
                         12
                     ],
                     "semesters_offered": [
@@ -570,49 +742,28 @@
                     ]
                 },
                 {
-                    "class_name": "Personal Financial Management",
-                    "class_number": "ENTR 318",
+                    "class_name": "Advanced Topics in Computer Science",
+                    "class_number": "CS 490R",
                     "corequisites": [],
-                    "course_type": "minor",
+                    "course_type": "major",
                     "credits": 3,
-                    "id": 33,
+                    "id": 17,
                     "is_elective": true,
-                    "prerequisites": [],
+                    "prerequisites": [
+                        12
+                    ],
                     "semesters_offered": [
-                        "Fall",
-                        "Winter"
+                        "Fall"
                     ]
                 },
                 {
-                    "class_name": "Information Technology Essentials",
-                    "class_number": "IT 124",
+                    "class_name": "Family History (Genealogy)",
+                    "class_number": "REL 261",
                     "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 2,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                }
-            ],
-            "totalCredits": 15,
-            "type": "Fall",
-            "year": 2027
-        },
-        {
-            "classes": [
-                {
-                    "class_name": "Web Design",
-                    "class_number": "CS 140",
-                    "corequisites": [],
-                    "course_type": "major",
-                    "credits": 3,
-                    "id": 3,
-                    "is_elective": false,
+                    "course_type": "religion",
+                    "credits": 2,
+                    "id": 51,
+                    "is_elective": true,
                     "prerequisites": [],
                     "semesters_offered": [
                         "Fall",
@@ -636,91 +787,9 @@
                     ]
                 }
             ],
-            "totalCredits": 6,
-            "type": "Winter",
-            "year": 2028
-        },
-        {
-            "classes": [
-                {
-                    "class_name": "Foundations of the Restoration",
-                    "class_number": "REL 225",
-                    "corequisites": [],
-                    "course_type": "religion",
-                    "credits": 2,
-                    "id": 47,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Jesus Christ and the Everlasting Gospel",
-                    "class_number": "REL 250",
-                    "corequisites": [],
-                    "course_type": "religion",
-                    "credits": 2,
-                    "id": 48,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "The Teachings and Doctrine of the Book of Mormon",
-                    "class_number": "REL 275",
-                    "corequisites": [],
-                    "course_type": "religion",
-                    "credits": 2,
-                    "id": 49,
-                    "is_elective": false,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Intro to The Church of Jesus Christ of Latter-day Saints",
-                    "class_number": "REL 100",
-                    "corequisites": [],
-                    "course_type": "religion",
-                    "credits": 2,
-                    "id": 50,
-                    "is_elective": true,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                },
-                {
-                    "class_name": "Family History (Genealogy)",
-                    "class_number": "REL 261",
-                    "corequisites": [],
-                    "course_type": "religion",
-                    "credits": 2,
-                    "id": 51,
-                    "is_elective": true,
-                    "prerequisites": [],
-                    "semesters_offered": [
-                        "Fall",
-                        "Winter",
-                        "Spring"
-                    ]
-                }
-            ],
-            "totalCredits": 10,
-            "type": "Spring",
-            "year": 2028
+            "totalCredits": 14,
+            "type": "Fall",
+            "year": 2027
         },
         {
             "classes": [
@@ -741,7 +810,7 @@
                 }
             ],
             "totalCredits": 2,
-            "type": "Fall",
+            "type": "Winter",
             "year": 2028
         }
     ]
