@@ -7,12 +7,165 @@
             "holokai": "Math & Sciences",
             "sections": [
                 {
+                    "id": 1,
+                    "section_name": "CS/IT Foundation Requirements",
+                    "credits_required": 0,
+                    "is_required": true,
+                    "credits_needed_to_take": null,
+                    "display_order": 1,
+                    "classes": [
+                        {
+                            "id": 1,
+                            "class_name": "Introduction to Programming Fundamentals",
+                            "class_number": "CS 101",
+                            "semesters_offered": [
+                                "Fall"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 2,
+                            "class_name": "Information Technology Essentials",
+                            "class_number": "IT 124",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 3,
+                            "class_name": "Web Design",
+                            "class_number": "CS 140",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 4,
+                            "class_name": "Introduction to Object-Oriented Programming",
+                            "class_number": "CS 202",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                1
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 5,
+                            "class_name": "Database Applications",
+                            "class_number": "CS 250",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 6,
+                            "class_name": "Systems Engineering",
+                            "class_number": "CS 311",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                4,
+                                5
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 7,
+                            "class_name": "History and Ethics of Computing",
+                            "class_number": "HIST 470",
+                            "semesters_offered": [
+                                "Fall",
+                                "Spring"
+                            ],
+                            "prerequisites": [
+                                27
+                            ],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 3,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        }
+                    ]
+                },
+                {
                     "id": 5,
                     "section_name": "Computer Science Core Requirments",
                     "credits_required": 0,
                     "is_required": true,
                     "credits_needed_to_take": null,
-                    "display_order": 1,
+                    "display_order": 2,
                     "classes": [
                         {
                             "id": 8,
@@ -205,159 +358,6 @@
                     ]
                 },
                 {
-                    "id": 1,
-                    "section_name": "CS/IT Foundation Requirements",
-                    "credits_required": 0,
-                    "is_required": true,
-                    "credits_needed_to_take": null,
-                    "display_order": 2,
-                    "classes": [
-                        {
-                            "id": 1,
-                            "class_name": "Introduction to Programming Fundamentals",
-                            "class_number": "CS 101",
-                            "semesters_offered": [
-                                "Fall"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 2,
-                            "class_name": "Information Technology Essentials",
-                            "class_number": "IT 124",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 3,
-                            "class_name": "Web Design",
-                            "class_number": "CS 140",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 4,
-                            "class_name": "Introduction to Object-Oriented Programming",
-                            "class_number": "CS 202",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                1
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 5,
-                            "class_name": "Database Applications",
-                            "class_number": "CS 250",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 6,
-                            "class_name": "Systems Engineering",
-                            "class_number": "CS 311",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                4,
-                                5
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 7,
-                            "class_name": "History and Ethics of Computing",
-                            "class_number": "HIST 470",
-                            "semesters_offered": [
-                                "Fall",
-                                "Spring"
-                            ],
-                            "prerequisites": [
-                                27
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": false,
-                            "elective_group": null
-                        }
-                    ]
-                },
-                {
                     "id": 7,
                     "section_name": "Science Requirment",
                     "credits_required": 0,
@@ -365,26 +365,6 @@
                     "credits_needed_to_take": 4,
                     "display_order": 3,
                     "classes": [
-                        {
-                            "id": 23,
-                            "class_name": "Physics I",
-                            "class_number": "PHYS 205",
-                            "semesters_offered": [
-                                "Fall"
-                            ],
-                            "prerequisites": [
-                                22
-                            ],
-                            "corequisites": [],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": "",
-                            "credits": 4,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
                         {
                             "id": 70,
                             "class_name": "Introduction to General Chemistry",
@@ -401,28 +381,6 @@
                             "times_offered": [],
                             "is_senior_class": false,
                             "restrictions": "",
-                            "credits": 3,
-                            "description": null,
-                            "is_elective": true,
-                            "elective_group": null
-                        },
-                        {
-                            "id": 72,
-                            "class_name": "Biology I - Cell and Molecular Biology",
-                            "class_number": "BIOL 112",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "prerequisites": [],
-                            "corequisites": [
-                                73
-                            ],
-                            "days_offered": [],
-                            "times_offered": [],
-                            "is_senior_class": false,
-                            "restrictions": null,
                             "credits": 3,
                             "description": null,
                             "is_elective": true,
@@ -1362,13 +1320,13 @@
             ]
         },
         {
-            "id": 7,
-            "course_name": "FLUENT",
+            "id": 5,
+            "course_name": "EIL Level 1",
             "course_type": "eil/holokai",
             "holokai": null,
             "sections": [
                 {
-                    "id": 21,
+                    "id": 17,
                     "section_name": "Holokai Student Development",
                     "credits_required": 0,
                     "is_required": true,
@@ -1391,6 +1349,96 @@
                             "is_senior_class": false,
                             "restrictions": "",
                             "credits": 1,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        }
+                    ]
+                },
+                {
+                    "id": 18,
+                    "section_name": "EIL Section",
+                    "credits_required": 0,
+                    "is_required": true,
+                    "credits_needed_to_take": null,
+                    "display_order": 0,
+                    "classes": [
+                        {
+                            "id": 62,
+                            "class_name": "The Int'l Student in the University",
+                            "class_number": "EIL 201",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 2,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 63,
+                            "class_name": "Listening/Speaking",
+                            "class_number": "EIL 313",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 4,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 64,
+                            "class_name": "Reading/Writing",
+                            "class_number": "EIL 317",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": "",
+                            "credits": 4,
+                            "description": null,
+                            "is_elective": false,
+                            "elective_group": null
+                        },
+                        {
+                            "id": 65,
+                            "class_name": "Academic English II",
+                            "class_number": "EIL 320",
+                            "semesters_offered": [
+                                "Fall",
+                                "Winter",
+                                "Spring"
+                            ],
+                            "prerequisites": [],
+                            "corequisites": [],
+                            "days_offered": [],
+                            "times_offered": [],
+                            "is_senior_class": false,
+                            "restrictions": null,
+                            "credits": 4,
                             "description": null,
                             "is_elective": false,
                             "elective_group": null
@@ -1429,29 +1477,6 @@
                             ],
                             "days_offered": [],
                             "times_offered": []
-                        },
-                        {
-                            "id": 73,
-                            "class_number": "BIOL 112L",
-                            "class_name": "Biology I - Cell and Molecular Biology Lab",
-                            "semesters_offered": [
-                                "Fall",
-                                "Winter",
-                                "Spring"
-                            ],
-                            "credits": 1,
-                            "is_senior_class": false,
-                            "restrictions": null,
-                            "prerequisites": [],
-                            "corequisites": [
-                                {
-                                    "id": 72,
-                                    "class_number": "BIOL 112",
-                                    "class_name": "Biology I - Cell and Molecular Biology"
-                                }
-                            ],
-                            "days_offered": [],
-                            "times_offered": []
                         }
                     ]
                 }
@@ -1461,12 +1486,12 @@
     "preferences": {
         "startSemester": "Winter 2025",
         "majorClassLimit": 3,
-        "fallWinterCredits": 18,
-        "springCredits": 12,
+        "fallWinterCredits": 17,
+        "springCredits": 11,
         "approach": "credits-based",
         "limitFirstYear": true,
         "firstYearLimits": {
-            "fallWinterCredits": 13,
+            "fallWinterCredits": 16,
             "springCredits": 9
         }
     }
