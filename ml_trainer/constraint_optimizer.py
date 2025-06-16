@@ -608,14 +608,20 @@ class ScheduleOptimizer:
         # Get only elective courses
         elective_courses = [c for c in courses if c.is_elective]
         
-        # Calculate total available credits in this section
-        total_available_credits = sum(c.credits for c in elective_courses)
+        # Calculate total available credits in this section INCLUDING corequisites
+        total_available_credits = 0
+        for course in elective_courses:
+            course_with_coreqs = self._get_course_with_coreqs(course, self._all_courses)
+            total_available_credits += sum(c.credits for c in course_with_coreqs)
+    
+        logger.info(f"Section {courses[0].section_id} has {total_available_credits} total credits available (including corequisites)")
+    
         if total_available_credits < credits_needed:
             error_msg = (f"Section {courses[0].section_id} requires {credits_needed} credits but only has "
-                        f"{total_available_credits} credits available from elective courses")
+                        f"{total_available_credits} credits available from elective courses (including corequisites)")
             logger.error(error_msg)
             raise ValueError(error_msg)
-        
+    
         # Track section fulfillment
         section_id = courses[0].section_id
         if section_id in self.satisfied_sections:
@@ -640,17 +646,17 @@ class ScheduleOptimizer:
                 if current_total >= credits_needed:
                     best_combination = current_combo
                     best_total = current_total
-                    # Don't break here - we want to try all combinations of this size
-                    
-            # If we found a valid combination, use it
-            if best_combination:
-                self.satisfied_sections.add(section_id)
-                logger.info(f"Found combination for section {section_id}: {[c.class_number for c in best_combination]} = {best_total} cr "
-                           f"(needed {credits_needed})")
-                return best_combination
-    
+                    break  # Found a valid combination for this size
+                
+        # If we found a valid combination, use it
+        if best_combination:
+            self.satisfied_sections.add(section_id)
+            logger.info(f"Found combination for section {section_id}: {[c.class_number for c in best_combination]} = {best_total} cr "
+                       f"(needed {credits_needed})")
+            return best_combination
+
         logger.warning(f"Could not meet credit requirement for section {section_id}: needed {credits_needed} credits")
-        return None
+        return []  # Return empty list instead of None
 
     def _get_course_with_coreqs(self, course: Course, available_courses: List[Course]) -> List[Course]:
         """Get a course and all its corequisites"""
