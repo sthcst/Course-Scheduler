@@ -1491,10 +1491,6 @@ button.disabled:hover::after {
     transition: color 0.2s ease-in-out;
 }
 
-/* .footer-links a:hover {
-    color: #9e1b34; /* Highlight color on hover */
-} */
-
 .footer p { /* Changed from #main-footer p to .footer p */
     font-size: 14px;
     margin: 0;
