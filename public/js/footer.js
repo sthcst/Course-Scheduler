@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="https://holokai.m.byuh.edu/p/build-your-holokai" target="_blank" rel="noopener noreferrer">Build Your Holokai</a>
                 <a href="https://advising.byuh.edu/academic-advisors" target="_blank" rel="noopener noreferrer">Academic Advising</a>
             </div>
-            <p>&copy; ${new Date().getFullYear()} Holokai Planner. All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} Brigham Young University-Hawaii. All rights reserved.</p>
         `;
 
         // Append the footer to the body
