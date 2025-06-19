@@ -1,4 +1,26 @@
 window.addEventListener('DOMContentLoaded', async () => {
+    // Add a global map to store all classes by ID for quick lookup
+    let allClassesLookup = {};
+
+    // Fetch ALL classes to build a lookup map. This is crucial because
+    // prerequisites/corequisites might refer to classes not part of the
+    // currently viewed course's 'data' object.
+    try {
+        const allClassesResponse = await fetch('/api/classes');
+        if (!allClassesResponse.ok) {
+            throw new Error(`Error fetching all classes: ${allClassesResponse.statusText}`);
+        }
+        const allFetchedClasses = await allClassesResponse.json();
+        allClassesLookup = allFetchedClasses.reduce((map, cls) => {
+            if (cls.id) map[cls.id] = cls;
+            return map;
+        }, {});
+        console.log("Built allClassesLookup:", allClassesLookup); // Debugging
+    } catch (error) {
+        console.error("Failed to fetch all classes for lookup:", error);
+        // Continue without comprehensive lookup if fetch fails, some corequisite details might be missing
+    }
+
     // Example function that renders course sections and classes
     function renderCourseSections(courseData) {
         const courseSections = document.getElementById('course-sections');
@@ -35,7 +57,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const editCourseModal = document.getElementById('edit-course-modal');
     const editCourseForm = document.getElementById('edit-course-form');
     const editCourseButton = document.getElementById('edit-course-button');
-    const editSectionModal = document = document.getElementById('edit-section-modal');
+    const editSectionModal = document.getElementById('edit-section-modal'); // Fixed typo: document = document
     const editSectionForm = document.getElementById('edit-section-form');
     const editSectionTypeSelect = document.getElementById('edit-section-type');
     const editElectiveOptions = document.getElementById('edit-elective-options');
@@ -43,6 +65,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     if (deleteCourseButton) {
         deleteCourseButton.addEventListener('click', async () => {
+            // Using a custom modal for confirmation is better than `confirm()`
+            // For now, I will use `confirm()` as it's existing in the provided code
             if (!confirm('Are you sure you want to delete this course?')) return;
             try {
                 const response = await fetch(`/api/courses/${courseId}`, {
@@ -338,6 +362,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         const deleteButton = document.getElementById('delete-course-button');
         if (deleteButton) {
             deleteButton.addEventListener('click', async () => {
+                // Using a custom modal for confirmation is better than `confirm()`
+                // For now, I will use `confirm()` as it's existing in the provided code
                 if (confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
                     try {
                         const response = await fetch(`/api/courses/${courseId}`, {
@@ -361,6 +387,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         const copyButton = document.getElementById('copy-course-button');
         if (copyButton) {
             copyButton.addEventListener('click', async () => {
+                // Using a custom modal for confirmation is better than `confirm()`
+                // For now, I will use `confirm()` as it's existing in the provided code
                 if (confirm('Do you want to create a copy of this course with all its sections and classes?')) {
                     try {
                         // Show loading state
@@ -397,7 +425,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         // Clear the sections div
         courseSectionsDiv.innerHTML = '';
 
-        const isComputerScienceMajor = (data.course_name === "Computer Science" && data.course_type.toLowerCase() === 'major');     
+        // const isComputerScienceMajor = (data.course_name === "Computer Science" && data.course_type.toLowerCase() === 'major'); // This is no longer used for corequisite logic     
 
         if (data.sections && Array.isArray(data.sections) && data.sections.length > 0) {
             data.sections.forEach((section, index) => {
@@ -450,16 +478,26 @@ window.addEventListener('DOMContentLoaded', async () => {
                     const sectionClassesList = document.getElementById(`section-${section.id}-classes`);
                     if (section.classes && section.classes.length > 0) {
                         section.classes.forEach(cls => {
-                            let creditsDisplay = `${cls.credits || 0} cr.`; // Default display
+                            let baseCredits = cls.credits || 0;
+                            let creditsDisplay = `${baseCredits} cr.`; // Start with the class's own credits
 
-                            // Check if it's the Computer Science Major, AND the "Science Requirements" section
-                            if (isComputerScienceMajor && section.section_name === "Science Requirements") {
-                                // Now check for the specific classes that get the +1 credit
-                                if (cls.class_number === "CHEM 101" || cls.class_number === "BIOL 112") {
-                                    const baseCredits = Number(cls.credits || 0); // Ensure it's a number for addition
-                                    creditsDisplay = `(${baseCredits}+1 cr.)`;
-                                }
+                            // Calculate total corequisite credits
+                            let totalCorequisiteCredits = 0;
+                            if (cls.corequisites && cls.corequisites.length > 0) {
+                                cls.corequisites.forEach(coreq => {
+                                    const coreqId = typeof coreq === 'object' ? coreq.id : coreq;
+                                    const coreqClass = allClassesLookup[coreqId];
+                                    if (coreqClass) {
+                                        totalCorequisiteCredits += (coreqClass.credits || 0);
+                                    }
+                                });
                             }
+
+                            // Append corequisite info if corequisites exist and have credits
+                            if (totalCorequisiteCredits > 0) {
+                                creditsDisplay += ` + ${totalCorequisiteCredits} cr. Co-requisite`;
+                            }
+
                             const li = document.createElement('li');
                             li.innerHTML = `
                                 <span>${cls.class_number}: ${cls.class_name}</span>
@@ -533,6 +571,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                 const classId = e.target.dataset.classId;
                 const sectionId = e.target.dataset.sectionId;
                 
+                // Using a custom modal for confirmation is better than `confirm()`
+                // For now, I will use `confirm()` as it's existing in the provided code
                 if (confirm('Are you sure you want to remove this class from the section?')) {
                     try {
                         // Update the URL to match the API endpoint
@@ -560,6 +600,8 @@ window.addEventListener('DOMContentLoaded', async () => {
             button.addEventListener('click', async (e) => {
                 const sectionId = e.target.dataset.section;
                 
+                // Using a custom modal for confirmation is better than `confirm()`
+                // For now, I will use `confirm()` as it's existing in the provided code
                 if (confirm('Are you sure you want to delete this section? This will remove all class associations.')) {
                     try {
                         const response = await fetch(
@@ -640,9 +682,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                 sectionElement.classList.toggle('active');
                 
                 // Toggle the active class on the button itself
-                e.target.classList.toggle('active');
-                
-                // Rotate the image when toggled
                 e.target.style.transform = classList.classList.contains('show-actions') ? 
                     'rotate(180deg)' : 'rotate(0deg)';
             });
