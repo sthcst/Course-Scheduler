@@ -22,6 +22,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Example function that renders course sections and classes
+    // This function is still present but its direct use might be minimal now
+    // as displayCourse directly renders to courseSectionsDiv.
     function renderCourseSections(courseData) {
         const courseSections = document.getElementById('course-sections');
         courseSections.innerHTML = '';
@@ -57,7 +59,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const editCourseModal = document.getElementById('edit-course-modal');
     const editCourseForm = document.getElementById('edit-course-form');
     const editCourseButton = document.getElementById('edit-course-button');
-    const editSectionModal = document.getElementById('edit-section-modal'); // Fixed typo: document = document
+    const editSectionModal = document.getElementById('edit-section-modal');
     const editSectionForm = document.getElementById('edit-section-form');
     const editSectionTypeSelect = document.getElementById('edit-section-type');
     const editElectiveOptions = document.getElementById('edit-elective-options');
@@ -65,8 +67,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     if (deleteCourseButton) {
         deleteCourseButton.addEventListener('click', async () => {
-            // Using a custom modal for confirmation is better than `confirm()`
-            // For now, I will use `confirm()` as it's existing in the provided code
             if (!confirm('Are you sure you want to delete this course?')) return;
             try {
                 const response = await fetch(`/api/courses/${courseId}`, {
@@ -290,13 +290,22 @@ window.addEventListener('DOMContentLoaded', async () => {
     function displayCourse(data) {
         // Calculate total credits in the course
         let totalCredits = 0;
+        // Set to keep track of unique class IDs already added to totalCredits
+        const countedClassIds = new Set();
         
         if (data.sections && Array.isArray(data.sections)) {
             data.sections.forEach(section => {
                 if (section.classes && Array.isArray(section.classes)) {
                     section.classes.forEach(cls => {
-                        // Add credits from each class, with fallback to 0 if not available
-                        totalCredits += Number(cls.credits || 0);
+                        // Add main class credits only if not already counted
+                        if (!countedClassIds.has(cls.id)) {
+                            totalCredits += Number(cls.credits || 0);
+                            countedClassIds.add(cls.id);
+                        }
+
+                        // Add corequisite credits
+                        // NOTE: Corequisite credits are only counted for the individual class display,
+                        // NOT for the overall course totalCredits at the top.
                     });
                 }
             });
@@ -362,8 +371,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         const deleteButton = document.getElementById('delete-course-button');
         if (deleteButton) {
             deleteButton.addEventListener('click', async () => {
-                // Using a custom modal for confirmation is better than `confirm()`
-                // For now, I will use `confirm()` as it's existing in the provided code
                 if (confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
                     try {
                         const response = await fetch(`/api/courses/${courseId}`, {
@@ -387,8 +394,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         const copyButton = document.getElementById('copy-course-button');
         if (copyButton) {
             copyButton.addEventListener('click', async () => {
-                // Using a custom modal for confirmation is better than `confirm()`
-                // For now, I will use `confirm()` as it's existing in the provided code
                 if (confirm('Do you want to create a copy of this course with all its sections and classes?')) {
                     try {
                         // Show loading state
@@ -424,8 +429,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
         // Clear the sections div
         courseSectionsDiv.innerHTML = '';
-
-        // const isComputerScienceMajor = (data.course_name === "Computer Science" && data.course_type.toLowerCase() === 'major'); // This is no longer used for corequisite logic     
 
         if (data.sections && Array.isArray(data.sections) && data.sections.length > 0) {
             data.sections.forEach((section, index) => {
@@ -474,15 +477,14 @@ window.addEventListener('DOMContentLoaded', async () => {
                     courseSectionsDiv.appendChild(sectionDiv);
                     
                     // Display classes for this section...
-                    // Your existing code for displaying classes
                     const sectionClassesList = document.getElementById(`section-${section.id}-classes`);
                     if (section.classes && section.classes.length > 0) {
                         section.classes.forEach(cls => {
                             let baseCredits = cls.credits || 0;
                             let creditsDisplay = `${baseCredits} cr.`; // Start with the class's own credits
 
-                            // Calculate total corequisite credits
-                            let totalCorequisiteCredits = 0;
+                            // Calculate total corequisite credits to display with the class
+                            let totalCorequisiteCredits = 0; // Declare here
                             if (cls.corequisites && cls.corequisites.length > 0) {
                                 cls.corequisites.forEach(coreq => {
                                     const coreqId = typeof coreq === 'object' ? coreq.id : coreq;
@@ -499,6 +501,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                             }
 
                             const li = document.createElement('li');
+                            // Add a class for styling if necessary and a data attribute for easier access
+                            li.className = 'class-item-clickable'; // Add a class for styling/cursor
+                            li.dataset.classId = cls.id; // Store class ID for lookup if needed
+                            li.style.cursor = 'pointer'; // Indicate it's clickable
+
                             li.innerHTML = `
                                 <span>${cls.class_number}: ${cls.class_name}</span>
                                 <div class="class-right-content">
@@ -518,6 +525,17 @@ window.addEventListener('DOMContentLoaded', async () => {
                                 </div>
                             `;
                             sectionClassesList.appendChild(li);
+
+                            // Add the click event listener to show the details popup
+                            li.addEventListener('click', () => {
+                                // Find the class data using its ID from the global lookup
+                                const clickedClassData = allClassesLookup[cls.id];
+                                if (clickedClassData) {
+                                    showClassDetails(clickedClassData);
+                                } else {
+                                    console.error('Class data not found for ID:', cls.id);
+                                }
+                            });
                         });
                     } else {
                         sectionClassesList.innerHTML = '<li>No classes in this section</li>';
@@ -571,8 +589,6 @@ window.addEventListener('DOMContentLoaded', async () => {
                 const classId = e.target.dataset.classId;
                 const sectionId = e.target.dataset.sectionId;
                 
-                // Using a custom modal for confirmation is better than `confirm()`
-                // For now, I will use `confirm()` as it's existing in the provided code
                 if (confirm('Are you sure you want to remove this class from the section?')) {
                     try {
                         // Update the URL to match the API endpoint
@@ -600,8 +616,6 @@ window.addEventListener('DOMContentLoaded', async () => {
             button.addEventListener('click', async (e) => {
                 const sectionId = e.target.dataset.section;
                 
-                // Using a custom modal for confirmation is better than `confirm()`
-                // For now, I will use `confirm()` as it's existing in the provided code
                 if (confirm('Are you sure you want to delete this section? This will remove all class associations.')) {
                     try {
                         const response = await fetch(
@@ -1037,5 +1051,88 @@ window.addEventListener('DOMContentLoaded', async () => {
             console.error('Error in individual updates:', error);
             return false;
         }
+    }
+
+    // NEW: Function to show class details popup
+    function showClassDetails(classData) {
+        // Remove any existing popups
+        const existingPopup = document.querySelector('.class-details-popup');
+        const existingOverlay = document.querySelector('.popup-overlay');
+        if (existingPopup) existingPopup.remove();
+        if (existingOverlay) existingOverlay.remove();
+
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'popup-overlay';
+        document.body.appendChild(overlay);
+
+        // Create popup
+        const popup = document.createElement('div');
+        popup.className = 'class-details-popup';
+
+        // Helper function to get class number from ID using allClassesLookup
+        const getClassNameFromId = (id) => {
+            const cls = allClassesLookup[id];
+            return cls ? `${cls.class_number}` : 'Unknown Class';
+        };
+
+        // Format prerequisites and corequisites with class numbers
+        const prerequisites = Array.isArray(classData.prerequisites) && classData.prerequisites.length > 0
+            ? classData.prerequisites.map(p => getClassNameFromId(typeof p === 'object' ? p.id : p)).join(', ')
+            : 'None';
+        
+        const corequisites = Array.isArray(classData.corequisites) && classData.corequisites.length > 0
+            ? classData.corequisites.map(c => getClassNameFromId(typeof c === 'object' ? c.id : c)).join(', ')
+            : 'None';
+
+        popup.innerHTML = `
+            <button class="close-button">&times;</button>
+            <h2>${classData.class_number} - ${classData.class_name}</h2>
+            
+            <div class="details-section">
+                <h3>Description</h3>
+                <p>${classData.description || 'No description available.'}</p>
+            </div>
+            
+            <div class="details-section">
+                <h3>Credit Hours</h3>
+                <p>${classData.credits || 3} credits</p>
+            </div>
+            
+            <div class="details-section">
+                <h3>Prerequisites</h3>
+                <p>${prerequisites}</p>
+            </div>
+            
+            <div class="details-section">
+                <h3>Co-requisites</h3>
+                <p>${corequisites}</p>
+            </div>
+            <div class="details-section">
+                <h3>Instructor</h3>
+                <p>${classData.professor || 'Not assigned'}</p>
+            </div>
+            <div class="details-section">
+                <h3>Link to Class</h3>
+                <p>${classData.link || 'No link available.'}</p>
+            </div>
+        `;
+
+        // Add to document
+        document.body.appendChild(popup);
+
+        // Add close handlers
+        const closePopup = () => {
+            popup.remove();
+            overlay.remove();
+        };
+
+        popup.querySelector('.close-button').addEventListener('click', closePopup);
+        overlay.addEventListener('click', closePopup);
+
+        // Stop click event from bubbling to overlay when clicking popup
+        popup.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
     }
 });

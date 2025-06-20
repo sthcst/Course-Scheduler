@@ -637,6 +637,16 @@ body {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Updated border color */
 }
 
+/* Add this class for clickable items to provide visual feedback */
+.class-item-clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.class-item-clickable:hover {
+    background-color: #f0f0f0; /* Light highlight on hover */
+}
+
 /* New container for the content on the right (credits OR buttons) */
 .classes-list li .class-right-content {
     /* No longer relative positioning for children within this context */
@@ -780,4 +790,83 @@ body {
     padding: 0;
     margin-left: 5px;
     transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Class Details Popup Styles */
+.class-details-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    z-index: 10000; /* Higher z-index to ensure it's on top */
+    width: 90%;
+    max-width: 500px;
+}
+
+.class-details-popup .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.class-details-popup h2 {
+    margin: 0 30px 20px 0; /* Add right margin to prevent overlap with close button */
+    color: #333;
+    word-wrap: break-word; /* Allow long titles to wrap */
+}
+
+.class-details-popup .details-section {
+    margin-bottom: 15px;
+}
+
+.class-details-popup .details-section h3 {
+    color: #666;
+    font-size: 0.9em;
+    margin: 0 0 5px 0;
+}
+
+.class-details-popup .details-section p {
+    margin: 0;
+    color: #333;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999; /* Just below the popup */
+}
+
+.class-details-popup .close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 8px;
+    line-height: 1;
+    width: 40px; /* Set fixed width */
+    height: 40px; /* Set fixed height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+/* Add hover effect for better UX */
+.class-details-popup .close-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #333;
 }
