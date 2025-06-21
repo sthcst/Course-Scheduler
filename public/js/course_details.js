@@ -484,7 +484,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                             let creditsDisplay = `${baseCredits} cr.`; // Start with the class's own credits
 
                             // Calculate total corequisite credits to display with the class
-                            let totalCorequisiteCredits = 0; // Declare here
+                            let totalCorequisiteCredits = 0; 
                             if (cls.corequisites && cls.corequisites.length > 0) {
                                 cls.corequisites.forEach(coreq => {
                                     const coreqId = typeof coreq === 'object' ? coreq.id : coreq;
@@ -963,7 +963,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 const sectionIdRaw = sections[i].dataset.sectionId;
                 const sectionIdInt = parseInt(sectionIdRaw, 10);
                 
-                if (isNaN(sectionIdInt) || sectionIdInt <= 0) {
+                if (isNaN(sectionIdInt) || isNaN(sectionIdInt)) { // Removed isNaN(sectionIdInt) || isNaN(sectionIdInt)
                     console.warn(`Skipping invalid section ID: ${sectionIdRaw}`);
                     continue;
                 }
@@ -1085,6 +1085,13 @@ window.addEventListener('DOMContentLoaded', async () => {
             ? classData.corequisites.map(c => getClassNameFromId(typeof c === 'object' ? c.id : c)).join(', ')
             : 'None';
 
+        // Determine the content for the link section
+        // Use a conditional (ternary) operator to decide whether to create an <a> tag
+        const linkContent = (classData.link && classData.link.startsWith('http'))
+            ? `<a href="${classData.link}" target="_blank" rel="noopener noreferrer">${classData.link}</a>`
+            : (classData.link || 'No link available.');
+
+
         popup.innerHTML = `
             <button class="close-button">&times;</button>
             <h2>${classData.class_number} - ${classData.class_name}</h2>
@@ -1105,16 +1112,13 @@ window.addEventListener('DOMContentLoaded', async () => {
             </div>
             
             <div class="details-section">
-                <h3>Co-requisites</h3>
+                <h3>Corequisites</h3>
                 <p>${corequisites}</p>
             </div>
+            
             <div class="details-section">
-                <h3>Instructor</h3>
-                <p>${classData.professor || 'Not assigned'}</p>
-            </div>
-            <div class="details-section">
-                <h3>Link to Class</h3>
-                <p>${classData.link || 'No link available.'}</p>
+                <h3>Link</h3>
+                <p>${linkContent}</p>
             </div>
         `;
 
