@@ -916,6 +916,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 section.classList.remove('drag-over-top', 'drag-over-bottom');
             });
             
+            
             // Drop event
             section.addEventListener('drop', (e) => {
                 e.preventDefault();

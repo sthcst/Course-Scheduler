@@ -870,3 +870,15 @@ body {
     background-color: rgba(0, 0, 0, 0.05);
     color: #333;
 }
+
+/* Add these styles for the link in the class details popup */
+.class-details-popup .details-section p a {
+    color: #ba0c2f; /* Match your theme's primary red */
+    text-decoration: underline;
+    word-break: break-all; /* Prevents long URLs from overflowing the popup */
+    transition: color 0.2s ease;
+}
+
+.class-details-popup .details-section p a:hover {
+    color: #a00b29; /* A slightly darker red for the hover effect */
+}
