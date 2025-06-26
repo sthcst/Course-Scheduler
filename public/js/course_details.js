@@ -313,17 +313,18 @@ window.addEventListener('DOMContentLoaded', async () => {
         
         // Update the HTML to include credits and holokai
         courseInfoDiv.innerHTML = `
-        <h2>${data.course_name} <span class="course-credits">•   ${totalCredits} Credits</span></h2>
+        <h2>${data.course_name}</h2>
         <h3>${data.course_type || 'N/A'}</h3>
         ${data.course_type && (data.course_type.toLowerCase() === 'major' || data.course_type.toLowerCase() === 'minor') ? 
             `<h4>Holokai Section: ${data.holokai || 'None'}</h4>` : ''}
+        <h4>Total Credits: ${totalCredits}</h4>
         <div class="editanddelete">
             <img id="edit-course-button" src="./assets/whiteedit.png" alt="Edit course">
             <img id="download-course-button" src="./assets/downloadcourse.png" alt="Download course">
             <img id="delete-course-button" src="./assets/whitedelete.png" alt="Delete course">
             <img id="copy-course-button" src="./assets/copy-button.png" alt="Duplicate course">
         </div>
-    `;
+        `;
 
         // Add this right after setting courseInfoDiv.innerHTML
         const editButton = document.getElementById('edit-course-button');
