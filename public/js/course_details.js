@@ -427,6 +427,13 @@ window.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
+        const downloadButton = document.getElementById('download-course-button');
+        if (downloadButton) {
+            downloadButton.addEventListener('click', async () => {
+                window.print();
+            });
+        }
+
         // Clear the sections div
         courseSectionsDiv.innerHTML = '';
 
