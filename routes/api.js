@@ -700,6 +700,84 @@ router.put('/classes/:class_id', async (req, res) => {
     }
 });
 
+/**
+ * @route   PUT /courses/:course_id/classes/:class_id
+ * @desc    Update a class that's associated with a course
+ * @access  Public
+ */
+router.put('/courses/:course_id/classes/:class_id', async (req, res) => {
+    // This new route handles the update when a course_id is present.
+    // The logic inside is the same as your other class update route.
+    try {
+        const { class_id } = req.params;
+        const classIdNum = parseInt(class_id, 10);
+
+        if (isNaN(classIdNum)) {
+            return res.status(400).json({ error: 'class_id must be a valid integer.' });
+        }
+
+        const {
+            class_number,
+            class_name,
+            semesters_offered,
+            prerequisites,
+            corequisites,
+            credits,
+            days_offered,
+            times_offered,
+            is_senior_class,
+            restrictions,
+            description,
+            link
+        } = req.body;
+
+        if (!class_number || !class_name) {
+            return res.status(400).json({ error: 'class_number and class_name are required.' });
+        }
+
+        // Your existing database update logic is perfect for this.
+        const updateQuery = `
+            UPDATE classes
+            SET
+                class_number = $1,
+                class_name = $2,
+                semesters_offered = $3,
+                prerequisites = $4,
+                corequisites = $5,
+                credits = $6,
+                days_offered = $7,
+                times_offered = $8,
+                is_senior_class = $9,
+                restrictions = $10,
+                description = $11,
+                link = $12,
+                updated_at = NOW()
+            WHERE id = $13
+            RETURNING *
+        `;
+
+        const { rows: [updatedClass] } = await pool.query(updateQuery, [
+            class_number, class_name, semesters_offered, prerequisites,
+            corequisites, credits, days_offered, times_offered,
+            is_senior_class, restrictions, description, link, classIdNum
+        ]);
+
+        if (!updatedClass) {
+            throw new Error('Class not found');
+        }
+
+        res.json({
+            ...updatedClass,
+            message: 'Class updated successfully'
+        });
+
+    } catch (error) {
+        // This makes sure errors are handled correctly
+        console.error('Error updating class in course:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // POST route for creating new classes
 router.post('/classes', async (req, res) => {
     try {
