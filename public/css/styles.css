@@ -1902,3 +1902,48 @@ body {
     background-color: rgba(0, 0, 0, 0.05);
     color: #333;
 }
+
+/* --- Tooltip Styles --- */
+
+/* This makes the button a container for our tooltip */
+.path-button {
+    position: relative;
+  }
+  
+  /* This is the style for the tooltip box itself. It's hidden at first. */
+  .path-button .tooltip-text {
+    visibility: hidden; /* Hide it */
+    opacity: 0; /* Make it fully transparent */
+    width: 200px; /* How wide the tooltip box should be */
+    background-color: #555; /* Dark gray background */
+    color: #fff; /* White text */
+    text-align: center;
+    border-radius: 6px; /* Rounded corners */
+    padding: 8px; /* Some space inside the box */
+    position: absolute; /* Lets us position it relative to the button */
+    z-index: 1; /* Makes sure it appears on top of other things */
+    bottom: 110%; /* Position it above the button */
+    left: 50%;
+    margin-left: -100px; /* Use half of the width to center it */
+    transition: opacity 0.3s; /* Smooth fade-in effect */
+    font-size: 12px; /* A good font size for a tooltip */
+    font-weight: normal; /* Normal font weight, not bold */
+  }
+  
+  /* This is the little arrow pointing down from the tooltip */
+  .path-button .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* Position the arrow at the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent; /* Creates the triangle shape */
+  }
+  
+  /* This is the magic! When you hover over the button... */
+  .path-button:hover .tooltip-text {
+    visibility: visible; /* ...make the tooltip visible! */
+    opacity: 1; /* Fade it in to be fully visible */
+  }
