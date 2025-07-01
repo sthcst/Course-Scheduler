@@ -214,6 +214,11 @@ class ScheduleOptimizer:
         eil_courses = {"STDEV 100R", "EIL 201", "EIL 313", "EIL 317", "EIL 320"}
         return course.class_number in eil_courses
 
+    def _is_eil_course_dict(self, course_dict: Dict) -> bool:
+        """Check if a course dictionary represents an EIL course"""
+        eil_courses = {"STDEV 100R", "EIL 201", "EIL 313", "EIL 317", "EIL 320"}
+        return course_dict.get("class_number", "") in eil_courses
+
     # Add a method to check if we can schedule a religion class in a semester
     def _can_schedule_religion_in_semester(self, semester_courses: List[Course]) -> bool:
         """Check if a religion class can be scheduled in the semester (max 1 per semester)"""
@@ -259,7 +264,7 @@ class ScheduleOptimizer:
             
             params = processed_data["parameters"]
             # Remove this log
-            # logger.info(f"Received scheduling parameters: {params}")
+            logger.info(f"Received scheduling parameters: {params}")
             
             self._all_courses = self._convert_to_courses(processed_data["classes"])
             
@@ -313,7 +318,7 @@ class ScheduleOptimizer:
                     required_courses = [c for c in courses if not c.is_elective]
                     courses_to_schedule.extend(required_courses)
                     # Remove this log
-                    # logger.info(f"Added required courses for section {section_id}: {[c.class_number for c in required_courses]}")
+                    logger.info(f"Added required courses for section {section_id}: {[c.class_number for c in required_courses]}")
 
             # Split courses into EIL and regular courses
             eil_courses = [c for c in courses_to_schedule if self._is_eil_course(c)]
@@ -1341,5 +1346,4 @@ class ScheduleOptimizer:
                     # But if we're moving it to before that course, it's still valid
                     if i > to_semester_idx:
                         return False
-        
         return True
