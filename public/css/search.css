@@ -475,6 +475,7 @@ header h1 {
     .stats-row {
         grid-template-columns: repeat(2, 1fr);
         margin-top: -50px;
+        height: auto; /* Allow height to adjust based on content */
     }
     
     #red-background {
@@ -509,6 +510,20 @@ header h1 {
         opacity: 1;
     }
 }
+
+/*
+  This rule makes the "Programs" and "Classes" boxes
+  stack on top of each other on medium-sized screens.
+*/
+@media (max-width: 1200px) {
+    .grid-container {
+      /* Change from two columns to just one column */
+      grid-template-columns: 1fr;
+  
+      /* Let the container's height adjust automatically */
+      height: auto;
+    }
+  }
 
 /* Remove the old slideUp animation or leave it for reference */
 @keyframes slideUp {
