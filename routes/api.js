@@ -519,6 +519,7 @@ router.get('/classes/:class_id', async (req, res) => {
                 c.times_offered,
                 c.is_senior_class,
                 c.restrictions${descriptionField},
+                c.link, --
                 json_agg(DISTINCT prereq.*) FILTER (WHERE prereq.id IS NOT NULL) as prerequisites_details,
                 json_agg(DISTINCT coreq.*) FILTER (WHERE coreq.id IS NOT NULL) as corequisites_details
             FROM classes c
