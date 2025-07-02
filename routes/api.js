@@ -1238,6 +1238,7 @@ router.get('/courses/:course_id/classes/:class_id', async (req, res) => {
             is_senior_class: classDetails.is_senior_class, // <-- Include is_senior_class
             restrictions: classDetails.restrictions,
             description: classDetails.description,
+            link: classDetails.link, // <-- link field added
             prerequisites: prerequisites,
             corequisites: corequisites,
             days_offered: classDetails.days_offered,
