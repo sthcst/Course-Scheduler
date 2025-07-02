@@ -1947,3 +1947,26 @@ body {
     visibility: visible; /* ...make the tooltip visible! */
     opacity: 1; /* Fade it in to be fully visible */
   }
+
+/* --- Admin Login Prompt Styles --- */
+
+.admin-login-prompt {
+    margin-top: 30px; /* Adds some space above the text */
+    text-align: center;
+  }
+  
+  .admin-login-prompt p {
+    font-size: 14px;
+    color: #6c757d; /* A muted gray color */
+    margin: 0;
+  }
+  
+  .admin-login-prompt a {
+    color: #9e1b34; /* Your primary red color */
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  
+  .admin-login-prompt a:hover {
+    color: #8a0d29; /* A slightly darker red for hover */
+  }
