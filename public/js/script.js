@@ -179,7 +179,7 @@ function createCreditsPopup(target) {
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     // 1. Fetch basic course data for dropdowns
-    const basicResponse = await fetch('/api/courses/basic');
+    const basicResponse = await fetch('/api/courses/');
     if (!basicResponse.ok) {
       throw new Error(`Error fetching basic courses: ${basicResponse.statusText}`);
     }

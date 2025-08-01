@@ -112,6 +112,16 @@ router.put('/courses/:course_id/sections/reorder', async (req, res) => {
     }
 });
 
+router.get('/courses/basic', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, name FROM courses');
+    res.json(result.rows);
+  } catch (e) {
+    console.error('Error fetching basic courses:', e);
+    res.status(500).json({ error: 'Failed to fetch basic courses' });
+  }
+});
+
 router.get('/courses', async (req, res) => {
     try {
         const { course_name, course_id } = req.query;
