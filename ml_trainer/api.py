@@ -215,6 +215,18 @@ def test_optimizer():
         logger.exception("Error in optimizer test:")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/test-db')
+def test_db():
+    try:
+        import psycopg2
+        import os
+        conn = psycopg2.connect(os.environ['DATABASE_URL'])
+        conn.close()
+        return '✅ Connected to DB!'
+    except Exception as e:
+        return f'❌ DB connection failed: {e}', 500
+
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') == 'development'
