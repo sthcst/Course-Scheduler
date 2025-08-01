@@ -122,6 +122,17 @@ router.get('/courses/basic', async (req, res) => {
   }
 });
 
+router.get('/ping-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT 1+1 AS result');
+    res.json({ result: result.rows[0].result });
+  } catch (e) {
+    console.error('Database test failed:', e);
+    res.status(500).json({ error: 'Failed to connect to database', details: e.message });
+  }
+});
+
+
 router.get('/courses', async (req, res) => {
     try {
         const { course_name, course_id } = req.query;
