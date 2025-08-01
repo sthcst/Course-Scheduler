@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from constraint_optimizer import ScheduleOptimizer
-from semester_based_optimizer import SemesterBasedOptimizer  # Add this import
+from semester_based_optimizer import SemesterBasedOptimizer
 from data_processor import ScheduleDataProcessor
 import os
 from datetime import datetime
