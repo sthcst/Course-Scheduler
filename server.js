@@ -75,7 +75,9 @@ app.post('/api/generate-schedule', async (req, res) => {
         const mlServiceUrl = process.env.ML_SERVICE_URL;
         
         console.log(`Attempting to connect to ML service at: ${mlServiceUrl}/generate-schedule`);
-        
+        console.log("ML_SERVICE_URL is:", process.env.ML_SERVICE_URL);
+        console.log("Calling:", `${process.env.ML_SERVICE_URL}/generate-schedule`);
+
         const response = await axios.post(
             `${mlServiceUrl}/generate-schedule`, // This should be the full URL
             req.body,
