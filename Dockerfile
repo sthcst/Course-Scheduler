@@ -1,20 +1,22 @@
-# Use the official Node.js 18 image as the base
+# Use the official Node.js 18 image
 FROM node:18-alpine
 
-# Set the working directory inside the container
+# Create app directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Install app dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Bundle app source
 COPY . .
 
-# Expose the port the app runs on
+# Set environment variables
+ENV PORT=3000
+ENV NODE_ENV=production
+
+# Expose the app port
 EXPOSE 3000
 
-# Define the command to run the application
-CMD ["npm", "start"]
+# Start the server
+CMD ["node", "server.js"]
