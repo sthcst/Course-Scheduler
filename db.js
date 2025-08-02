@@ -1,16 +1,16 @@
-const { Pool } = require('pg'); // Add the missing import
-const isProduction = process.env.NODE_ENV === 'production';
+const { Pool } = require('pg');
+
+const connectionString = process.env.DATABASE_URL;
+const useSSL = connectionString.includes('render') || connectionString.includes('supabase');
+
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: isProduction
-        ? { rejectUnauthorized: false }  // Render needs SSL
-        : false                          // Local dev needs plain connection
+  connectionString,
+  ssl: useSSL ? { rejectUnauthorized: false } : false
 });
 
-// Handle connection errors gracefully
 pool.on('error', (err) => {
-    console.error('Unexpected error on idle client', err);
-    process.exit(-1);
+  console.error('Unexpected error on idle client', err);
+  process.exit(-1);
 });
 
 module.exports = pool;
