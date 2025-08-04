@@ -5,6 +5,8 @@ const path = require('path');
 const axios = require('axios'); // Add this at the top with other imports
 const app = express();
 const PORT = process.env.PORT || 9000;
+const pool = require('./db');
+
 
 
 // Middleware to parse JSON bodies
