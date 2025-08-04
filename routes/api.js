@@ -11,6 +11,7 @@ module.exports = pool;
  */
 router.get('/courses/search', async (req, res) => {
     try {
+        console.log("✅ Hit /courses/basic route");
       const { query, limit = 5, course_type } = req.query;
       
       if (!query) {
