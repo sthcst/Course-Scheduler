@@ -1,16 +1,22 @@
 const { Pool } = require('pg');
 
-const connectionString = process.env.DATABASE_URL;
-const useSSL = connectionString.includes('render') || connectionString.includes('supabase');
-
 const pool = new Pool({
-  connectionString,
-  ssl: useSSL ? { rejectUnauthorized: false } : false
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
+// Optional: DB connection test
+pool.connect((err, client, release) => {
+  if (err) {
+    return console.error('Error acquiring client', err.stack);
+  }
+  client.query('SELECT NOW()', (err, result) => {
+    release();
+    if (err) {
+      return console.error('Error executing query', err.stack);
+    }
+    console.log('✅ Database connected:', result.rows);
+  });
 });
 
 module.exports = pool;
