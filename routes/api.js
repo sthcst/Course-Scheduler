@@ -122,7 +122,9 @@ router.get('/courses/basic', async (req, res) => {
     res.json(result.rows);
   } catch (e) {
     console.error('Error fetching basic courses:', e);
-    res.status(500).json({ error: 'Failed to fetch basic courses' });
+    res.status(500).json({ error: 'Failed to fetch basic courses',
+        details: error.message
+    });
   }
 });
 
