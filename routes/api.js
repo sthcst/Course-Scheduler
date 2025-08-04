@@ -269,8 +269,9 @@ router.get('/courses/basic', async (req, res) => {
         const { rows } = await pool.query(query);
         res.json(rows);
     } catch (error) {
-        console.error('❌ Error fetching basic course info:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('❌ Error fetching basic course info:', error.message, error.stack);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
+
     }
 });
 
