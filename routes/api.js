@@ -1936,6 +1936,7 @@ router.get('/courses/:course_id/sections/:section_id', async (req, res) => {
     } catch (error) {
         console.error('Error fetching section details:', error);
         res.status(500).json({ error: 'Failed to fetch section details' });
+        details: error.message;
     }
 });
 
