@@ -2,12 +2,6 @@ const express = require('express');
 const router = express.Router();
 const pool = require('./db');
 
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-});
-
 // Optional: DB connection test
 pool.connect((err, client, release) => {
   if (err) {
