@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-// Import the configured pool from db.js instead of creating a new one
-const pool = require('../db');
+const { Pool } = require('pg');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
+
 
 // Test database connection
 pool.connect((err, client, release) => {

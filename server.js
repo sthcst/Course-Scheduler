@@ -16,6 +16,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Import and mount API routes
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
+// Simple health check
+app.get('/ping', (req, res) => {
+  res.json({
+    status: 'healthy',
+    service: 'node-server',
+    timestamp: new Date().toISOString()
+  });
+});
 
 /**
  * Serve HTML Files Based on Routes
