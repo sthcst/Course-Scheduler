@@ -7,8 +7,6 @@ const app = express();
 const PORT = process.env.PORT || 9000;
 const pool = require('./db');
 
-
-
 // Middleware to parse JSON bodies
 app.use(express.json());
 
