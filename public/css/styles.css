@@ -516,6 +516,8 @@ h1,h2,h3,h4,h5,h6,
 
 /* Mobile behavior */
 @media (max-width: 768px){
+  /* Remove reserved right space for action buttons on mobile */
+  :root{ --pv-actions-w: 0px; }
   /* Hide legacy top menubar when sidebar is present */
   #menubar{ display:none !important; }
   /* Show burger button in sidebar */
@@ -523,6 +525,21 @@ h1,h2,h3,h4,h5,h6,
   /* Hide preview images for Major/Minor cards on mobile */
   .preview{ display:block; aspect-ratio:auto; }
   .preview .pv-img{ display:none; }
+
+  /* On mobile, place action buttons below header text to prevent squeezing */
+  .pv-head{ display:flex; flex-direction:column; padding-right: 12px !important; align-items: center; }
+  /* Ensure higher-specificity variant is also overridden */
+  #step-holokai .pv-head{ padding-right: 12px !important; }
+  .pv-title{ text-align: center; }
+  .pv-holokai{ justify-content: center; }
+  .pv-credits{ text-align: center; margin-bottom: 12px; }
+  .pv-actions{
+    position: static; /* no absolute overlay on mobile */
+    order: 0;         /* place at the top of the header */
+    align-self: flex-end; /* top-right */
+    margin: 0 0 8px 0; /* spacing below buttons */
+  }
+  .pv-action::part(base){ width:30px; height:30px; }
 }
 
 /* ===== Electives Wizard (right panel) ===== */
